@@ -1,0 +1,258 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-jakarta);
+  --font-display: var(--font-sora);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  /* MediTike brand */
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-gold: var(--gold);
+  --color-gold-dark: var(--gold-dark);
+  --color-terra: var(--terra);
+  --color-cream: var(--cream);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.75rem;
+  /* Background: warm cream (African-inspired, not pure white) */
+  --background: oklch(0.985 0.012 90);
+  --foreground: oklch(0.18 0.02 165);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.02 165);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.02 165);
+  /* Primary: Deep emerald (Togo green / medical trust) */
+  --primary: oklch(0.55 0.13 165);
+  --primary-foreground: oklch(0.99 0 0);
+  /* Secondary: warm sand */
+  --secondary: oklch(0.94 0.018 80);
+  --secondary-foreground: oklch(0.3 0.02 80);
+  --muted: oklch(0.95 0.012 90);
+  --muted-foreground: oklch(0.5 0.015 90);
+  /* Accent: African gold */
+  --accent: oklch(0.92 0.05 80);
+  --accent-foreground: oklch(0.35 0.08 70);
+  --destructive: oklch(0.6 0.22 28);
+  --border: oklch(0.9 0.015 90);
+  --input: oklch(0.93 0.015 90);
+  --ring: oklch(0.55 0.13 165);
+  --chart-1: oklch(0.55 0.13 165);
+  --chart-2: oklch(0.78 0.13 75);
+  --chart-3: oklch(0.55 0.18 30);
+  --chart-4: oklch(0.7 0.1 200);
+  --chart-5: oklch(0.65 0.15 145);
+  --sidebar: oklch(0.99 0.005 90);
+  --sidebar-foreground: oklch(0.18 0.02 165);
+  --sidebar-primary: oklch(0.55 0.13 165);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.94 0.018 80);
+  --sidebar-accent-foreground: oklch(0.3 0.02 80);
+  --sidebar-border: oklch(0.9 0.015 90);
+  --sidebar-ring: oklch(0.55 0.13 165);
+  /* MediTike brand colors */
+  --brand: oklch(0.55 0.13 165);
+  --brand-dark: oklch(0.42 0.1 165);
+  --gold: oklch(0.82 0.14 78);
+  --gold-dark: oklch(0.68 0.13 72);
+  --terra: oklch(0.6 0.16 38);
+  --cream: oklch(0.985 0.012 90);
+}
+
+.dark {
+  --background: oklch(0.16 0.015 165);
+  --foreground: oklch(0.96 0.005 90);
+  --card: oklch(0.22 0.02 165);
+  --card-foreground: oklch(0.96 0.005 90);
+  --popover: oklch(0.22 0.02 165);
+  --popover-foreground: oklch(0.96 0.005 90);
+  --primary: oklch(0.7 0.14 165);
+  --primary-foreground: oklch(0.15 0.02 165);
+  --secondary: oklch(0.28 0.02 165);
+  --secondary-foreground: oklch(0.95 0.005 90);
+  --muted: oklch(0.26 0.02 165);
+  --muted-foreground: oklch(0.7 0.01 90);
+  --accent: oklch(0.35 0.05 80);
+  --accent-foreground: oklch(0.92 0.05 80);
+  --destructive: oklch(0.7 0.19 22);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.7 0.14 165);
+  --chart-1: oklch(0.7 0.14 165);
+  --chart-2: oklch(0.8 0.13 75);
+  --chart-3: oklch(0.65 0.18 30);
+  --chart-4: oklch(0.7 0.1 200);
+  --chart-5: oklch(0.75 0.15 145);
+  --sidebar: oklch(0.22 0.02 165);
+  --sidebar-foreground: oklch(0.96 0.005 90);
+  --sidebar-primary: oklch(0.7 0.14 165);
+  --sidebar-primary-foreground: oklch(0.15 0.02 165);
+  --sidebar-accent: oklch(0.28 0.02 165);
+  --sidebar-accent-foreground: oklch(0.95 0.005 90);
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: oklch(0.7 0.14 165);
+  --brand: oklch(0.7 0.14 165);
+  --brand-dark: oklch(0.55 0.13 165);
+  --gold: oklch(0.82 0.14 78);
+  --gold-dark: oklch(0.7 0.13 72);
+  --terra: oklch(0.65 0.16 38);
+  --cream: oklch(0.18 0.015 165);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv11";
+  }
+}
+
+/* African Kente-inspired pattern utilities */
+.kente-divider {
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--brand) 0,
+    var(--brand) 8px,
+    var(--gold) 8px,
+    var(--gold) 14px,
+    var(--terra) 14px,
+    var(--terra) 18px,
+    var(--gold) 18px,
+    var(--gold) 24px
+  );
+}
+
+.kente-strip {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 6px,
+    rgba(255, 255, 255, 0.08) 6px,
+    rgba(255, 255, 255, 0.08) 8px,
+    transparent 8px,
+    transparent 14px,
+    rgba(255, 255, 255, 0.05) 14px,
+    rgba(255, 255, 255, 0.05) 16px
+  );
+}
+
+.dotted-bg {
+  background-image: radial-gradient(circle, rgba(5, 150, 105, 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.warm-gradient {
+  background: linear-gradient(135deg, oklch(0.985 0.012 90) 0%, oklch(0.97 0.025 80) 100%);
+}
+
+.brand-gradient {
+  background: linear-gradient(135deg, oklch(0.55 0.13 165) 0%, oklch(0.42 0.1 165) 100%);
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, oklch(0.85 0.14 78) 0%, oklch(0.68 0.13 72) 100%);
+}
+
+.text-gradient-brand {
+  background: linear-gradient(135deg, oklch(0.55 0.13 165) 0%, oklch(0.5 0.14 145) 50%, oklch(0.7 0.13 75) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, oklch(0.82 0.14 78) 0%, oklch(0.6 0.16 38) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: oklch(0.96 0.01 90);
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(0.7 0.08 165);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.55 0.13 165);
+}
+
+/* Pulse glow for live indicators */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(5, 150, 105, 0); }
+}
+.pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.float-anim {
+  animation: float 3.5s ease-in-out infinite;
+}
+
+/* Shimmer */
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}

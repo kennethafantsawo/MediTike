@@ -1,0 +1,6 @@
+{
+  "name": "MediTike",
+  "description": "Plateforme PWA de mise en relation client-pharmacie en temps réel pour la disponibilité de médicaments et produits de santé.",
+  "requestFramePermissions": ["notifications", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
