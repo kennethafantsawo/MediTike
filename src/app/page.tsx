@@ -5,6 +5,10 @@ import { ClientApp } from "@/components/meditike/client/client-app";
 import { PharmacistApp } from "@/components/meditike/pharmacist/pharmacist-app";
 import { SplashScreen } from "@/components/meditike/shared/splash";
 
+// L'URL admin est injectée côté serveur via NEXT_PUBLIC_ADMIN_PATH (ou fallback dev).
+// Côté client on ne peut pas lire les variables non-publiques, donc on utilise une publique.
+const ADMIN_PATH = process.env.NEXT_PUBLIC_ADMIN_PATH || "admin-secret-dev-2024";
+
 export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -16,7 +20,7 @@ export default function Home() {
   // Redirige les admins vers l'espace admin secret
   useEffect(() => {
     if (user?.role === "admin" && typeof window !== "undefined") {
-      window.location.href = "/admin-secret-dev-2024";
+      window.location.href = `/${ADMIN_PATH}`;
     }
   }, [user]);
 

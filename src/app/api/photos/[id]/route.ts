@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/meditike/session";
-import { UPLOADS_DIR } from "@/lib/meditike/config";
-import fs from "fs/promises";
-import path from "path";
+import { getPhoto } from "@/lib/meditike/photo-storage";
 
 /**
  * GET /api/photos/[id]
@@ -41,19 +39,19 @@ export async function GET(
       return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
     }
 
-    const filePath = path.join(UPLOADS_DIR, photo.filename);
-    try {
-      const buffer = await fs.readFile(filePath);
-      return new NextResponse(buffer, {
-        headers: {
-          "Content-Type": photo.mimeType,
-          "Cache-Control": "private, max-age=300",
-          "X-Content-Type-Options": "nosniff",
-        },
-      });
-    } catch (e) {
-      return NextResponse.json({ error: "Fichier introuvable sur disque" }, { status: 404 });
+    // Récupérer la photo depuis le stockage (Supabase ou local)
+    const result = await getPhoto(photo.filename);
+    if (!result) {
+      return NextResponse.json({ error: "Fichier introuvable" }, { status: 404 });
     }
+
+    return new NextResponse(result.buffer, {
+      headers: {
+        "Content-Type": result.mimeType,
+        "Cache-Control": "private, max-age=300",
+        "X-Content-Type-Options": "nosniff",
+      },
+    });
   } catch (err: any) {
     console.error("[photo GET] error:", err);
     return NextResponse.json(

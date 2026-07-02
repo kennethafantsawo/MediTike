@@ -1,0 +1,156 @@
+// MediTike — Schéma Prisma pour Supabase PostgreSQL (PRODUCTION)
+// =====================================================
+// Pour utiliser en production sur Vercel + Supabase:
+// 1. Remplacez prisma/schema.prisma par ce fichier
+// 2. Configurez DATABASE_URL dans .env (connexion Supabase)
+// 3. Exécutez : bun run db:push
+// 4. Exécutez : bun scripts/seed.ts
+// =====================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  phone        String   @unique
+  passwordHash String
+  fullName     String?
+  role         String   @default("client") // "client" | "pharmacist" | "admin"
+  pharmacyId   String?
+  pharmacy     Pharmacy? @relation(fields: [pharmacyId], references: [id])
+  isActive     Boolean  @default(true)
+  lastSeenAt   DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  productRequests  ProductRequest[]
+  productResponses ProductResponse[]
+  auditLogs        AuditLog[]
+
+  @@index([role])
+  @@index([isActive])
+}
+
+model Pharmacy {
+  id           String   @id @default(cuid())
+  name         String
+  phone1       String
+  phone2       String?
+  whatsapp     String?
+  address      String?
+  city         String   @default("Lomé")
+  district     String?
+  isActive     Boolean  @default(true)
+  createdById  String?
+  createdByName String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  users           User[]
+  dutySchedules   PharmacyDuty[]
+  productResponses ProductResponse[]
+
+  @@index([isActive])
+  @@index([city])
+}
+
+model PharmacyDuty {
+  id          String   @id @default(cuid())
+  pharmacyId  String?
+  pharmacy    Pharmacy? @relation(fields: [pharmacyId], references: [id], onDelete: SetNull)
+  name        String
+  address     String?
+  phone1      String?
+  phone2      String?
+  weekStart   DateTime
+  weekEnd     DateTime
+  sourceFile  String?
+  importedAt  DateTime @default(now())
+
+  @@unique([name, weekStart])
+  @@index([weekStart])
+}
+
+model ProductRequest {
+  id           String   @id @default(cuid())
+  clientId     String
+  client       User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  productName  String
+  note         String?
+  status       String   @default("open") // "draft" | "open" | "responded" | "expired" | "closed"
+  clientName   String?
+  clientPhone  String?
+  photos       Photo[]
+  responses    ProductResponse[]
+  notifiedPharmacies Int @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  expiresAt    DateTime?
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([clientId])
+}
+
+model ProductResponse {
+  id            String   @id @default(cuid())
+  requestId     String
+  request       ProductRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  pharmacistId  String
+  pharmacist    User     @relation(fields: [pharmacistId], references: [id])
+  pharmacyId    String
+  pharmacy      Pharmacy @relation(fields: [pharmacyId], references: [id])
+  available     Boolean
+  price         Float?
+  note          String?
+  read          Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  @@index([requestId])
+  @@index([pharmacistId])
+  @@index([pharmacyId])
+}
+
+model Photo {
+  id           String   @id @default(cuid())
+  requestId    String
+  request      ProductRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  sha256       String
+  uploadedAt   DateTime @default(now())
+  deleteAt     DateTime
+  deletedAt    DateTime?
+
+  @@index([deleteAt])
+  @@index([requestId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  adminId   String
+  admin     User     @relation(fields: [adminId], references: [id])
+  action    String
+  details   Json?
+  ip        String? @default("unknown")::Inet
+  createdAt DateTime @default(now())
+
+  @@index([adminId])
+  @@index([createdAt])
+}
+
+model AppStat {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Int
+  updatedAt DateTime @updatedAt
+}

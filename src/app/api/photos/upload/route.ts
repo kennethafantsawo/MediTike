@@ -7,8 +7,7 @@ import {
   isAllowedPhotoType,
   calculatePhotoDeletionDate,
 } from "@/lib/meditike/helpers";
-import { UPLOADS_DIR } from "@/lib/meditike/config";
-import fs from "fs/promises";
+import { storePhoto, deletePhoto } from "@/lib/meditike/photo-storage";
 import path from "path";
 import crypto from "crypto";
 
@@ -85,13 +84,9 @@ export async function POST(req: NextRequest) {
     // Génération du nom de fichier sécurisé
     const ext = path.extname(file.name).toLowerCase() || ".jpg";
     const safeFilename = `${sha256.slice(0, 16)}${ext}`;
-    const uploadPath = path.join(UPLOADS_DIR, safeFilename);
 
-    // S'assurer que le dossier uploads existe
-    await fs.mkdir(UPLOADS_DIR, { recursive: true });
-
-    // Écrire le fichier
-    await fs.writeFile(uploadPath, buffer);
+    // Sauvegarder dans le stockage (Supabase en prod, local en dev)
+    await storePhoto(safeFilename, buffer, mimeType || "image/jpeg");
 
     // Si requestId fourni: lier la photo à la demande existante
     // Sinon: la photo sera liée lors de la création de la demande (requestId temporairement null)
@@ -130,11 +125,11 @@ export async function POST(req: NextRequest) {
         include: { responses: { orderBy: { createdAt: "asc" }, take: 1 } },
       });
       if (!request) {
-        await fs.unlink(uploadPath).catch(() => {});
+        await deletePhoto(safeFilename);
         return NextResponse.json({ error: "Demande introuvable" }, { status: 404 });
       }
       if (request.clientId !== session.userId) {
-        await fs.unlink(uploadPath).catch(() => {});
+        await deletePhoto(safeFilename);
         return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
       }
       requestCreatedAt = request.createdAt;
