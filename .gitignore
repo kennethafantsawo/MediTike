@@ -52,3 +52,34 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# ─── MediTike-specific ─────────────────────────────────────────
+# SQLite database (local dev only — Supabase Postgres en prod)
+/db/
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Uploaded photos (dev local storage — Supabase Storage en prod)
+/uploads/
+
+# Generated screenshots (tests Agent Browser)
+/scripts/*.png
+/scripts/*.jpg
+/tool-results/
+
+# Tooling & cache
+.tool-versions
+.idea/
+.vscode/
+*.swp
+
+# Capacitor (build mobile — généré, pas versionné)
+/android/
+/ios/
+.gradle/
+
+# Process IDs & runtime files
+*.pid
+.zscripts/dev.pid
