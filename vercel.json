@@ -6,15 +6,12 @@
   "crons": [
     {
       "path": "/api/cron/cleanup",
-      "schedule": "0 * * * *"
+      "schedule": "0 3 * * *"
     },
     {
       "path": "/api/cron/refresh-duty",
       "schedule": "0 7 * * 1"
     }
   ],
-  "regions": ["fra1"],
-  "env": {
-    "NEXTAUTH_URL": "@nextauth-url"
-  }
+  "regions": ["fra1"]
 }

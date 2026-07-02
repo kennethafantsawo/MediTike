@@ -135,12 +135,42 @@ Dans Project Settings → Environment Variables, ajoutez TOUTES les variables du
 
 ### 3.3 Crons automatiques
 Le fichier `vercel.json` configure déjà:
-- **Chaque heure** : `/api/cron/cleanup` (suppression photos expirées)
-- **Chaque lundi 7h UTC** : `/api/cron/refresh-duty` (vérif semaine de garde)
+- **Chaque jour à 3h00 UTC** : `/api/cron/cleanup` (suppression photos expirées + cleanup demandes)
+- **Chaque lundi à 7h00 UTC** : `/api/cron/refresh-duty` (vérif semaine de garde)
 
 Vercel exécutera ces routes automatiquement avec le header `Authorization: Bearer <CRON_SECRET>`.
 
-⚠️ **Note**: Vercel Cron nécessite le plan **Pro** ($20/mois) pour les schedules < 1 jour. En Free tier, seule la fréquence quotidienne est disponible.
+⚠️ **Important — Plan Hobby (gratuit)**: Vercel limite les crons à **1 fois par jour maximum**. Les schedules ci-dessus (quotidien + hebdomadaire) sont compatibles Hobby.
+
+#### 🚀 Pour un nettoyage horaire (recommandé en production)
+
+Si vous voulez que les photos expirées soient supprimées dans l'heure qui suit (au lieu d'attendre le passage quotidien à 3h UTC), utilisez un service de cron externe **gratuit** :
+
+**Option A — cron-job.org (recommandé, gratuit, sans limite)** :
+1. Créez un compte gratuit sur https://cron-job.org
+2. New cron job → configurez :
+   - **URL** : `https://votre-domaine.vercel.app/api/cron/cleanup`
+   - **Method** : GET
+   - **Headers** : `Authorization: Bearer <votre_CRON_SECRET>`
+   - **Schedule** : `0 * * * *` (chaque heure)
+3. Save — c'est tout, cron-job.org appellera votre API chaque heure
+
+**Option B — UptimeRobot (gratuit, 5 min intervals)** :
+1. https://uptimerobot.com → New monitor
+2. Monitor type : HTTP(s)
+3. URL : `https://votre-domaine.vercel.app/api/cron/cleanup` (attention : ne permet pas de header Authorization en gratuit — à utiliser seulement en test)
+
+**Option C — Upgrade Vercel Pro ($20/mois)** :
+- Active les crons natifs jusqu'à 1 minute d'intervalle
+- Pas besoin de service externe
+- À envisager si le traffic monte
+
+#### 📊 Impact du nettoyage quotidien (vs horaire)
+- Photos : supprimées dans un délai max de ~24h après leur date d'expiration (au lieu de ~1h)
+- Demandes expirées : marquées dans les 24h
+- Brouillons orphelins : supprimés dans les 24h
+- **Aucune perte de données** — juste un délai de nettoyage plus long
+- **Recommandation** : le nettoyage quotidien est amplement suffisant pour le MVP. Passez à l'horaire uniquement si le volume de photos devient important.
 
 ### 3.4 Deploy
 Cliquez "Deploy". Vercel build et déploie automatiquement.
