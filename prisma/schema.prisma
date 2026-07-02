@@ -1,5 +1,5 @@
-// MediTike Prisma schema
-// Health marketplace for Togo pharmacies
+// MediTike — Schéma Prisma (projet sérieux v2)
+// Plateforme de demande de médicaments auprès des pharmacies du Togo
 
 generator client {
   provider = "prisma-client-js"
@@ -18,107 +18,130 @@ model User {
   role         String   @default("client") // "client" | "pharmacist" | "admin"
   pharmacyId   String?
   pharmacy     Pharmacy? @relation(fields: [pharmacyId], references: [id])
+  isActive     Boolean  @default(true)
+  lastSeenAt   DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  searchRequests  SearchRequest[]
-  searchResponses SearchResponse[]
+  productRequests  ProductRequest[]
+  productResponses ProductResponse[]
+  auditLogs        AuditLog[]
 }
 
 model Pharmacy {
-  id          String   @id @default(cuid())
-  name        String
-  phone       String
-  whatsapp    String?
-  address     String
-  city        String   @default("Lomé")
-  district    String?  // Quartier
-  latitude    Float?
-  longitude   Float?
-  openingHours String? // e.g. "08:00-22:00"
-  imageUrl    String?
-  isOpen24h   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  users          User[]
-  stocks         PharmacyStock[]
-  dutySchedules  DutySchedule[]
-  searchResponses SearchResponse[]
-}
-
-model Medication {
-  id          String   @id @default(cuid())
-  name        String
-  normalizedName String
-  genericName String?
-  category    String?  // e.g. "Antibiotique", "Antalgique"
-  form        String?  // "Comprimé", "Sirop", "Injectable"
-  dosage      String?  // "500mg"
-  description String?
-  createdAt   DateTime @default(now())
-
-  stocks PharmacyStock[]
-}
-
-model PharmacyStock {
   id           String   @id @default(cuid())
-  pharmacyId   String
-  medicationId String
-  pharmacy     Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
-  medication   Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
-  inStock      Boolean  @default(true)
-  price        Float?   // Price in FCFA (XOF)
-  lastVerified DateTime @default(now())
+  name         String
+  phone1       String
+  phone2       String?
+  whatsapp     String?
+  address      String?
+  city         String   @default("Lomé")
+  district     String?
+  isActive     Boolean  @default(true)
+  createdById  String?  // admin who created it
+  createdByName String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  @@unique([pharmacyId, medicationId])
+  users           User[]
+  dutySchedules   PharmacyDuty[]
+  productResponses ProductResponse[]
 }
 
-model SearchRequest {
+// Pharmacies de garde hebdomadaires (import du fichier xlsx du Ministère)
+model PharmacyDuty {
+  id          String   @id @default(cuid())
+  pharmacyId  String?  // link to registered pharmacy if matched by name
+  pharmacy    Pharmacy? @relation(fields: [pharmacyId], references: [id], onDelete: SetNull)
+  name        String   // raw name from xlsx
+  address     String?  // raw address from xlsx
+  phone1      String?
+  phone2      String?
+  weekStart   DateTime // Monday 00:00 UTC
+  weekEnd     DateTime  // next Monday 00:00 UTC
+  sourceFile  String?  // filename of the xlsx/json imported
+  importedAt  DateTime @default(now())
+
+  @@unique([name, weekStart])
+  @@index([weekStart])
+}
+
+// Demande client (produit recherché)
+model ProductRequest {
   id           String   @id @default(cuid())
   clientId     String
-  client       User     @relation(fields: [clientId], references: [id])
-  query        String   // Free text searched by user
-  normalizedQuery String
-  status       String   @default("pending") // "pending" | "resolved" | "expired"
+  client       User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  productName  String   // médicament demandé
+  note         String?  // note optionnelle du client
+  status       String   @default("open") // "open" | "responded" | "expired" | "closed"
   clientName   String?
   clientPhone  String?
+  photos       Photo[]
+  responses    ProductResponse[]
+  notifiedPharmacies Int @default(0) // nombre de pharmacies notifiées
   createdAt    DateTime @default(now())
-  expiresAt    DateTime?
+  updatedAt    DateTime @updatedAt
+  expiresAt    DateTime? // 7 jours après création si pas de réponse
 
-  responses SearchResponse[]
+  @@index([status])
+  @@index([createdAt])
 }
 
-model SearchResponse {
+// Réponse pharmacien
+model ProductResponse {
   id            String   @id @default(cuid())
   requestId     String
-  request       SearchRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  pharmacistId  String?
-  pharmacist    User?    @relation(fields: [pharmacistId], references: [id])
+  request       ProductRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  pharmacistId  String
+  pharmacist    User     @relation(fields: [pharmacistId], references: [id])
   pharmacyId    String
   pharmacy      Pharmacy @relation(fields: [pharmacyId], references: [id])
   available     Boolean
   price         Float?   // FCFA
   note          String?
+  read          Boolean  @default(false) // client a-t-il vu la réponse ?
   createdAt     DateTime @default(now())
+
+  @@index([requestId])
+  @@index([pharmacistId])
 }
 
-model DutySchedule {
-  id          String   @id @default(cuid())
-  pharmacyId  String
-  pharmacy    Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
-  date        DateTime
-  startTime   String   // "08:00"
-  endTime     String   // "22:00"
-  isDay       Boolean  @default(true) // true = day shift, false = night shift
-  createdAt   DateTime @default(now())
-
-  @@unique([pharmacyId, date])
-}
-
-model AppStats {
+// Photos attachées aux demandes — auto-suppression programmée
+model Photo {
   id           String   @id @default(cuid())
-  key          String   @unique
-  value        Int
-  updatedAt    DateTime @updatedAt
+  requestId    String
+  request      ProductRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  filename     String   // nom du fichier sur disque (hashé)
+  originalName String
+  mimeType     String
+  size         Int      // bytes
+  sha256       String   // hash pour intégrité
+  uploadedAt   DateTime @default(now())
+  deleteAt     DateTime // calculé : 72h après réponse OU 7j après création si pas de réponse
+  deletedAt    DateTime? // null = encore présent, date = supprimé
+
+  @@index([deleteAt])
+  @@index([requestId])
+}
+
+// Journal d'audit admin (toutes les actions sensibles)
+model AuditLog {
+  id        String   @id @default(cuid())
+  adminId   String
+  admin     User     @relation(fields: [adminId], references: [id])
+  action    String   // "create_pharmacy" | "delete_pharmacy" | "import_duty" | "create_admin" | ...
+  details   String?  // JSON string
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([adminId])
+  @@index([createdAt])
+}
+
+// Statistiques agrégées (cache pour admin dashboard)
+model AppStat {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Int
+  updatedAt DateTime @updatedAt
 }

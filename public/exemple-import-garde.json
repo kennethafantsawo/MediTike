@@ -1,0 +1,50 @@
+{
+  "version": "1.0",
+  "source": "Ministère de la Santé Togo",
+  "weeks": [
+    {
+      "weekStart": "2026-07-06",
+      "weekEnd": "2026-07-13",
+      "label": "06/07/2026 au 13/07/2026",
+      "pharmacies": [
+        {
+          "name": "SANTE",
+          "address": "Près de NOPATO",
+          "phone1": "70 44 91 37",
+          "phone2": null
+        },
+        {
+          "name": "AKOFA",
+          "address": "Av. Maman N'Danida Amoutivé",
+          "phone1": "22 21 00 97",
+          "phone2": "70 49 96 28"
+        },
+        {
+          "name": "CENTRE",
+          "address": "ASSIVITO, face WATT",
+          "phone1": "22 21 83 30",
+          "phone2": "91 03 83 83"
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-07-13",
+      "weekEnd": "2026-07-20",
+      "label": "13/07/2026 au 20/07/2026",
+      "pharmacies": [
+        {
+          "name": "BEL AIR",
+          "address": "PRES DE L'EEPT DE AFEGAME (PLAGE) ET DE SUPER RAMCO MARINA",
+          "phone1": "22 21 03 21",
+          "phone2": "96 80 08 75"
+        },
+        {
+          "name": "MATTHIA",
+          "address": "1048, Avenue de la Libération",
+          "phone1": "22 21 29 64",
+          "phone2": "96 80 10 07"
+        }
+      ]
+    }
+  ]
+}

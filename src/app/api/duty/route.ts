@@ -1,69 +1,53 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getMondayUTC } from "@/lib/meditike/helpers";
 
 /**
  * GET /api/duty
- * Returns pharmacies on duty today (and optionally for a specific date).
+ * Retourne les pharmacies de garde pour la semaine courante (ou une semaine spécifique).
+ * Query params: ?week=YYYY-MM-DD (lundi)
+ *
+ * Pas d'auth requise: c'est une info publique.
  */
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const url = new URL(req.url);
+    const weekParam = url.searchParams.get("week");
 
-    const duties = await db.dutySchedule.findMany({
-      where: { date: today },
-      include: { pharmacy: true },
-      orderBy: [{ isDay: "desc" }, { startTime: "asc" }],
-    });
-
-    const result = duties.map((d) => ({
-      id: d.id,
-      date: d.date,
-      startTime: d.startTime,
-      endTime: d.endTime,
-      isDay: d.isDay,
-      pharmacy: {
-        id: d.pharmacy.id,
-        name: d.pharmacy.name,
-        phone: d.pharmacy.phone,
-        whatsapp: d.pharmacy.whatsapp,
-        address: d.pharmacy.address,
-        city: d.pharmacy.city,
-        district: d.pharmacy.district,
-        openingHours: d.pharmacy.openingHours,
-        isOpen24h: d.pharmacy.isOpen24h,
-      },
-    }));
-
-    // Also include 24/7 pharmacies as always on duty
-    const open24 = await db.pharmacy.findMany({
-      where: { isOpen24h: true, NOT: { id: { in: duties.map((d) => d.pharmacyId) } } },
-    });
-
-    for (const p of open24) {
-      result.push({
-        id: `static-${p.id}`,
-        date: today,
-        startTime: "00:00",
-        endTime: "23:59",
-        isDay: true,
-        pharmacy: {
-          id: p.id,
-          name: p.name,
-          phone: p.phone,
-          whatsapp: p.whatsapp,
-          address: p.address,
-          city: p.city,
-          district: p.district,
-          openingHours: p.openingHours,
-          isOpen24h: p.isOpen24h,
-        },
-      });
+    let weekStart: Date;
+    if (weekParam) {
+      weekStart = new Date(weekParam);
+      if (isNaN(weekStart.getTime())) {
+        weekStart = getMondayUTC();
+      }
+    } else {
+      weekStart = getMondayUTC();
     }
+    weekStart.setUTCHours(0, 0, 0, 0);
 
-    return NextResponse.json({ date: today, duties: result, total: result.length });
+    const duties = await db.pharmacyDuty.findMany({
+      where: { weekStart },
+      orderBy: [{ name: "asc" }],
+    });
+
+    // Compter les semaines disponibles pour navigation
+    const availableWeeks = await db.pharmacyDuty.groupBy({
+      by: ["weekStart"],
+      orderBy: { weekStart: "asc" },
+      take: 30,
+    });
+
+    return NextResponse.json({
+      weekStart,
+      duties,
+      total: duties.length,
+      availableWeeks: availableWeeks.map((w) => w.weekStart),
+    });
   } catch (err: any) {
-    console.error("[duty] error:", err);
-    return NextResponse.json({ error: err?.message || "Erreur serveur" }, { status: 500 });
+    console.error("[duty GET] error:", err);
+    return NextResponse.json(
+      { error: err?.message || "Erreur serveur" },
+      { status: 500 }
+    );
   }
 }

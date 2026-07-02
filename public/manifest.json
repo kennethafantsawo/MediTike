@@ -1,0 +1,15 @@
+{
+  "name": "MediTike",
+  "short_name": "MediTike",
+  "description": "Demandez vos médicaments aux pharmacies du Togo",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f3ef",
+  "theme_color": "#047857",
+  "orientation": "portrait-primary",
+  "lang": "fr",
+  "icons": [
+    { "src": "/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "categories": ["medical", "health", "shopping"]
+}

@@ -1,16 +1,17 @@
 /**
- * Simple cookie-based session for MediTike.
- * Stores userId + role in an httpOnly cookie signed with HMAC-SHA256.
- * For production-grade auth use NextAuth, but for this MVP the signed cookie is enough.
+ * Session sécurisée — cookies HTTP-only signés HMAC-SHA256.
+ * Standard de sécurité: cookies SameSite=Lax, Secure en production, httpOnly.
  */
 import { cookies } from "next/headers";
 import crypto from "crypto";
 
-const SECRET = process.env.MEDITIKE_SESSION_SECRET || "meditike-dev-secret-change-in-prod-2024";
+const SECRET =
+  process.env.MEDITIKE_SESSION_SECRET ||
+  "meditike-dev-secret-change-in-production-please-use-strong-secret-2024";
 
 export interface SessionPayload {
   userId: string;
-  role: string;
+  role: "client" | "pharmacist" | "admin";
   phone: string;
   fullName?: string;
   pharmacyId?: string | null;
@@ -27,7 +28,9 @@ function verify(token: string): SessionPayload | null {
     const [data, sig] = token.split(".");
     if (!data || !sig) return null;
     const expectedSig = crypto.createHmac("sha256", SECRET).update(data).digest("base64url");
-    if (sig !== expectedSig) return null;
+    // Constant-time comparison
+    if (sig.length !== expectedSig.length) return null;
+    if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) return null;
     const payload = JSON.parse(Buffer.from(data, "base64url").toString("utf-8"));
     return payload as SessionPayload;
   } catch {
@@ -35,8 +38,8 @@ function verify(token: string): SessionPayload | null {
   }
 }
 
-const COOKIE_NAME = "meditike_session";
-const MAX_AGE = 60 * 60 * 24 * 30; // 30 days
+const COOKIE_NAME = "mt_session";
+const MAX_AGE = 60 * 60 * 24 * 30; // 30 jours
 
 export async function setSession(payload: SessionPayload) {
   const store = await cookies();
@@ -63,8 +66,11 @@ export async function clearSession() {
   store.delete(COOKIE_NAME);
 }
 
-/** Client-side helper to read whether a session cookie exists (not the payload). */
-export function hasSessionCookie(): boolean {
-  if (typeof document === "undefined") return false;
-  return document.cookie.includes(COOKIE_NAME);
+/** Récupère l'IP du client pour audit log. */
+export function getClientIP(req: Request): string {
+  const xff = req.headers.get("x-forwarded-for");
+  if (xff) return xff.split(",")[0].trim();
+  const xri = req.headers.get("x-real-ip");
+  if (xri) return xri;
+  return "unknown";
 }
