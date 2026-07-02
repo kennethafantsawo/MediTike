@@ -4,8 +4,8 @@
   "description": "Demandez vos médicaments aux pharmacies du Togo",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f3ef",
-  "theme_color": "#047857",
+  "background_color": "#faf8f4",
+  "theme_color": "#0f5132",
   "orientation": "portrait-primary",
   "lang": "fr",
   "icons": [
