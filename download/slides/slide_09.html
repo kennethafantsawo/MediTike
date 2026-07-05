@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>MediTike — Faisabilité &amp; Déploiement</title>
+  <link rel="stylesheet" href="global.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .section-num {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+    .col-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .check-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 7px 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: var(--fg);
+    }
+    .check-item:last-child { border-bottom: none; }
+    .check-bullet {
+      flex-shrink: 0;
+      width: 20px; height: 20px;
+      border-radius: 6px;
+      background: rgba(15, 81, 50, 0.10);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+    .check-bullet .material-icons { font-size: 14px; }
+    .evo-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .evo-card::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 0; bottom: 0; width: 3px;
+      background: var(--accent);
+    }
+    .evo-card.mid::before { background: var(--primary); }
+    .evo-card.long::before { background: linear-gradient(180deg, var(--primary), var(--accent)); }
+    .evo-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px;
+    }
+    .evo-tag {
+      font-family: var(--font-num);
+      font-size: 10px;
+      color: var(--accent);
+      background: rgba(184, 153, 104, 0.10);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .evo-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--fg);
+    }
+    .evo-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .evo-list li {
+      font-size: 11.5px;
+      color: var(--muted);
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+      line-height: 1.4;
+    }
+    .evo-list li::before {
+      content: "›";
+      color: var(--accent);
+      font-weight: 700;
+      font-family: var(--font-heading);
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(15, 81, 50, 0.10);
+      color: var(--primary);
+      font-family: var(--font-body);
+    }
+    .pulse-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 0 4px rgba(15, 81, 50, 0.18);
+    }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <div class="kente-bar absolute top-0 left-0 right-0" data-decor aria-hidden="true"></div>
+
+    <!-- Header -->
+    <header class="flex items-end justify-between mb-4">
+      <div>
+        <div class="section-num mb-2">06 / 06</div>
+        <h1 class="font-display text-[38px] leading-none" style="color: var(--primary);">Faisabilité &amp; Déploiement</h1>
+        <p class="mt-2 text-[15px]" style="color: var(--muted);">Une plateforme déjà opérationnelle en production</p>
+      </div>
+      <span class="status-pill"><span class="pulse-dot"></span> LIVE · Production</span>
+    </header>
+
+    <!-- 2 columns -->
+    <div class="grid grid-cols-2 gap-6 flex-1">
+
+      <!-- Left: Deployment status -->
+      <section>
+        <div class="col-title mb-3">
+          <i class="material-icons" style="color: var(--primary); font-size: 20px;">check_circle</i>
+          Déjà en production
+        </div>
+        <div class="card" style="padding: 14px 18px;">
+          <div class="check-item">
+            <span class="check-bullet"><i class="material-icons">check</i></span>
+            <span>Frontend déployé sur Vercel (Next.js 16, HTTPS automatique)</span>
+          </div>
+          <div class="check-item">
+            <span class="check-bullet"><i class="material-icons">check</i></span>
+            <span>Base de données PostgreSQL sur Supabase (région Frankfurt)</span>
+          </div>
+          <div class="check-item">
+            <span class="check-bullet"><i class="material-icons">check</i></span>
+            <span>Bucket Storage privé Supabase configuré</span>
+          </div>
+          <div class="check-item">
+            <span class="check-bullet"><i class="material-icons">check</i></span>
+            <span>Cron jobs Vercel opérationnels (cleanup + refresh hebdo)</span>
+          </div>
+          <div class="check-item">
+            <span class="check-bullet"><i class="material-icons">check</i></span>
+            <span>1348 pharmacies de garde importées (26 semaines)</span>
+          </div>
+          <div class="check-item">
+            <span class="check-bullet"><i class="material-icons">check</i></span>
+            <span>Comptes admin + 2 pharmacies démo + 1 client démo créés</span>
+          </div>
+          <div class="check-item">
+            <span class="check-bullet"><i class="material-icons">check</i></span>
+            <span>Code source sur GitHub (kennethafantsawo/MediTike)</span>
+          </div>
+          <div class="check-item">
+            <span class="check-bullet"><i class="material-icons">check</i></span>
+            <span>Documentation complète (DEPLOYMENT.md)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Future evolutions -->
+      <section>
+        <div class="col-title mb-3">
+          <i class="material-icons" style="color: var(--accent); font-size: 20px;">rocket_launch</i>
+          Évolutions prévues
+        </div>
+        <div class="flex flex-col gap-2.5">
+
+          <div class="evo-card short">
+            <div class="evo-head">
+              <div class="evo-title">Court terme <span style="color: var(--muted); font-weight:500;">(3 mois)</span></div>
+              <span class="evo-tag">3 M</span>
+            </div>
+            <ul class="evo-list">
+              <li>Notifications WhatsApp Business API</li>
+              <li>Application mobile native (APK Android via Capacitor)</li>
+              <li>Géolocalisation des pharmacies</li>
+            </ul>
+          </div>
+
+          <div class="evo-card mid">
+            <div class="evo-head">
+              <div class="evo-title">Moyen terme <span style="color: var(--muted); font-weight:500;">(6-12 mois)</span></div>
+              <span class="evo-tag">6-12 M</span>
+            </div>
+            <ul class="evo-list">
+              <li>Paiement Mobile Money (Moov / T-Money)</li>
+              <li>Téléconsultation pharmaceutique</li>
+              <li>Extension à la sous-région CEDEAO</li>
+            </ul>
+          </div>
+
+          <div class="evo-card long">
+            <div class="evo-head">
+              <div class="evo-title">Long terme <span style="color: var(--muted); font-weight:500;">(vision)</span></div>
+              <span class="evo-tag">VISION</span>
+            </div>
+            <ul class="evo-list">
+              <li>Intégration dossier pharmaceutique patient</li>
+              <li>IA recommandation médicaments génériques</li>
+              <li>Partenariat ONP (Ordre National des Pharmaciens)</li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <div class="slide-footer">
+      <span>MediTike · Gala Scientifique FSS 2026</span>
+      <span>06 — Faisabilité &amp; Déploiement</span>
+    </div>
+  </div>
+
+  <aside data-notes class="hidden">
+    - Insister sur le fait que le projet est RÉEL et FONCTIONNEL, pas un simple concept.
+    - Mentionner Vercel + Supabase (Frankfurt) et le code source sur GitHub.
+    - Mettre en avant les 1348 pharmacies déjà importées et les comptes démo créés.
+    - Présenter la feuille de route : court terme WhatsApp, moyen terme Mobile Money, long terme IA.
+    - Souligner la documentation DEPLOYMENT.md comme preuve de maturité.
+  </aside>
+</body>
+</html>

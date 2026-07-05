@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>MediTike — Synthèse scientifique</title>
+  <link rel="stylesheet" href="global.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .crit-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 16px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+    }
+    .crit-card.top-primary { border-top: 4px solid var(--primary); }
+    .crit-card.top-accent  { border-top: 4px solid var(--accent); }
+    .crit-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .crit-icon.bg-primary { background: rgba(15, 81, 50, 0.10); color: var(--primary); }
+    .crit-icon.bg-accent  { background: rgba(184, 153, 104, 0.14); color: var(--accent); }
+    .crit-icon .material-icons { font-size: 24px; }
+    .crit-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--fg);
+      letter-spacing: -0.01em;
+    }
+    .crit-note {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border-radius: 999px;
+      align-self: flex-start;
+    }
+    .crit-note.note-primary { background: rgba(15, 81, 50, 0.10); color: var(--primary); }
+    .crit-note.note-accent  { background: rgba(184, 153, 104, 0.14); color: var(--accent); }
+    .crit-just {
+      font-family: var(--font-body);
+      font-size: 11.5px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+    .crit-tag {
+      position: absolute;
+      top: 14px; right: 14px;
+      font-family: var(--font-num);
+      font-size: 10px;
+      color: var(--muted);
+      opacity: .7;
+    }
+    .quote-card {
+      border-left: 4px solid var(--accent);
+      background: rgba(184, 153, 104, 0.06);
+      padding: 14px 22px;
+      border-radius: 0 12px 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .quote-mark {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 36px;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .badge-line {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(15, 81, 50, 0.08);
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <div class="kente-bar absolute top-0 left-0 right-0" data-decor aria-hidden="true"></div>
+
+    <!-- Header -->
+    <header class="flex items-end justify-between mb-4">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="badge-line"><i class="material-icons" style="font-size:13px;">workspace_premium</i> Évaluation jury</span>
+          <span class="badge-line" style="background: rgba(184, 153, 104, 0.10); color: var(--accent);"><i class="material-icons" style="font-size:13px;">grading</i> 4 critères</span>
+        </div>
+        <h1 class="font-display text-[38px] leading-none" style="color: var(--primary);">Synthèse scientifique</h1>
+        <p class="mt-2 text-[15px]" style="color: var(--muted);">Réponse aux critères d'évaluation du jury</p>
+      </div>
+      <div class="text-right">
+        <div class="font-num text-[11px]" style="color: var(--muted); opacity:.75;">CONCLUSION</div>
+        <div class="font-display text-[15px]" style="color: var(--primary);">Note globale · Très favorable</div>
+      </div>
+    </header>
+
+    <!-- 4 cards row -->
+    <div class="grid grid-cols-4 gap-3 flex-1">
+
+      <!-- CARTE 1 -->
+      <div class="crit-card top-primary">
+        <span class="crit-tag">CRIT. 01</span>
+        <div class="crit-icon bg-primary"><i class="material-icons">science</i></div>
+        <div class="crit-title">Pertinence scientifique</div>
+        <span class="crit-note note-primary">ÉLEVÉE</span>
+        <p class="crit-just">Projet directement lié à la santé publique togolaise, basé sur l'analyse du fichier officiel du Ministère de la Santé (1348 pharmacies). Réponse à une problématique documentée de retard d'accès aux médicaments.</p>
+      </div>
+
+      <!-- CARTE 2 -->
+      <div class="crit-card top-accent">
+        <span class="crit-tag">CRIT. 02</span>
+        <div class="crit-icon bg-accent"><i class="material-icons">build</i></div>
+        <div class="crit-title">Faisabilité</div>
+        <span class="crit-note note-accent">DÉMONTRÉE</span>
+        <p class="crit-just">Plateforme déjà déployée en production sur Vercel + Supabase. Code source versionné sur GitHub. Documentation technique complète. Architecture scalable et maintenable.</p>
+      </div>
+
+      <!-- CARTE 3 -->
+      <div class="crit-card top-primary">
+        <span class="crit-tag">CRIT. 03</span>
+        <div class="crit-icon bg-primary"><i class="material-icons">public</i></div>
+        <div class="crit-title">Impact santé publique</div>
+        <span class="crit-note note-primary">MAJEUR</span>
+        <p class="crit-just">Réduction estimée de 90% du délai patient-pharmacie. Couverture nationale (7 villes). Confidentialité des données patients garantie par auto-suppression. Innovation frugale adaptable à la sous-région.</p>
+      </div>
+
+      <!-- CARTE 4 -->
+      <div class="crit-card top-accent">
+        <span class="crit-tag">CRIT. 04</span>
+        <div class="crit-icon bg-accent"><i class="material-icons">auto_awesome</i></div>
+        <div class="crit-title">Qualité présentation</div>
+        <span class="crit-note note-accent">PROFESSIONNELLE</span>
+        <p class="crit-just">Design sobre et institutionnel. Identité visuelle africaine subtile (Kente, Adinkra). UX testée sur desktop et mobile. Code propre, lint 0 erreur, 100% TypeScript.</p>
+      </div>
+
+    </div>
+
+    <!-- Citation -->
+    <div class="quote-card mt-4">
+      <span class="quote-mark">“</span>
+      <p class="text-[13px] leading-relaxed italic" style="color: var(--fg);">
+        MediTike illustre comment l'intersection entre santé et technologie peut produire des solutions concrètes, sécurisées et accessibles, répondant aux besoins réels de la population togolaise.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="slide-footer">
+      <span>MediTike · Gala Scientifique FSS 2026</span>
+      <span>Synthèse scientifique</span>
+    </div>
+  </div>
+
+  <aside data-notes class="hidden">
+    - Faire le lien explicite avec les 4 critères du jury : pertinence, faisabilité, impact, qualité.
+    - Cette slide est cruciale : elle synthétise la valeur scientifique du projet.
+    - Souligner les notes attribuées : ÉLEVÉE, DÉMONTRÉE, MAJEUR, PROFESSIONNELLE.
+    - Mettre en avant l'innovation frugale adaptable à la sous-région CEDEAO.
+    - Conclure sur la citation finale pour marquer l'auditoire.
+  </aside>
+</body>
+</html>

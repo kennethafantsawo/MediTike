@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { MessageCircle, Clock, MapPin, ShieldCheck, Pill, ChevronRight, Sparkles, Smartphone, Lock } from "lucide-react";
+import { MessageCircle, Clock, MapPin, ShieldCheck, Pill, ChevronRight, Sparkles, Smartphone, Lock, Phone, Mail } from "lucide-react";
 import { Logo, LogoMark } from "@/components/brand/logo";
 import { GradientBlob, KenteDivider } from "@/components/brand/african-pattern";
 import { AuthModal } from "@/components/meditike/shared/auth-modal";
@@ -32,6 +32,7 @@ export function Landing({ onAuthed }: LandingProps) {
             <a href="#comment" className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors">Comment ça marche</a>
             <a href="#garde" className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors">Pharmacies de garde</a>
             <a href="#securite" className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors">Sécurité</a>
+            <a href="/a-propos" className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors">À propos</a>
           </nav>
           <div className="flex items-center gap-2">
             <button onClick={openLogin} className="px-4 py-2 text-sm font-bold text-foreground hover:bg-muted rounded-xl transition-colors">Se connecter</button>
@@ -275,13 +276,27 @@ export function Landing({ onAuthed }: LandingProps) {
             <div>
               <h4 className="font-display font-bold text-sm uppercase tracking-wider mb-3 text-amber-300">Contact</h4>
               <ul className="space-y-2 text-sm text-background/70">
-                <li>contact@meditike.tg</li>
-                <li>Lomé, Togo</li>
+                <li className="flex items-center gap-2">
+                  <Phone className="w-3.5 h-3.5 text-amber-300" />
+                  <a href="tel:+22896417270" className="hover:text-background transition-colors">+228 96 41 72 70</a>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Mail className="w-3.5 h-3.5 text-amber-300" />
+                  <span>contact@meditike.tg</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <MapPin className="w-3.5 h-3.5 text-amber-300" />
+                  <span>Lomé, Togo</span>
+                </li>
               </ul>
             </div>
           </div>
-          <div className="mt-8 pt-6 border-t border-background/10 text-center text-xs text-background/50">
-            © {new Date().getFullYear()} MediTike. Conçu avec ❤️ au Togo.
+          <div className="mt-8 pt-6 border-t border-background/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-background/50">
+            <p>© {new Date().getFullYear()} MediTike. Conçu avec ❤️ au Togo.</p>
+            <p className="flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-amber-300" />
+              Projet soumis au Gala Scientifique FSS 2026
+            </p>
           </div>
         </div>
       </footer>

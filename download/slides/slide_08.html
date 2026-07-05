@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>MediTike — Impact en santé publique</title>
+  <link rel="stylesheet" href="global.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .impact-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(245, 243, 239, 0.10);
+      border-radius: 18px;
+      padding: 22px 24px;
+      backdrop-filter: blur(8px);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .impact-card::after {
+      content: "";
+      position: absolute;
+      right: -30px; bottom: -30px;
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(184, 153, 104, 0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .impact-num {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 76px;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      background: linear-gradient(135deg, #2da771 0%, var(--accent-light) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .impact-label {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--fg-light);
+      letter-spacing: -0.01em;
+    }
+    .impact-sub {
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      color: var(--muted-light);
+      line-height: 1.5;
+    }
+    .impact-tag {
+      position: absolute;
+      top: 18px; right: 20px;
+      font-family: var(--font-num);
+      font-size: 11px;
+      color: var(--accent-light);
+      opacity: .65;
+    }
+    .quote-card {
+      border-left: 3px solid var(--accent);
+      background: rgba(184, 153, 104, 0.06);
+      padding: 14px 22px;
+      border-radius: 0 12px 12px 0;
+    }
+    .ghost-blob {
+      position: absolute;
+      left: -120px; bottom: -80px;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(15, 81, 50, 0.35) 0%, transparent 70%);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="slide slide-dark">
+    <div class="kente-bar absolute top-0 left-0 right-0" data-decor aria-hidden="true"></div>
+    <div class="ghost-blob" data-decor aria-hidden="true"></div>
+
+    <!-- Header -->
+    <header class="flex items-end justify-between mb-5 relative">
+      <div>
+        <span class="badge badge-dark mb-2"><i class="material-icons" style="font-size:14px;">eco</i> Innovation frugale</span>
+        <h1 class="font-display text-[40px] leading-none mt-2" style="color: var(--fg-light);">Impact en santé publique</h1>
+        <p class="mt-2 text-[15px]" style="color: var(--muted-light);">Une innovation frugale adaptée aux réalités togolaises</p>
+      </div>
+      <div class="text-right">
+        <div class="font-num text-[12px]" style="color: var(--accent-light); opacity:.7;">SECTEUR</div>
+        <div class="font-display text-[18px]" style="color: var(--fg-light);">Santé · Numérique</div>
+      </div>
+    </header>
+
+    <!-- 2x2 Stats Grid -->
+    <div class="grid grid-cols-2 gap-4 flex-1">
+      <!-- STAT 1 -->
+      <div class="impact-card">
+        <span class="impact-tag">01 · DÉLAI</span>
+        <div class="impact-num">−90%</div>
+        <div class="impact-label">Délai de contact pharmacie de garde</div>
+        <div class="impact-sub">De plusieurs dizaines de minutes à moins de 5 minutes</div>
+      </div>
+      <!-- STAT 2 -->
+      <div class="impact-card">
+        <span class="impact-tag">02 · COUVERTURE</span>
+        <div class="impact-num">100%</div>
+        <div class="impact-label">Couverture pharmacies de garde officielles</div>
+        <div class="impact-sub">1348 entrées importées du Ministère de la Santé</div>
+      </div>
+      <!-- STAT 3 -->
+      <div class="impact-card">
+        <span class="impact-tag">03 · TERRITOIRE</span>
+        <div class="impact-num">7</div>
+        <div class="impact-label">Villes togolaises desservies</div>
+        <div class="impact-sub">Lomé, Kara, Sokodé, Kpalimé, Atakpamé, Dapaong, Tsévié</div>
+      </div>
+      <!-- STAT 4 -->
+      <div class="impact-card">
+        <span class="impact-tag">04 · CONFIDENTIALITÉ</span>
+        <div class="impact-num">72h</div>
+        <div class="impact-label">Auto-suppression photos patients</div>
+        <div class="impact-sub">Confidentialité garantie par conception</div>
+      </div>
+    </div>
+
+    <!-- Citation -->
+    <div class="quote-card mt-4">
+      <p class="text-[13.5px] leading-relaxed italic" style="color: var(--fg-light);">
+        «&nbsp;MediTike s'inscrit dans une démarche d'innovation frugale, démontrant qu'une plateforme médicale sécurisée et accessible peut être conçue avec les technologies modernes du web, tout en respectant les réalités infrastructurelles togolaises.&nbsp;»
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="slide-footer slide-footer-dark">
+      <span>MediTike · Gala Scientifique FSS 2026</span>
+      <span>Impact · Santé publique</span>
+    </div>
+  </div>
+
+  <aside data-notes class="hidden">
+    - Mettre en avant la réduction de 90% du délai patient-pharmacie de garde.
+    - Insister sur l'innovation frugale et l'adaptation aux réalités togolaises.
+    - Mentionner la couverture nationale : 7 villes desservies dès le lancement.
+    - Rappeler l'importance de l'auto-suppression 72h pour la confidentialité.
+    - Souligner les 1348 pharmacies officielles importées du Ministère.
+  </aside>
+</body>
+</html>

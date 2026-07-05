@@ -1,0 +1,157 @@
+/* MediTike — Gala FSS 2026 — Global Stylesheet */
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+
+:root {
+  /* Palette — sobre, cohérente avec le site */
+  --bg: #faf8f4;            /* crème doux */
+  --bg-dark: #0f1f1a;       /* vert forêt foncé (slides sombres) */
+  --primary: #0f5132;       /* vert forêt — brand principal */
+  --primary-light: #1a6b4a;
+  --accent: #b89968;        /* bronze terreux */
+  --accent-light: #d4b888;
+  --fg: #1a2b22;            /* texte sombre sur fond clair */
+  --fg-light: #f5f3ef;      /* texte clair sur fond sombre */
+  --muted: #6b7c72;
+  --muted-light: rgba(245, 243, 239, 0.7);
+  --border: #e5e0d5;
+  --border-light: rgba(245, 243, 239, 0.12);
+
+  /* Typography tokens */
+  --font-heading: 'Sora', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-num: 'JetBrains Mono', monospace;
+  --fs-display: 56px;
+  --fs-h1: 44px;
+  --fs-h2: 32px;
+  --fs-h3: 22px;
+  --fs-body: 16px;
+  --fs-small: 13px;
+  --fs-micro: 11px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  color: var(--fg);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.slide {
+  width: 1280px;
+  height: 720px;
+  position: relative;
+  overflow: hidden;
+  padding: 56px 72px;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.slide-dark {
+  background: var(--bg-dark);
+  color: var(--fg-light);
+}
+
+/* Kente divider — bande colorée sobre */
+.kente-bar {
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary) 33%, var(--accent) 33%, var(--accent) 66%, var(--primary) 66%, var(--primary) 100%);
+}
+
+/* Typography utilities */
+.font-display { font-family: var(--font-heading); font-weight: 800; letter-spacing: -0.02em; }
+.font-num { font-family: var(--font-num); font-weight: 700; }
+
+/* Cards */
+.card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.card-dark {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+}
+
+/* Accent badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: var(--fs-small);
+  font-weight: 700;
+  background: rgba(184, 153, 104, 0.12);
+  color: var(--accent);
+  border: 1px solid rgba(184, 153, 104, 0.3);
+}
+
+.badge-dark {
+  background: rgba(245, 243, 239, 0.1);
+  color: var(--accent-light);
+  border: 1px solid rgba(245, 243, 239, 0.2);
+}
+
+/* Numbers big */
+.stat-num {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 48px;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Footer line */
+.slide-footer {
+  position: absolute;
+  bottom: 24px;
+  left: 72px;
+  right: 72px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--fs-micro);
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+
+.slide-footer-dark { color: var(--muted-light); }
+
+/* Logo mark */
+.logo-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--primary);
+}
+
+.logo-mark-dark { color: var(--fg-light); }
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+}

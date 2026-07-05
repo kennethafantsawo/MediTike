@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>MediTike — La solution</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="global.css">
+</head>
+<body>
+<div class="slide">
+  <!-- Top row -->
+  <div class="flex justify-between items-start">
+    <div class="flex items-baseline gap-4">
+      <span class="font-display" style="font-size:64px; color:var(--accent); line-height:1; letter-spacing:-0.03em;">03</span>
+      <span class="font-num" style="font-size:14px; color:var(--muted); letter-spacing:0.1em;">/ 06</span>
+    </div>
+    <div class="flex items-center gap-2" style="font-size:11px; color:var(--muted); letter-spacing:0.18em; text-transform:uppercase;">
+      <span class="kente-bar" data-decor aria-hidden="true" style="width:42px; height:3px;"></span>
+      <span>Solution</span>
+    </div>
+  </div>
+
+  <!-- Title block -->
+  <div style="margin-top:14px; margin-bottom:22px;">
+    <h1 class="font-display" style="font-size:44px; color:var(--primary); line-height:1.1; margin-bottom:8px;">La solution MediTike</h1>
+    <h3 style="font-size:22px; color:var(--muted); font-weight:500;">Une plateforme à 3 acteurs pour un flux temps réel</h3>
+  </div>
+
+  <!-- 3 cards -->
+  <div class="grid grid-cols-3 gap-5" style="flex:1; min-height:0;">
+
+    <!-- Card 1: Patient -->
+    <div class="card flex flex-col" style="padding:20px 22px; position:relative; overflow:hidden;">
+      <div data-decor aria-hidden="true" style="position:absolute; top:0; left:0; right:0; height:3px; background:var(--primary);"></div>
+      <div class="flex items-center gap-3" style="margin-bottom:14px; margin-top:4px;">
+        <div style="width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display:flex; align-items:center; justify-content:center; color:white;">
+          <i class="material-icons" style="font-size:26px;">person</i>
+        </div>
+        <div class="flex flex-col">
+          <span style="font-size:10.5px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--primary);">Acteur 01</span>
+          <h3 class="font-display" style="font-size:20px; color:var(--fg); line-height:1.2;">Espace Patient</h3>
+        </div>
+      </div>
+      <p style="font-size:12.5px; color:var(--fg); line-height:1.55; margin-bottom:12px;">Le client crée une demande avec nom du médicament + photo optionnelle (ordonnance, boîte). Sa demande est envoyée instantanément à toutes les pharmacies de garde.</p>
+      <div style="height:1px; background:var(--border); margin-bottom:10px;"></div>
+      <ul class="flex flex-col gap-1.5" style="font-size:12px; color:var(--fg);">
+        <li class="flex items-start gap-2"><i class="material-icons" style="font-size:14px; color:var(--primary); margin-top:2px;">check_circle</i><span>Inscription sécurisée téléphone + mot de passe</span></li>
+        <li class="flex items-start gap-2"><i class="material-icons" style="font-size:14px; color:var(--primary); margin-top:2px;">check_circle</i><span>Upload photos max 2 Mo</span></li>
+        <li class="flex items-start gap-2"><i class="material-icons" style="font-size:14px; color:var(--primary); margin-top:2px;">check_circle</i><span>Réception des réponses en temps réel</span></li>
+        <li class="flex items-start gap-2"><i class="material-icons" style="font-size:14px; color:var(--primary); margin-top:2px;">check_circle</i><span>Contact direct WhatsApp/Appeler</span></li>
+      </ul>
+    </div>
+
+    <!-- Card 2: Pharmacien -->
+    <div class="card flex flex-col" style="padding:20px 22px; position:relative; overflow:hidden;">
+      <div data-decor aria-hidden="true" style="position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent);"></div>
+      <div class="flex items-center gap-3" style="margin-bottom:14px; margin-top:4px;">
+        <div style="width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%); display:flex; align-items:center; justify-content:center; color:white;">
+          <i class="material-icons" style="font-size:26px;">store</i>
+        </div>
+        <div class="flex flex-col">
+          <span style="font-size:10.5px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent);">Acteur 02</span>
+          <h3 class="font-display" style="font-size:20px; color:var(--fg); line-height:1.2;">Espace Pharmacien</h3>
+        </div>
+      </div>
+      <p style="font-size:12.5px; color:var(--fg); line-height:1.55; margin-bottom:12px;">Les pharmaciens reçoivent les demandes en temps réel et répondent : disponible/indisponible, prix en FCFA, note personnalisée.</p>
+      <div style="height:1px; background:var(--border); margin-bottom:10px;"></div>
+      <ul class="flex flex-col gap-1.5" style="font-size:12px; color:var(--fg);">
+        <li class="flex items-start gap-2"><i class="material-icons" style="font-size:14px; color:var(--accent); margin-top:2px;">check_circle</i><span>Notifications instantanées</span></li>
+        <li class="flex items-start gap-2"><i class="material-icons" style="font-size:14px; color:var(--accent); margin-top:2px;">check_circle</i><span>Réponse en 1 clic</span></li>
+        <li class="flex items-start gap-2"><i class="material-icons" style="font-size:14px; color:var(--accent); margin-top:2px;">check_circle</i><span>Historique des réponses</span></li>
+        <li class="flex items-start gap-2"><i class="material-icons" style="font-size:14px; color:var(--accent); margin-top:2px;">check_circle</i><span>Prix et disponibilité</span></li>
+      </ul>
+    </div>
+
+    <!-- Card 3: Admin -->
+    <div class="card flex flex-col" style="padding:20px 22px; position:relative; overflow:hidden;">
+      <div data-decor aria-hidden="true" style="position:absolute; top:0; left:0; right:0; height:3px; background:var(--bg-dark);"></div>
+      <div class="flex items-center gap-3" style="margin-bottom:14px; margin-top:4px;">
+        <div style="width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg, var(--bg-dark) 0%, var(--primary) 100%); display:flex; align-items:center; justify-content:center; color:white;">
+          <i class="material-icons" style="font-size:26px;">shield</i>
+        </div>
+        <div class="flex flex-col">
+          <span style="font-size:10.5px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--bg-dark);">Acteur 03</span>
+          <h3 class="font-display" style="font-size:20px; color:var(--fg); line-height:1.2;">Espace Admin</h3>
+        </div>
+      </div>
+      <p style="font-size:12.5px; color:var(--fg); line-height:1.55; margin-bottom:12px;">L'administrateur gère les pharmacies, importe la liste de garde, et supervise l'activité via un tableau de bord sécurisé.</p>
+      <div style="height:1px; background:var(--border); margin-bottom:10px;"></div>
+      <ul class="flex flex-col gap-1.5" style="font-size:12px; color:var(--fg);">
+        <li class="flex items-start gap-2"><i class="material-icons" style="font-size:14px; color:var(--bg-dark); margin-top:2px;">check_circle</i><span>URL admin secrète (32 caractères)</span></li>
+        <li class="flex items-start gap-2"><i class="material-icons" style="font-size:14px; color:var(--bg-dark); margin-top:2px;">check_circle</i><span>Import xlsx/json de la liste de garde</span></li>
+        <li class="flex items-start gap-2"><i class="material-icons" style="font-size:14px; color:var(--bg-dark); margin-top:2px;">check_circle</i><span>Statistiques temps réel</span></li>
+        <li class="flex items-start gap-2"><i class="material-icons" style="font-size:14px; color:var(--bg-dark); margin-top:2px;">check_circle</i><span>Journal d'audit complet</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<aside data-notes class="hidden">
+  <ul>
+    <li>Présenter les 3 acteurs : Patient, Pharmacien, Admin et le flux entre eux.</li>
+    <li>Insister sur la simplicité du parcours patient (envoi → réponse → contact).</li>
+    <li>Mettre en avant la réponse en 1 clic côté pharmacien.</li>
+    <li>Souligner la sécurité admin : URL secrète 32 caractères + audit log.</li>
+  </ul>
+</aside>
+</body>
+</html>

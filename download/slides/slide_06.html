@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>MediTike — Architecture technique</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="global.css">
+</head>
+<body>
+<div class="slide">
+  <!-- Top row -->
+  <div class="flex justify-between items-start">
+    <div class="flex items-baseline gap-4">
+      <span class="font-display" style="font-size:64px; color:var(--accent); line-height:1; letter-spacing:-0.03em;">04</span>
+      <span class="font-num" style="font-size:14px; color:var(--muted); letter-spacing:0.1em;">/ 06</span>
+    </div>
+    <div class="flex items-center gap-2" style="font-size:11px; color:var(--muted); letter-spacing:0.18em; text-transform:uppercase;">
+      <span class="kente-bar" data-decor aria-hidden="true" style="width:42px; height:3px;"></span>
+      <span>Stack technique</span>
+    </div>
+  </div>
+
+  <!-- Title block -->
+  <div style="margin-top:14px; margin-bottom:22px;">
+    <h1 class="font-display" style="font-size:44px; color:var(--primary); line-height:1.1; margin-bottom:8px;">Architecture technique</h1>
+    <h3 style="font-size:22px; color:var(--muted); font-weight:500;">Stack moderne, scalable et maintenable</h3>
+  </div>
+
+  <!-- Two columns 60/40 -->
+  <div class="grid gap-6" style="grid-template-columns: 1.5fr 1fr; flex:1; min-height:0;">
+
+    <!-- LEFT: 4 stacked layers -->
+    <div class="flex flex-col gap-2.5" style="min-height:0;">
+      <!-- Layer 1: Frontend -->
+      <div class="card flex items-start gap-3" style="padding:14px 18px; border-left:4px solid var(--primary);">
+        <div style="width:36px; height:36px; flex-shrink:0; border-radius:8px; background:rgba(15,81,50,0.08); display:flex; align-items:center; justify-content:center;">
+          <i class="material-icons" style="font-size:20px; color:var(--primary);">web</i>
+        </div>
+        <div class="flex flex-col" style="flex:1; min-width:0;">
+          <div class="flex items-center gap-2" style="margin-bottom:3px;">
+            <span style="font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--primary);">Couche 01</span>
+            <span style="font-size:10px; color:var(--muted);">·</span>
+            <span style="font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em;">Frontend</span>
+          </div>
+          <p class="font-display" style="font-size:16px; color:var(--fg); line-height:1.3; font-weight:700; margin-bottom:4px;">Next.js 16 + TypeScript 5 + Tailwind CSS 4</p>
+          <p style="font-size:11.5px; color:var(--muted); line-height:1.5;">App Router · Server Components · PWA installable · Build APK/iOS via Capacitor</p>
+        </div>
+      </div>
+
+      <!-- Layer 2: API & Auth -->
+      <div class="card flex items-start gap-3" style="padding:14px 18px; border-left:4px solid var(--primary);">
+        <div style="width:36px; height:36px; flex-shrink:0; border-radius:8px; background:rgba(15,81,50,0.08); display:flex; align-items:center; justify-content:center;">
+          <i class="material-icons" style="font-size:20px; color:var(--primary);">api</i>
+        </div>
+        <div class="flex flex-col" style="flex:1; min-width:0;">
+          <div class="flex items-center gap-2" style="margin-bottom:3px;">
+            <span style="font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--primary);">Couche 02</span>
+            <span style="font-size:10px; color:var(--muted);">·</span>
+            <span style="font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em;">API &amp; Auth</span>
+          </div>
+          <p class="font-display" style="font-size:16px; color:var(--fg); line-height:1.3; font-weight:700; margin-bottom:4px;">API Routes Next.js + Sessions HMAC-SHA256</p>
+          <p style="font-size:11.5px; color:var(--muted); line-height:1.5;">Auth bcrypt (12 rounds) · Cookies HTTP-only · Middleware URL admin dynamique · WebSocket ready</p>
+        </div>
+      </div>
+
+      <!-- Layer 3: Database -->
+      <div class="card flex items-start gap-3" style="padding:14px 18px; border-left:4px solid var(--accent);">
+        <div style="width:36px; height:36px; flex-shrink:0; border-radius:8px; background:rgba(184,153,104,0.12); display:flex; align-items:center; justify-content:center;">
+          <i class="material-icons" style="font-size:20px; color:var(--accent);">database</i>
+        </div>
+        <div class="flex flex-col" style="flex:1; min-width:0;">
+          <div class="flex items-center gap-2" style="margin-bottom:3px;">
+            <span style="font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent);">Couche 03</span>
+            <span style="font-size:10px; color:var(--muted);">·</span>
+            <span style="font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em;">Base de données</span>
+          </div>
+          <p class="font-display" style="font-size:16px; color:var(--fg); line-height:1.3; font-weight:700; margin-bottom:4px;">PostgreSQL (Supabase) + Prisma ORM</p>
+          <p style="font-size:11.5px; color:var(--muted); line-height:1.5;">8 modèles · 1348 entrées de garde · Index optimisés · Migrations versionnées</p>
+        </div>
+      </div>
+
+      <!-- Layer 4: Storage & Cron -->
+      <div class="card flex items-start gap-3" style="padding:14px 18px; border-left:4px solid var(--accent);">
+        <div style="width:36px; height:36px; flex-shrink:0; border-radius:8px; background:rgba(184,153,104,0.12); display:flex; align-items:center; justify-content:center;">
+          <i class="material-icons" style="font-size:20px; color:var(--accent);">cloud_queue</i>
+        </div>
+        <div class="flex flex-col" style="flex:1; min-width:0;">
+          <div class="flex items-center gap-2" style="margin-bottom:3px;">
+            <span style="font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent);">Couche 04</span>
+            <span style="font-size:10px; color:var(--muted);">·</span>
+            <span style="font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em;">Storage &amp; Cron</span>
+          </div>
+          <p class="font-display" style="font-size:16px; color:var(--fg); line-height:1.3; font-weight:700; margin-bottom:4px;">Supabase Storage + Vercel Cron</p>
+          <p style="font-size:11.5px; color:var(--muted); line-height:1.5;">Bucket privé RLS · Auto-suppression photos 72h/7j · Cron quotidien + hebdomadaire · Audit log</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: 2x2 stats grid -->
+    <div class="flex flex-col gap-3" style="min-height:0;">
+      <div class="flex items-center gap-2" style="margin-bottom:-2px;">
+        <i class="material-icons" style="font-size:18px; color:var(--primary);">insights</i>
+        <span class="font-display" style="font-size:16px; color:var(--primary); font-weight:700;">Métriques code</span>
+      </div>
+      <div class="grid grid-cols-2 gap-3" style="flex:1; min-height:0;">
+        <!-- Stat 1 -->
+        <div class="card flex flex-col justify-between" style="padding:16px;">
+          <div class="flex items-center gap-2">
+            <i class="material-icons" style="font-size:16px; color:var(--accent);">schema</i>
+            <span style="font-size:10.5px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted);">Modèles</span>
+          </div>
+          <div>
+            <div class="stat-num" style="font-size:48px; margin-bottom:4px;">8</div>
+            <p style="font-size:11px; color:var(--muted); line-height:1.3;">modèles Prisma</p>
+          </div>
+        </div>
+        <!-- Stat 2 -->
+        <div class="card flex flex-col justify-between" style="padding:16px;">
+          <div class="flex items-center gap-2">
+            <i class="material-icons" style="font-size:16px; color:var(--accent);">alt_route</i>
+            <span style="font-size:10.5px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted);">Endpoints</span>
+          </div>
+          <div>
+            <div class="stat-num" style="font-size:48px; margin-bottom:4px;">14</div>
+            <p style="font-size:11px; color:var(--muted); line-height:1.3;">routes API</p>
+          </div>
+        </div>
+        <!-- Stat 3 -->
+        <div class="card flex flex-col justify-between" style="padding:16px;">
+          <div class="flex items-center gap-2">
+            <i class="material-icons" style="font-size:16px; color:var(--accent);">folder_open</i>
+            <span style="font-size:10.5px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted);">Codebase</span>
+          </div>
+          <div>
+            <div class="stat-num" style="font-size:48px; margin-bottom:4px;">142</div>
+            <p style="font-size:11px; color:var(--muted); line-height:1.3;">fichiers source</p>
+          </div>
+        </div>
+        <!-- Stat 4 -->
+        <div class="card flex flex-col justify-between" style="padding:16px;">
+          <div class="flex items-center gap-2">
+            <i class="material-icons" style="font-size:16px; color:var(--accent);">code</i>
+            <span style="font-size:10.5px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted);">Typage</span>
+          </div>
+          <div>
+            <div class="stat-num" style="font-size:48px; margin-bottom:4px;">100%</div>
+            <p style="font-size:11px; color:var(--muted); line-height:1.3;">TypeScript</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<aside data-notes class="hidden">
+  <ul>
+    <li>Décrire la stack en 4 couches : Frontend, API &amp; Auth, Base de données, Storage &amp; Cron.</li>
+    <li>Insister sur la sécurité : bcrypt, HMAC-SHA256, cookies HTTP-only, URL admin dynamique.</li>
+    <li>Mentionner la scalabilité : Prisma ORM, PostgreSQL Supabase, migrations versionnées.</li>
+    <li>Souligner l'auto-suppression des photos via cron (72h/7j).</li>
+    <li>Donner les chiffres clés : 8 modèles, 14 routes, 142 fichiers, 100% TypeScript.</li>
+  </ul>
+</aside>
+</body>
+</html>

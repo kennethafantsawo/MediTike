@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>MediTike — Hypothèse & Objectifs</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="global.css">
+</head>
+<body>
+<div class="slide">
+  <!-- Top row -->
+  <div class="flex justify-between items-start">
+    <div class="flex items-baseline gap-4">
+      <span class="font-display" style="font-size:64px; color:var(--accent); line-height:1; letter-spacing:-0.03em;">02</span>
+      <span class="font-num" style="font-size:14px; color:var(--muted); letter-spacing:0.1em;">/ 06</span>
+    </div>
+    <div class="flex items-center gap-2" style="font-size:11px; color:var(--muted); letter-spacing:0.18em; text-transform:uppercase;">
+      <span class="kente-bar" data-decor aria-hidden="true" style="width:42px; height:3px;"></span>
+      <span>Cadre scientifique</span>
+    </div>
+  </div>
+
+  <!-- Title -->
+  <div style="margin-top:18px; margin-bottom:24px;">
+    <h1 class="font-display" style="font-size:44px; color:var(--primary); line-height:1.1;">Hypothèse &amp; Objectifs</h1>
+  </div>
+
+  <!-- Two columns -->
+  <div class="grid grid-cols-2 gap-8" style="flex:1; min-height:0;">
+
+    <!-- LEFT: Hypothèse card -->
+    <div class="card flex flex-col" style="padding:28px 28px; border-left:4px solid var(--accent); position:relative;">
+      <div class="flex items-center gap-2" style="margin-bottom:14px;">
+        <i class="material-icons" style="font-size:22px; color:var(--accent);">lightbulb</i>
+        <span style="font-size:11px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent);">Postulat de recherche</span>
+      </div>
+      <h2 class="font-display" style="font-size:32px; color:var(--primary); line-height:1.15; margin-bottom:18px;">Hypothèse</h2>
+      <p style="font-size:15px; color:var(--fg); line-height:1.7;">
+        La digitalisation du circuit de demande de médicaments, couplée à une diffusion en temps réel de la liste officielle des pharmacies de garde, permettrait de réduire significativement les délais d'accès au traitement tout en optimisant la charge opérationnelle des officines.
+      </p>
+      <div style="margin-top:auto; padding-top:18px; border-top:1px dashed var(--border); display:flex; align-items:center; gap:10px;">
+        <i class="material-icons" style="font-size:16px; color:var(--primary);">verified</i>
+        <span style="font-size:12px; color:var(--muted); font-weight:600;">Vérifiable · Mesurable · Reproductible</span>
+      </div>
+    </div>
+
+    <!-- RIGHT: Objectifs -->
+    <div class="flex flex-col" style="min-height:0;">
+      <div class="flex items-center gap-2" style="margin-bottom:12px;">
+        <i class="material-icons" style="font-size:18px; color:var(--primary);">flag</i>
+        <span class="font-display" style="font-size:18px; color:var(--primary); font-weight:700;">Objectifs spécifiques</span>
+      </div>
+
+      <div class="flex flex-col gap-2.5" style="flex:1;">
+        <!-- Objective 1 -->
+        <div class="card flex items-start gap-3" style="padding:12px 14px;">
+          <div style="width:32px; height:32px; flex-shrink:0; border-radius:50%; background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%); display:flex; align-items:center; justify-content:center; color:white; font-family:var(--font-heading); font-weight:800; font-size:14px;">1</div>
+          <p style="font-size:13px; color:var(--fg); line-height:1.5; padding-top:4px;">Réduire le délai moyen de contact patient-pharmacie de garde de plusieurs dizaines de minutes à <strong style="color:var(--primary);">moins de 5 minutes</strong>.</p>
+        </div>
+        <!-- Objective 2 -->
+        <div class="card flex items-start gap-3" style="padding:12px 14px;">
+          <div style="width:32px; height:32px; flex-shrink:0; border-radius:50%; background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%); display:flex; align-items:center; justify-content:center; color:white; font-family:var(--font-heading); font-weight:800; font-size:14px;">2</div>
+          <p style="font-size:13px; color:var(--fg); line-height:1.5; padding-top:4px;">Centraliser et actualiser automatiquement la <strong style="color:var(--primary);">liste officielle hebdomadaire</strong> du Ministère de la Santé.</p>
+        </div>
+        <!-- Objective 3 -->
+        <div class="card flex items-start gap-3" style="padding:12px 14px;">
+          <div style="width:32px; height:32px; flex-shrink:0; border-radius:50%; background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%); display:flex; align-items:center; justify-content:center; color:white; font-family:var(--font-heading); font-weight:800; font-size:14px;">3</div>
+          <p style="font-size:13px; color:var(--fg); line-height:1.5; padding-top:4px;">Garantir la confidentialité des données patients via <strong style="color:var(--primary);">auto-suppression des photos après 72 heures</strong>.</p>
+        </div>
+        <!-- Objective 4 -->
+        <div class="card flex items-start gap-3" style="padding:12px 14px;">
+          <div style="width:32px; height:32px; flex-shrink:0; border-radius:50%; background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%); display:flex; align-items:center; justify-content:center; color:white; font-family:var(--font-heading); font-weight:800; font-size:14px;">4</div>
+          <p style="font-size:13px; color:var(--fg); line-height:1.5; padding-top:4px;">Fournir un outil accessible (web + mobile) fonctionnant même sur <strong style="color:var(--primary);">connexions modestes</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<aside data-notes class="hidden">
+  <ul>
+    <li>Formuler l'hypothèse : digitalisation + diffusion temps réel = réduction des délais.</li>
+    <li>Objectif 1 : passer de plusieurs dizaines de minutes à moins de 5 minutes.</li>
+    <li>Objectif 2 : automatiser la liste officielle hebdomadaire du Ministère.</li>
+    <li>Objectif 3 : confidentialité via auto-suppression des photos à 72h.</li>
+    <li>Objectif 4 : accessibilité sur connexions modestes (web + mobile).</li>
+  </ul>
+</aside>
+</body>
+</html>
