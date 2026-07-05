@@ -2,89 +2,181 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>MediTike — Hypothèse & Objectifs</title>
+<title>MediTike — Notre idée</title>
+<link rel="stylesheet" href="global.css">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<link rel="stylesheet" href="global.css">
+<style>
+  body { background: var(--bg); }
+  .ghost-num {
+    position: absolute;
+    top: 36px; right: 60px;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 220px;
+    line-height: 1;
+    color: rgba(184,153,104,0.07);
+    letter-spacing: -0.05em;
+    pointer-events: none;
+  }
+  .section-num {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    color: var(--accent);
+    font-size: 22px;
+    letter-spacing: 0.18em;
+  }
+  .h1 {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    color: var(--primary);
+    font-size: 44px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .accent-bar {
+    width: 36px; height: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .idea-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 14px;
+    padding: 28px 30px;
+    position: relative;
+    box-shadow: 0 6px 20px rgba(15,81,50,0.04);
+  }
+  .idea-quote {
+    position: absolute;
+    top: 16px; right: 22px;
+    font-family: var(--font-heading);
+    font-size: 60px;
+    line-height: 1;
+    color: rgba(184,153,104,0.18);
+    pointer-events: none;
+  }
+  .idea-text {
+    font-family: var(--font-body);
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: #2c3a32;
+  }
+  .obj-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s;
+  }
+  .obj-num {
+    flex-shrink: 0;
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .obj-text {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #2c3a32;
+  }
+  .col-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 18px;
+    letter-spacing: -0.01em;
+  }
+</style>
 </head>
 <body>
 <div class="slide">
-  <!-- Top row -->
-  <div class="flex justify-between items-start">
-    <div class="flex items-baseline gap-4">
-      <span class="font-display" style="font-size:64px; color:var(--accent); line-height:1; letter-spacing:-0.03em;">02</span>
-      <span class="font-num" style="font-size:14px; color:var(--muted); letter-spacing:0.1em;">/ 06</span>
-    </div>
-    <div class="flex items-center gap-2" style="font-size:11px; color:var(--muted); letter-spacing:0.18em; text-transform:uppercase;">
-      <span class="kente-bar" data-decor aria-hidden="true" style="width:42px; height:3px;"></span>
-      <span>Cadre scientifique</span>
+  <div class="ghost-num" data-decor aria-hidden="true">02</div>
+
+  <!-- Header -->
+  <div class="relative z-10">
+    <div class="section-num mb-3">02 / 06</div>
+    <h1 class="h1">Notre idée</h1>
+    <div class="flex items-center gap-3 mt-3">
+      <div class="accent-bar"></div>
+      <span class="text-[#6b7c72]" style="font-size:15px;">Une seule demande, plusieurs réponses, un seul déplacement.</span>
     </div>
   </div>
 
-  <!-- Title -->
-  <div style="margin-top:18px; margin-bottom:24px;">
-    <h1 class="font-display" style="font-size:44px; color:var(--primary); line-height:1.1;">Hypothèse &amp; Objectifs</h1>
-  </div>
+  <!-- 2-column body -->
+  <div class="grid grid-cols-2 gap-8 mt-7 relative z-10 flex-1">
 
-  <!-- Two columns -->
-  <div class="grid grid-cols-2 gap-8" style="flex:1; min-height:0;">
-
-    <!-- LEFT: Hypothèse card -->
-    <div class="card flex flex-col" style="padding:28px 28px; border-left:4px solid var(--accent); position:relative;">
-      <div class="flex items-center gap-2" style="margin-bottom:14px;">
-        <i class="material-icons" style="font-size:22px; color:var(--accent);">lightbulb</i>
-        <span style="font-size:11px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent);">Postulat de recherche</span>
+    <!-- Left: L'idée -->
+    <div class="flex flex-col">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="material-icons text-[#b89968]" style="font-size:18px;">lightbulb</span>
+        <span class="font-display text-[#0f5132]" style="font-size:13px; letter-spacing:0.12em;">L'IDÉE</span>
       </div>
-      <h2 class="font-display" style="font-size:32px; color:var(--primary); line-height:1.15; margin-bottom:18px;">Hypothèse</h2>
-      <p style="font-size:15px; color:var(--fg); line-height:1.7;">
-        La digitalisation du circuit de demande de médicaments, couplée à une diffusion en temps réel de la liste officielle des pharmacies de garde, permettrait de réduire significativement les délais d'accès au traitement tout en optimisant la charge opérationnelle des officines.
-      </p>
-      <div style="margin-top:auto; padding-top:18px; border-top:1px dashed var(--border); display:flex; align-items:center; gap:10px;">
-        <i class="material-icons" style="font-size:16px; color:var(--primary);">verified</i>
-        <span style="font-size:12px; color:var(--muted); font-weight:600;">Vérifiable · Mesurable · Reproductible</span>
-      </div>
-    </div>
-
-    <!-- RIGHT: Objectifs -->
-    <div class="flex flex-col" style="min-height:0;">
-      <div class="flex items-center gap-2" style="margin-bottom:12px;">
-        <i class="material-icons" style="font-size:18px; color:var(--primary);">flag</i>
-        <span class="font-display" style="font-size:18px; color:var(--primary); font-weight:700;">Objectifs spécifiques</span>
-      </div>
-
-      <div class="flex flex-col gap-2.5" style="flex:1;">
-        <!-- Objective 1 -->
-        <div class="card flex items-start gap-3" style="padding:12px 14px;">
-          <div style="width:32px; height:32px; flex-shrink:0; border-radius:50%; background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%); display:flex; align-items:center; justify-content:center; color:white; font-family:var(--font-heading); font-weight:800; font-size:14px;">1</div>
-          <p style="font-size:13px; color:var(--fg); line-height:1.5; padding-top:4px;">Réduire le délai moyen de contact patient-pharmacie de garde de plusieurs dizaines de minutes à <strong style="color:var(--primary);">moins de 5 minutes</strong>.</p>
-        </div>
-        <!-- Objective 2 -->
-        <div class="card flex items-start gap-3" style="padding:12px 14px;">
-          <div style="width:32px; height:32px; flex-shrink:0; border-radius:50%; background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%); display:flex; align-items:center; justify-content:center; color:white; font-family:var(--font-heading); font-weight:800; font-size:14px;">2</div>
-          <p style="font-size:13px; color:var(--fg); line-height:1.5; padding-top:4px;">Centraliser et actualiser automatiquement la <strong style="color:var(--primary);">liste officielle hebdomadaire</strong> du Ministère de la Santé.</p>
-        </div>
-        <!-- Objective 3 -->
-        <div class="card flex items-start gap-3" style="padding:12px 14px;">
-          <div style="width:32px; height:32px; flex-shrink:0; border-radius:50%; background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%); display:flex; align-items:center; justify-content:center; color:white; font-family:var(--font-heading); font-weight:800; font-size:14px;">3</div>
-          <p style="font-size:13px; color:var(--fg); line-height:1.5; padding-top:4px;">Garantir la confidentialité des données patients via <strong style="color:var(--primary);">auto-suppression des photos après 72 heures</strong>.</p>
-        </div>
-        <!-- Objective 4 -->
-        <div class="card flex items-start gap-3" style="padding:12px 14px;">
-          <div style="width:32px; height:32px; flex-shrink:0; border-radius:50%; background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%); display:flex; align-items:center; justify-content:center; color:white; font-family:var(--font-heading); font-weight:800; font-size:14px;">4</div>
-          <p style="font-size:13px; color:var(--fg); line-height:1.5; padding-top:4px;">Fournir un outil accessible (web + mobile) fonctionnant même sur <strong style="color:var(--primary);">connexions modestes</strong>.</p>
+      <div class="idea-card flex-1 flex flex-col">
+        <div class="idea-quote" data-decor>«</div>
+        <div class="col-title mb-3">L'idée</div>
+        <p class="idea-text">
+          Et si on pouvait, depuis son téléphone, envoyer une seule demande de médicament à toutes les pharmacies de garde en même temps ? Les pharmaciens voient la demande, répondent directement, et le patient sait tout de suite où aller.
+        </p>
+        <p class="idea-text mt-3">
+          Plus besoin d'appeler 5 ou 10 pharmacies : <span class="font-semibold text-[#0f5132]">une demande, plusieurs réponses, un seul déplacement.</span>
+        </p>
+        <div class="flex items-center gap-2 mt-auto pt-5">
+          <span class="material-icons text-[#0f5132]" style="font-size:16px;">smartphone</span>
+          <span class="text-[#6b7c72]" style="font-size:12px; letter-spacing:0.04em;">UNE IDÉE SIMPLE, POUR UN PROBLÈME RÉEL</span>
         </div>
       </div>
     </div>
+
+    <!-- Right: 4 objectifs -->
+    <div class="flex flex-col">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="material-icons text-[#b89968]" style="font-size:18px;">flag</span>
+        <span class="font-display text-[#0f5132]" style="font-size:13px; letter-spacing:0.12em;">CE QU'ON VEUT ACCOMPLIR</span>
+      </div>
+      <div class="col-title mb-3">Ce qu'on veut accomplir</div>
+
+      <div class="flex flex-col gap-2.5 flex-1">
+        <div class="obj-card">
+          <div class="obj-num">1</div>
+          <div class="obj-text">Passer de <span class="font-semibold text-[#0f5132]">30 minutes à moins de 5 minutes</span> pour trouver une pharmacie qui a le médicament.</div>
+        </div>
+        <div class="obj-card">
+          <div class="obj-num">2</div>
+          <div class="obj-text">Rendre la liste officielle des pharmacies de garde accessible à tout le monde, <span class="font-semibold text-[#0f5132]">en temps réel</span>.</div>
+        </div>
+        <div class="obj-card">
+          <div class="obj-num">3</div>
+          <div class="obj-text">Protéger la vie privée des patients : leurs photos sont <span class="font-semibold text-[#0f5132]">supprimées automatiquement</span> après quelques jours.</div>
+        </div>
+        <div class="obj-card">
+          <div class="obj-num">4</div>
+          <div class="obj-text">Un outil simple, gratuit, qui marche <span class="font-semibold text-[#0f5132]">même avec une connexion internet lente</span>.</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
+
 <aside data-notes class="hidden">
-  <ul>
-    <li>Formuler l'hypothèse : digitalisation + diffusion temps réel = réduction des délais.</li>
-    <li>Objectif 1 : passer de plusieurs dizaines de minutes à moins de 5 minutes.</li>
-    <li>Objectif 2 : automatiser la liste officielle hebdomadaire du Ministère.</li>
-    <li>Objectif 3 : confidentialité via auto-suppression des photos à 72h.</li>
-    <li>Objectif 4 : accessibilité sur connexions modestes (web + mobile).</li>
-  </ul>
+- Présenter l'idée simplement : une demande, plusieurs réponses, un seul déplacement.
+- Insister sur le gain de temps : 30 minutes à moins de 5 minutes.
+- Lister les 4 objectifs concrets, un par un, sans jargon.
+- Mentionner la protection de la vie privée (photos supprimées automatiquement).
+- Souligner que l'outil reste gratuit et accessible même avec une connexion lente.
 </aside>
 </body>
 </html>

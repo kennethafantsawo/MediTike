@@ -188,7 +188,7 @@ export default function AboutPage() {
       <footer className="bg-foreground text-background py-6">
         <KenteDivider />
         <div className="max-w-5xl mx-auto px-5 text-center text-xs text-background/60 mt-4">
-          © {new Date().getFullYear()} MediTike · Plateforme de santé publique pour le Togo
+          © {new Date().getFullYear()} MediTike
         </div>
       </footer>
     </div>

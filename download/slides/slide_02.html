@@ -2,82 +2,157 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>MediTike — Problématique</title>
+<title>MediTike — Le problème</title>
+<link rel="stylesheet" href="global.css">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<link rel="stylesheet" href="global.css">
+<style>
+  body { background: var(--bg); }
+  .ghost-num {
+    position: absolute;
+    top: 36px; right: 60px;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 220px;
+    line-height: 1;
+    color: rgba(184,153,104,0.07);
+    letter-spacing: -0.05em;
+    pointer-events: none;
+  }
+  .section-num {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    color: var(--accent);
+    font-size: 22px;
+    letter-spacing: 0.18em;
+  }
+  .h1 {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    color: var(--primary);
+    font-size: 44px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .h3-muted {
+    font-family: var(--font-body);
+    font-weight: 500;
+    color: var(--muted);
+    font-size: 22px;
+    line-height: 1.4;
+  }
+  .body-text {
+    font-family: var(--font-body);
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: #2c3a32;
+  }
+  .stat-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(180deg, var(--primary), var(--accent));
+  }
+  .stat-num-big {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 56px;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.03em;
+  }
+  .stat-label {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.45;
+    margin-top: 10px;
+  }
+  .accent-bar {
+    width: 36px; height: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+</style>
 </head>
 <body>
 <div class="slide">
-  <!-- Top row: section number + page indicator -->
-  <div class="flex justify-between items-start">
-    <div class="flex items-baseline gap-4">
-      <span class="font-display" style="font-size:64px; color:var(--accent); line-height:1; letter-spacing:-0.03em;">01</span>
-      <span class="font-num" style="font-size:14px; color:var(--muted); letter-spacing:0.1em;">/ 06</span>
-    </div>
-    <div class="flex items-center gap-2" style="font-size:11px; color:var(--muted); letter-spacing:0.18em; text-transform:uppercase;">
-      <span class="kente-bar" data-decor aria-hidden="true" style="width:42px; height:3px;"></span>
-      <span>Contexte</span>
+  <div class="ghost-num" data-decor aria-hidden="true">01</div>
+
+  <!-- Header: section number + title -->
+  <div class="relative z-10">
+    <div class="section-num mb-4">01 / 06</div>
+    <h1 class="h1">Le problème</h1>
+    <div class="flex items-center gap-3 mt-3">
+      <div class="accent-bar"></div>
+      <h3 class="h3-muted">Trouver un médicament urgent au Togo</h3>
     </div>
   </div>
 
-  <!-- Title block -->
-  <div style="margin-top:18px;">
-    <h1 class="font-display" style="font-size:44px; color:var(--primary); line-height:1.1; margin-bottom:10px;">Problématique</h1>
-    <h3 style="font-size:22px; color:var(--muted); font-weight:500; line-height:1.35;">L'accès aux médicaments au Togo : un défi de santé publique</h3>
-  </div>
-
-  <!-- Two paragraphs in two columns -->
-  <div class="grid grid-cols-2 gap-8" style="margin-top:28px;">
-    <div class="flex gap-4">
-      <div style="width:3px; background:var(--primary); border-radius:2px; flex-shrink:0;"></div>
-      <p style="font-size:14.5px; color:var(--fg); line-height:1.65;">
-        Au Togo, l'accès aux médicaments en dehors des heures d'ouverture classiques demeure un défi majeur de santé publique. Lorsqu'un patient a besoin d'un médicament en urgence — particulièrement la nuit, le week-end, ou dans les zones mal couvertes — il doit appeler successivement plusieurs pharmacies pour identifier celle qui dispose du produit recherché.
+  <!-- Body paragraphs -->
+  <div class="grid grid-cols-2 gap-10 mt-8 relative z-10">
+    <div>
+      <div class="flex items-center gap-2 mb-3">
+        <span class="material-icons text-[#b89968]" style="font-size:18px;">nightlight</span>
+        <span class="font-display text-[#0f5132]" style="font-size:13px; letter-spacing:0.12em;">LA SITUATION</span>
+      </div>
+      <p class="body-text">
+        Quand on a besoin d'un médicament urgent — la nuit, le week-end, ou quand on ne connaît pas bien le quartier — c'est souvent compliqué. Il faut appeler une pharmacie après l'autre pour savoir si elle a le médicament qu'on cherche. Parfois, on tombe sur le répondeur. Parfois, la pharmacie n'a pas le produit. On perd un temps précieux.
       </p>
     </div>
-    <div class="flex gap-4">
-      <div style="width:3px; background:var(--accent); border-radius:2px; flex-shrink:0;"></div>
-      <p style="font-size:14.5px; color:var(--fg); line-height:1.65;">
-        Cette situation engendre des retards préjudiciables à la prise en charge thérapeutique, particulièrement pour les pathologies chroniques (diabète, hypertension, infections), les urgences pédiatriques et les traitements antipaludiques. Le Ministère de la Santé publie hebdomadairement la liste officielle des pharmacies de garde, mais cette information reste difficilement accessible aux citoyens dans le feu de l'urgence.
+    <div>
+      <div class="flex items-center gap-2 mb-3">
+        <span class="material-icons text-[#b89968]" style="font-size:18px;">visibility_off</span>
+        <span class="font-display text-[#0f5132]" style="font-size:13px; letter-spacing:0.12em;">L'INFORMATION EXISTE</span>
+      </div>
+      <p class="body-text">
+        Pourtant, le Ministère de la Santé publie chaque semaine la liste des pharmacies de garde. Le problème, c'est que cette liste est difficile à trouver quand on en a vraiment besoin. Les gens ne savent pas où la chercher, et encore moins comment contacter directement la bonne pharmacie.
       </p>
     </div>
   </div>
 
-  <!-- 3 stat cards -->
-  <div class="grid grid-cols-3 gap-5" style="margin-top:30px;">
-    <div class="card flex flex-col gap-2" style="padding:18px 20px;">
-      <div class="flex items-center gap-2" style="color:var(--accent); font-size:11px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase;">
-        <i class="material-icons" style="font-size:14px;">storefront</i>
-        Référencement
+  <!-- Stats row -->
+  <div class="grid grid-cols-3 gap-5 mt-auto relative z-10">
+    <div class="stat-card">
+      <div class="flex items-start justify-between mb-2">
+        <div class="stat-num-big">1348</div>
+        <span class="material-icons text-[#b89968]" style="font-size:22px;">local_pharmacy</span>
       </div>
-      <div class="stat-num" style="font-size:44px;">1348</div>
-      <p style="font-size:12.5px; color:var(--muted); line-height:1.45;">pharmacies de garde référencées dans le fichier officiel Ministère 2026-2027</p>
+      <div class="stat-label">pharmacies de garde répertoriées dans le fichier officiel 2026-2027</div>
     </div>
-    <div class="card flex flex-col gap-2" style="padding:18px 20px;">
-      <div class="flex items-center gap-2" style="color:var(--accent); font-size:11px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase;">
-        <i class="material-icons" style="font-size:14px;">event_repeat</i>
-        Programmation
+    <div class="stat-card">
+      <div class="flex items-start justify-between mb-2">
+        <div class="stat-num-big">26</div>
+        <span class="material-icons text-[#b89968]" style="font-size:22px;">calendar_month</span>
       </div>
-      <div class="stat-num" style="font-size:44px;">26</div>
-      <p style="font-size:12.5px; color:var(--muted); line-height:1.45;">semaines de garde programmées annuellement</p>
+      <div class="stat-label">semaines de garde programmées chaque année</div>
     </div>
-    <div class="card flex flex-col gap-2" style="padding:18px 20px;">
-      <div class="flex items-center gap-2" style="color:var(--accent); font-size:11px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase;">
-        <i class="material-icons" style="font-size:14px;">schedule</i>
-        Délai moyen
+    <div class="stat-card">
+      <div class="flex items-start justify-between mb-2">
+        <div class="stat-num-big">&gt;30 min</div>
+        <span class="material-icons text-[#b89968]" style="font-size:22px;">hourglass_empty</span>
       </div>
-      <div class="stat-num" style="font-size:44px;">&gt;30 min</div>
-      <p style="font-size:12.5px; color:var(--muted); line-height:1.45;">délai moyen actuel pour trouver une pharmacie disposant du médicament</p>
+      <div class="stat-label">temps moyen pour trouver une pharmacie qui a le médicament</div>
     </div>
   </div>
 </div>
+
 <aside data-notes class="hidden">
-  <ul>
-    <li>Décrire la situation actuelle : appel successif à plusieurs pharmacies en urgence.</li>
-    <li>Insister sur les retards thérapeutiques pour pathologies chroniques, pédiatrie et paludisme.</li>
-    <li>Donner les chiffres clés : 1348 pharmacies, 26 semaines, délai > 30 min.</li>
-    <li>Souligner que la liste officielle existe mais reste peu accessible en urgence.</li>
-  </ul>
+- Décrire la situation vécue par les patients sans jargon technique.
+- Insister sur le temps perdu : appeler plusieurs pharmacies, tomber sur le répondeur.
+- Rappeler que la liste officielle existe mais est difficile à trouver.
+- Souligner les 3 chiffres : 1348 pharmacies, 26 semaines, plus de 30 minutes en moyenne.
+- Préparer la transition vers l'idée MediTike.
 </aside>
 </body>
 </html>

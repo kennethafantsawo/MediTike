@@ -3,75 +3,130 @@
 <head>
 <meta charset="UTF-8">
 <title>MediTike — Couverture</title>
+<link rel="stylesheet" href="global.css">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<link rel="stylesheet" href="global.css">
+<style>
+  body { background: var(--bg); }
+  .kente-top {
+    position: absolute; top: 0; left: 0; right: 0;
+  }
+  .gradient-circle {
+    position: absolute;
+    width: 520px; height: 520px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(184,153,104,0.30) 0%, rgba(184,153,104,0) 70%);
+    filter: blur(36px);
+    bottom: -200px; right: -160px;
+    pointer-events: none;
+  }
+  .gradient-circle-2 {
+    position: absolute;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(15,81,50,0.10) 0%, rgba(15,81,50,0) 70%);
+    filter: blur(28px);
+    top: 60px; left: -100px;
+    pointer-events: none;
+  }
+  .cross-logo {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    box-shadow: 0 10px 28px rgba(15,81,50,0.22);
+  }
+  .cross-logo .material-icons { font-size: 32px; }
+  .hero-title {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    color: var(--primary);
+    line-height: 0.95;
+    font-size: 104px;
+  }
+  .hero-sub {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--fg);
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+    font-size: 36px;
+  }
+  .contact-line { display: flex; align-items: center; gap: 12px; }
+</style>
 </head>
 <body>
 <div class="slide">
-  <!-- Kente bar full bleed top -->
-  <div class="kente-bar" data-decor aria-hidden="true" style="position:absolute; top:0; left:0; right:0;"></div>
-
-  <!-- Decorative bronze blur circle bottom-right -->
-  <div data-decor aria-hidden="true" style="position:absolute; bottom:-160px; right:-160px; width:480px; height:480px; border-radius:50%; background:radial-gradient(circle, rgba(184,153,104,0.42) 0%, rgba(184,153,104,0.08) 55%, rgba(184,153,104,0) 75%); filter:blur(20px); pointer-events:none;"></div>
-
-  <!-- Subtle decorative micro-grid in background -->
-  <div data-decor aria-hidden="true" style="position:absolute; top:80px; right:80px; width:280px; height:280px; opacity:0.06; background-image:radial-gradient(#0f5132 1px, transparent 1px); background-size:14px 14px; pointer-events:none;"></div>
+  <div class="kente-bar kente-top" data-decor></div>
+  <div class="gradient-circle" data-decor aria-hidden="true"></div>
+  <div class="gradient-circle-2" data-decor aria-hidden="true"></div>
 
   <!-- Top row: badge + logo -->
-  <div class="flex justify-between items-start" style="position:relative; z-index:2;">
+  <div class="flex justify-between items-center relative z-10">
     <span class="badge">
-      <i class="material-icons" style="font-size:14px;">workspace_premium</i>
-      Plateforme de santé publique · Togo
+      <span class="material-icons" style="font-size:14px;">favorite</span>
+      Santé pour tous · Togo
     </span>
     <div class="flex items-center gap-3">
-      <div style="width:52px; height:52px; background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 55%, var(--accent) 100%); border-radius:12px; display:flex; align-items:center; justify-content:center; color:white; box-shadow:0 8px 22px rgba(15,81,50,0.22);">
-        <i class="material-icons" style="font-size:30px;">add</i>
+      <div class="text-right">
+        <div class="font-display text-[#0f5132] leading-none" style="font-size:20px;">MediTike</div>
+        <div class="text-[#6b7c72] mt-1" style="font-size:11px; letter-spacing:0.06em;">LOMÉ · TOGO</div>
       </div>
-      <div class="flex flex-col">
-        <span class="font-display" style="font-size:20px; color:var(--primary); line-height:1;">MediTike</span>
-        <span style="font-size:11px; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; margin-top:4px;">Santé · Togo</span>
+      <div class="cross-logo">
+        <span class="material-icons">add</span>
       </div>
     </div>
   </div>
 
-  <!-- Center content (title block) -->
-  <div class="flex-1 flex flex-col justify-center" style="position:relative; z-index:2; max-width:920px;">
-    <div style="display:flex; align-items:center; gap:14px; margin-bottom:14px;">
-      <div style="width:48px; height:2px; background:var(--accent);"></div>
-      <span style="font-size:12px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:var(--accent);">Plateforme de demande de médicaments</span>
+  <!-- Hero block -->
+  <div class="flex-1 flex flex-col justify-center relative z-10">
+    <div class="flex items-center gap-4 mb-5">
+      <span class="block w-10 h-[2px] bg-[#b89968]" data-decor></span>
+      <span class="text-[#b89968] font-display tracking-widest" style="font-size:13px;">UNE SOLUTION TOGOLAISE</span>
     </div>
-    <h1 class="font-display" style="font-size:56px; color:var(--primary); line-height:1.0; margin-bottom:22px;">MediTike</h1>
-    <h2 class="font-display" style="font-size:44px; color:var(--fg); line-height:1.15; font-weight:700; letter-spacing:-0.015em; margin-bottom:20px; max-width:880px;">Connecter patients et pharmacies pour un meilleur accès aux médicaments au Togo</h2>
-    <p style="font-size:16px; color:var(--muted); line-height:1.65; max-width:780px;">Une plateforme numérique scientifique et sécurisée, conçue pour réduire les délais d'accès aux médicaments et améliorer l'efficacité du système de garde pharmaceutique togolais.</p>
+    <h1 class="hero-title">MediTike</h1>
+    <h2 class="hero-sub mt-6">
+      Trouvez vos médicaments facilement,<br>
+      <span class="text-[#0f5132]">même la nuit ou le week-end.</span>
+    </h2>
+    <p class="text-[#6b7c72] mt-6 max-w-[640px]" style="font-size:17px; line-height:1.65;">
+      Une application simple qui met les patients en contact direct avec les pharmacies de garde, partout au Togo.
+    </p>
   </div>
 
-  <!-- Bottom row: contact + mention -->
-  <div class="flex justify-between items-end" style="position:relative; z-index:2;">
-    <div class="flex flex-col gap-2">
-      <div class="flex items-center gap-2" style="color:var(--fg); font-size:13px;">
-        <i class="material-icons" style="font-size:16px; color:var(--accent);">phone</i>
-        <span><strong style="color:var(--muted); font-weight:600;">Téléphone :</strong> +228 96 41 72 70</span>
+  <!-- Bottom row -->
+  <div class="flex justify-between items-end relative z-10">
+    <div class="space-y-2.5">
+      <div class="contact-line text-[#1a2b22]">
+        <span class="material-icons text-[#0f5132]" style="font-size:18px;">phone</span>
+        <span class="font-num" style="font-size:14px;">+228 96 41 72 70</span>
       </div>
-      <div class="flex items-center gap-2" style="color:var(--fg); font-size:13px;">
-        <i class="material-icons" style="font-size:16px; color:var(--accent);">email</i>
-        <span><strong style="color:var(--muted); font-weight:600;">Email :</strong> contact@meditike.tg</span>
+      <div class="contact-line text-[#1a2b22]">
+        <span class="material-icons text-[#0f5132]" style="font-size:18px;">mail</span>
+        <span style="font-size:14px;">contact@meditike.tg</span>
       </div>
-      <div class="flex items-center gap-2" style="color:var(--fg); font-size:13px;">
-        <i class="material-icons" style="font-size:16px; color:var(--accent);">place</i>
-        <span><strong style="color:var(--muted); font-weight:600;">Localisation :</strong> Lomé, Togo</span>
+      <div class="contact-line text-[#1a2b22]">
+        <span class="material-icons text-[#0f5132]" style="font-size:18px;">place</span>
+        <span style="font-size:14px;">Lomé, Togo</span>
       </div>
     </div>
-    <p style="font-size:11px; color:var(--muted); max-width:320px; text-align:right; line-height:1.55;">Plateforme numérique de santé publique conçue pour le contexte togolais — 2026</p>
+    <div class="text-right max-w-[280px]">
+      <div class="text-[#b89968] font-display tracking-widest mb-1" style="font-size:11px;">NOTRE PROMESSE</div>
+      <div class="text-[#1a2b22] italic" style="font-size:13px; line-height:1.5;">
+        « Une solution togolaise pour la santé de tous »
+      </div>
+    </div>
   </div>
 </div>
+
 <aside data-notes class="hidden">
-  <ul>
-    <li>Présenter MediTike en une phrase : plateforme numérique de demande de médicaments reliant patients et pharmacies de garde.</li>
-    <li>Contexte : projet de santé publique pour le Togo.</li>
-    <li>Indiquer les coordonnées de contact pour les questions du jury.</li>
-    <li>Souligner l'ancrage togolais (Lomé) et l'ambition nationale.</li>
-  </ul>
+- Présenter MediTike en une phrase : une application qui met les patients en contact avec les pharmacies de garde au Togo.
+- Insister sur la simplicité : même la nuit ou le week-end, on trouve son médicament.
+- Donner le contact pour les questions : +228 96 41 72 70, contact@meditike.tg, Lomé.
+- Rappeler que c'est une solution 100 % togolaise, pensée pour le terrain.
+- Garder un ton chaleureux, rassurant, institutionnel.
 </aside>
 </body>
 </html>

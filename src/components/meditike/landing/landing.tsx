@@ -292,7 +292,7 @@ export function Landing({ onAuthed }: LandingProps) {
             </div>
           </div>
           <div className="mt-8 pt-6 border-t border-background/10 text-center text-xs text-background/50">
-            © {new Date().getFullYear()} MediTike. Conçu avec ❤️ au Togo.
+            © {new Date().getFullYear()} MediTike.
           </div>
         </div>
       </footer>

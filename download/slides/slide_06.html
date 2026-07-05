@@ -2,164 +2,225 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>MediTike — Architecture technique</title>
+<title>MediTike — Les outils qu'on utilise</title>
+<link rel="stylesheet" href="global.css">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<link rel="stylesheet" href="global.css">
+<style>
+  body { background: var(--bg); }
+  .ghost-num {
+    position: absolute;
+    top: 36px; right: 60px;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 220px;
+    line-height: 1;
+    color: rgba(184,153,104,0.07);
+    letter-spacing: -0.05em;
+    pointer-events: none;
+  }
+  .section-num {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    color: var(--accent);
+    font-size: 22px;
+    letter-spacing: 0.18em;
+  }
+  .h1 {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    color: var(--primary);
+    font-size: 44px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .accent-bar {
+    width: 36px; height: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .tool-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .tool-card.bp { border-left: 4px solid var(--primary); }
+  .tool-card.ba { border-left: 4px solid var(--accent); }
+  .tool-icon {
+    flex-shrink: 0;
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+  }
+  .tool-icon.ip { background: linear-gradient(135deg, var(--primary), var(--primary-light)); }
+  .tool-icon.ia { background: linear-gradient(135deg, var(--accent), var(--accent-light)); }
+  .tool-icon .material-icons { font-size: 20px; }
+  .tool-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 15px;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+  .tool-desc {
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #2c3a32;
+  }
+  .stat-mini {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-mini::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+  }
+  .stat-mini-num {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 36px;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.02em;
+  }
+  .stat-mini-label {
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .col-tag {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+  }
+</style>
 </head>
 <body>
 <div class="slide">
-  <!-- Top row -->
-  <div class="flex justify-between items-start">
-    <div class="flex items-baseline gap-4">
-      <span class="font-display" style="font-size:64px; color:var(--accent); line-height:1; letter-spacing:-0.03em;">04</span>
-      <span class="font-num" style="font-size:14px; color:var(--muted); letter-spacing:0.1em;">/ 06</span>
-    </div>
-    <div class="flex items-center gap-2" style="font-size:11px; color:var(--muted); letter-spacing:0.18em; text-transform:uppercase;">
-      <span class="kente-bar" data-decor aria-hidden="true" style="width:42px; height:3px;"></span>
-      <span>Stack technique</span>
+  <div class="ghost-num" data-decor aria-hidden="true">04</div>
+
+  <!-- Header -->
+  <div class="relative z-10">
+    <div class="section-num mb-3">04 / 06</div>
+    <h1 class="h1">Les outils qu'on utilise</h1>
+    <div class="flex items-center gap-3 mt-3">
+      <div class="accent-bar"></div>
+      <span class="text-[#6b7c72]" style="font-size:15px;">Des technologies modernes, pour un résultat fiable et rapide</span>
     </div>
   </div>
 
-  <!-- Title block -->
-  <div style="margin-top:14px; margin-bottom:22px;">
-    <h1 class="font-display" style="font-size:44px; color:var(--primary); line-height:1.1; margin-bottom:8px;">Architecture technique</h1>
-    <h3 style="font-size:22px; color:var(--muted); font-weight:500;">Stack moderne, scalable et maintenable</h3>
-  </div>
+  <!-- Body 60/40 -->
+  <div class="grid mt-7 relative z-10 flex-1 gap-7" style="grid-template-columns: 60% 1fr;">
 
-  <!-- Two columns 60/40 -->
-  <div class="grid gap-6" style="grid-template-columns: 1.5fr 1fr; flex:1; min-height:0;">
-
-    <!-- LEFT: 4 stacked layers -->
-    <div class="flex flex-col gap-2.5" style="min-height:0;">
-      <!-- Layer 1: Frontend -->
-      <div class="card flex items-start gap-3" style="padding:14px 18px; border-left:4px solid var(--primary);">
-        <div style="width:36px; height:36px; flex-shrink:0; border-radius:8px; background:rgba(15,81,50,0.08); display:flex; align-items:center; justify-content:center;">
-          <i class="material-icons" style="font-size:20px; color:var(--primary);">web</i>
-        </div>
-        <div class="flex flex-col" style="flex:1; min-width:0;">
-          <div class="flex items-center gap-2" style="margin-bottom:3px;">
-            <span style="font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--primary);">Couche 01</span>
-            <span style="font-size:10px; color:var(--muted);">·</span>
-            <span style="font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em;">Frontend</span>
-          </div>
-          <p class="font-display" style="font-size:16px; color:var(--fg); line-height:1.3; font-weight:700; margin-bottom:4px;">Next.js 16 + TypeScript 5 + Tailwind CSS 4</p>
-          <p style="font-size:11.5px; color:var(--muted); line-height:1.5;">App Router · Server Components · PWA installable · Build APK/iOS via Capacitor</p>
-        </div>
+    <!-- LEFT: 4 tools -->
+    <div class="flex flex-col">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="material-icons text-[#b89968]" style="font-size:16px;">build</span>
+        <span class="col-tag">LES OUTILS</span>
       </div>
+      <div class="flex flex-col gap-2.5 flex-1">
 
-      <!-- Layer 2: API & Auth -->
-      <div class="card flex items-start gap-3" style="padding:14px 18px; border-left:4px solid var(--primary);">
-        <div style="width:36px; height:36px; flex-shrink:0; border-radius:8px; background:rgba(15,81,50,0.08); display:flex; align-items:center; justify-content:center;">
-          <i class="material-icons" style="font-size:20px; color:var(--primary);">api</i>
-        </div>
-        <div class="flex flex-col" style="flex:1; min-width:0;">
-          <div class="flex items-center gap-2" style="margin-bottom:3px;">
-            <span style="font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--primary);">Couche 02</span>
-            <span style="font-size:10px; color:var(--muted);">·</span>
-            <span style="font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em;">API &amp; Auth</span>
+        <div class="tool-card bp">
+          <div class="tool-icon ip"><span class="material-icons">language</span></div>
+          <div class="flex-1">
+            <div class="tool-title">L'application web</div>
+            <p class="tool-desc">C'est le site internet que les patients et pharmaciens utilisent. Il s'ouvre dans n'importe quel navigateur (Chrome, Safari, Firefox) sur téléphone ou ordinateur. Pas besoin d'installer quoi que ce soit.</p>
           </div>
-          <p class="font-display" style="font-size:16px; color:var(--fg); line-height:1.3; font-weight:700; margin-bottom:4px;">API Routes Next.js + Sessions HMAC-SHA256</p>
-          <p style="font-size:11.5px; color:var(--muted); line-height:1.5;">Auth bcrypt (12 rounds) · Cookies HTTP-only · Middleware URL admin dynamique · WebSocket ready</p>
         </div>
+
+        <div class="tool-card bp">
+          <div class="tool-icon ip"><span class="material-icons">storage</span></div>
+          <div class="flex-1">
+            <div class="tool-title">La base de données</div>
+            <p class="tool-desc">C'est là qu'on stocke toutes les informations : les comptes utilisateurs, les pharmacies, les demandes, les réponses. C'est sécurisé et hébergé par un service professionnel spécialisé.</p>
+          </div>
+        </div>
+
+        <div class="tool-card ba">
+          <div class="tool-icon ia"><span class="material-icons">photo_library</span></div>
+          <div class="flex-1">
+            <div class="tool-title">Le stockage des photos</div>
+            <p class="tool-desc">Quand un patient envoie une photo, elle est gardée dans un coffre-fort numérique privé. Personne d'autre que le patient et les pharmaciens ne peut la voir. Et elle est supprimée automatiquement après quelques jours.</p>
+          </div>
+        </div>
+
+        <div class="tool-card ba">
+          <div class="tool-icon ia"><span class="material-icons">autorenew</span></div>
+          <div class="flex-1">
+            <div class="tool-title">Les tâches automatiques</div>
+            <p class="tool-desc">Tous les jours, le système fait le ménage tout seul : il supprime les anciennes photos, met à jour la liste des pharmacies de garde, et marque les vieilles demandes comme expirées. Personne n'a besoin de le faire à la main.</p>
+          </div>
+        </div>
+
       </div>
+    </div>
 
-      <!-- Layer 3: Database -->
-      <div class="card flex items-start gap-3" style="padding:14px 18px; border-left:4px solid var(--accent);">
-        <div style="width:36px; height:36px; flex-shrink:0; border-radius:8px; background:rgba(184,153,104,0.12); display:flex; align-items:center; justify-content:center;">
-          <i class="material-icons" style="font-size:20px; color:var(--accent);">database</i>
-        </div>
-        <div class="flex flex-col" style="flex:1; min-width:0;">
-          <div class="flex items-center gap-2" style="margin-bottom:3px;">
-            <span style="font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent);">Couche 03</span>
-            <span style="font-size:10px; color:var(--muted);">·</span>
-            <span style="font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em;">Base de données</span>
-          </div>
-          <p class="font-display" style="font-size:16px; color:var(--fg); line-height:1.3; font-weight:700; margin-bottom:4px;">PostgreSQL (Supabase) + Prisma ORM</p>
-          <p style="font-size:11.5px; color:var(--muted); line-height:1.5;">8 modèles · 1348 entrées de garde · Index optimisés · Migrations versionnées</p>
-        </div>
+    <!-- RIGHT: En chiffres 2x2 -->
+    <div class="flex flex-col">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="material-icons text-[#b89968]" style="font-size:16px;">insights</span>
+        <span class="col-tag">EN CHIFFRES</span>
       </div>
-
-      <!-- Layer 4: Storage & Cron -->
-      <div class="card flex items-start gap-3" style="padding:14px 18px; border-left:4px solid var(--accent);">
-        <div style="width:36px; height:36px; flex-shrink:0; border-radius:8px; background:rgba(184,153,104,0.12); display:flex; align-items:center; justify-content:center;">
-          <i class="material-icons" style="font-size:20px; color:var(--accent);">cloud_queue</i>
-        </div>
-        <div class="flex flex-col" style="flex:1; min-width:0;">
-          <div class="flex items-center gap-2" style="margin-bottom:3px;">
-            <span style="font-size:10px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent);">Couche 04</span>
-            <span style="font-size:10px; color:var(--muted);">·</span>
-            <span style="font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em;">Storage &amp; Cron</span>
+      <div class="grid grid-cols-2 gap-3 flex-1">
+        <div class="stat-mini">
+          <div>
+            <div class="stat-mini-num">8</div>
           </div>
-          <p class="font-display" style="font-size:16px; color:var(--fg); line-height:1.3; font-weight:700; margin-bottom:4px;">Supabase Storage + Vercel Cron</p>
-          <p style="font-size:11.5px; color:var(--muted); line-height:1.5;">Bucket privé RLS · Auto-suppression photos 72h/7j · Cron quotidien + hebdomadaire · Audit log</p>
+          <div class="stat-mini-label">types d'informations stockées</div>
+        </div>
+        <div class="stat-mini">
+          <div>
+            <div class="stat-mini-num">1348</div>
+          </div>
+          <div class="stat-mini-label">pharmacies de garde importées</div>
+        </div>
+        <div class="stat-mini">
+          <div>
+            <div class="stat-mini-num">7</div>
+          </div>
+          <div class="stat-mini-label">villes togolaises couvertes</div>
+        </div>
+        <div class="stat-mini">
+          <div>
+            <div class="stat-mini-num">24/7</div>
+          </div>
+          <div class="stat-mini-label">disponible jour et nuit</div>
         </div>
       </div>
     </div>
 
-    <!-- RIGHT: 2x2 stats grid -->
-    <div class="flex flex-col gap-3" style="min-height:0;">
-      <div class="flex items-center gap-2" style="margin-bottom:-2px;">
-        <i class="material-icons" style="font-size:18px; color:var(--primary);">insights</i>
-        <span class="font-display" style="font-size:16px; color:var(--primary); font-weight:700;">Métriques code</span>
-      </div>
-      <div class="grid grid-cols-2 gap-3" style="flex:1; min-height:0;">
-        <!-- Stat 1 -->
-        <div class="card flex flex-col justify-between" style="padding:16px;">
-          <div class="flex items-center gap-2">
-            <i class="material-icons" style="font-size:16px; color:var(--accent);">schema</i>
-            <span style="font-size:10.5px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted);">Modèles</span>
-          </div>
-          <div>
-            <div class="stat-num" style="font-size:48px; margin-bottom:4px;">8</div>
-            <p style="font-size:11px; color:var(--muted); line-height:1.3;">modèles Prisma</p>
-          </div>
-        </div>
-        <!-- Stat 2 -->
-        <div class="card flex flex-col justify-between" style="padding:16px;">
-          <div class="flex items-center gap-2">
-            <i class="material-icons" style="font-size:16px; color:var(--accent);">alt_route</i>
-            <span style="font-size:10.5px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted);">Endpoints</span>
-          </div>
-          <div>
-            <div class="stat-num" style="font-size:48px; margin-bottom:4px;">14</div>
-            <p style="font-size:11px; color:var(--muted); line-height:1.3;">routes API</p>
-          </div>
-        </div>
-        <!-- Stat 3 -->
-        <div class="card flex flex-col justify-between" style="padding:16px;">
-          <div class="flex items-center gap-2">
-            <i class="material-icons" style="font-size:16px; color:var(--accent);">folder_open</i>
-            <span style="font-size:10.5px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted);">Codebase</span>
-          </div>
-          <div>
-            <div class="stat-num" style="font-size:48px; margin-bottom:4px;">142</div>
-            <p style="font-size:11px; color:var(--muted); line-height:1.3;">fichiers source</p>
-          </div>
-        </div>
-        <!-- Stat 4 -->
-        <div class="card flex flex-col justify-between" style="padding:16px;">
-          <div class="flex items-center gap-2">
-            <i class="material-icons" style="font-size:16px; color:var(--accent);">code</i>
-            <span style="font-size:10.5px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted);">Typage</span>
-          </div>
-          <div>
-            <div class="stat-num" style="font-size:48px; margin-bottom:4px;">100%</div>
-            <p style="font-size:11px; color:var(--muted); line-height:1.3;">TypeScript</p>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
+
 <aside data-notes class="hidden">
-  <ul>
-    <li>Décrire la stack en 4 couches : Frontend, API &amp; Auth, Base de données, Storage &amp; Cron.</li>
-    <li>Insister sur la sécurité : bcrypt, HMAC-SHA256, cookies HTTP-only, URL admin dynamique.</li>
-    <li>Mentionner la scalabilité : Prisma ORM, PostgreSQL Supabase, migrations versionnées.</li>
-    <li>Souligner l'auto-suppression des photos via cron (72h/7j).</li>
-    <li>Donner les chiffres clés : 8 modèles, 14 routes, 142 fichiers, 100% TypeScript.</li>
-  </ul>
+- Expliquer chaque outil simplement, comme à quelqu'un qui ne connaît rien à l'informatique.
+- Outil 1 : l'application web = un site internet, sans installation.
+- Outil 2 : la base de données = un coffre sécurisé pour toutes les informations.
+- Outil 3 : le stockage des photos = un coffre-fort privé, avec suppression automatique.
+- Outil 4 : les tâches automatiques = le système fait le ménage tout seul chaque jour.
 </aside>
 </body>
 </html>
