@@ -34,7 +34,7 @@ export default function AboutPage() {
               className="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-100 border border-amber-300/40 rounded-full mb-5"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-              <span className="text-xs font-bold text-amber-800">Projet soumis au Gala Scientifique FSS 2026</span>
+              <span className="text-xs font-bold text-amber-800">Plateforme de santé publique · Togo</span>
             </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 12 }}
@@ -164,7 +164,7 @@ export default function AboutPage() {
             <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
               <Badge icon={Users} text="Projet individuel" />
               <Badge icon={HeartPulse} text="Domaine : Santé publique" />
-              <Badge icon={Sparkles} text="Gala Scientifique FSS 2026" />
+              <Badge icon={Sparkles} text="Innovation frugale" />
             </div>
           </div>
         </section>
@@ -188,7 +188,7 @@ export default function AboutPage() {
       <footer className="bg-foreground text-background py-6">
         <KenteDivider />
         <div className="max-w-5xl mx-auto px-5 text-center text-xs text-background/60 mt-4">
-          © {new Date().getFullYear()} MediTike · Projet soumis au Gala Scientifique de la Faculté des Sciences de Santé (FSS) 2026
+          © {new Date().getFullYear()} MediTike · Plateforme de santé publique pour le Togo
         </div>
       </footer>
     </div>

@@ -291,12 +291,8 @@ export function Landing({ onAuthed }: LandingProps) {
               </ul>
             </div>
           </div>
-          <div className="mt-8 pt-6 border-t border-background/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-background/50">
-            <p>© {new Date().getFullYear()} MediTike. Conçu avec ❤️ au Togo.</p>
-            <p className="flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-amber-300" />
-              Projet soumis au Gala Scientifique FSS 2026
-            </p>
+          <div className="mt-8 pt-6 border-t border-background/10 text-center text-xs text-background/50">
+            © {new Date().getFullYear()} MediTike. Conçu avec ❤️ au Togo.
           </div>
         </div>
       </footer>
