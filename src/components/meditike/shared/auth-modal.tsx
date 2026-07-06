@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, Phone, User, Loader2, X, Eye, EyeOff, Sparkles, ChevronDown } from "lucide-react";
+import { Lock, Phone, User, Loader2, X, Eye, EyeOff, Sparkles, ChevronDown, Building2, Search } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { KenteDivider } from "@/components/brand/african-pattern";
 import { SUPPORTED_COUNTRIES, formatPhoneInput, normalizePhone, validatePhone } from "@/lib/meditike/helpers";
+import { PasswordRecovery } from "@/components/meditike/shared/password-recovery";
 
 interface AuthModalProps {
   open: boolean;
@@ -13,7 +14,18 @@ interface AuthModalProps {
   initialMode?: "login" | "register";
 }
 
+type UserType = "patient" | "pharmacist";
+
+interface PharmacyLite {
+  id: string;
+  name: string;
+  phone1: string;
+}
+
 export function AuthModal({ open, onClose, onAuthed, initialMode = "login" }: AuthModalProps) {
+  // Mode patient OU pharmacien (le mode admin utilise le formulaire patient)
+  const [userType, setUserType] = useState<UserType>("patient");
+  // Mode connexion / inscription (l'inscription n'est disponible que pour les patients)
   const [mode, setMode] = useState<"login" | "register">(initialMode);
   const [fullName, setFullName] = useState("");
   const [countryCode, setCountryCode] = useState("228"); // Togo par défaut
@@ -22,7 +34,27 @@ export function AuthModal({ open, onClose, onAuthed, initialMode = "login" }: Au
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showRecovery, setShowRecovery] = useState(false);
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
+
+  // Liste des pharmacies (pour le mode pharmacien)
+  const [pharmacies, setPharmacies] = useState<PharmacyLite[]>([]);
+  const [pharmaciesLoading, setPharmaciesLoading] = useState(false);
+  const [selectedPharmacyId, setSelectedPharmacyId] = useState("");
+  const [pharmacySearch, setPharmacySearch] = useState("");
+  const [pharmacyDropdownOpen, setPharmacyDropdownOpen] = useState(false);
+
+  // Charge la liste des pharmacies à l'ouverture si on bascule en mode pharmacien
+  useEffect(() => {
+    if (userType === "pharmacist" && pharmacies.length === 0 && !pharmaciesLoading) {
+      setPharmaciesLoading(true);
+      fetch("/api/pharmacies-list")
+        .then((r) => r.json())
+        .then((data) => { setPharmacies(data.pharmacies || []); })
+        .catch(() => { setPharmacies([]); })
+        .finally(() => setPharmaciesLoading(false));
+    }
+  }, [userType, pharmacies.length, pharmaciesLoading]);
 
   if (!open) return null;
 
@@ -33,12 +65,39 @@ export function AuthModal({ open, onClose, onAuthed, initialMode = "login" }: Au
     setPhone(formatted);
   }
 
+  /** Bascule entre patient et pharmacien. */
+  function switchUserType(type: UserType) {
+    setUserType(type);
+    setError(null);
+    // Le mode pharmacien ne permet que la connexion (pas d'inscription)
+    if (type === "pharmacist") {
+      setMode("login");
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
-      // Normaliser le numéro avec l'indicatif pays choisi
+      // ── Mode pharmacien : connexion par sélection de pharmacie ──
+      if (userType === "pharmacist") {
+        if (!selectedPharmacyId) {
+          throw new Error("Veuillez sélectionner votre pharmacie dans la liste.");
+        }
+        const res = await fetch("/api/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pharmacyId: selectedPharmacyId, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        onAuthed(data.user);
+        setPassword(""); setSelectedPharmacyId(""); setPharmacySearch("");
+        return;
+      }
+
+      // ── Mode patient : inscription ou connexion ──
       const normalizedPhone = normalizePhone(phone, countryCode);
       if (!validatePhone(phone, countryCode)) {
         const country = SUPPORTED_COUNTRIES.find((c) => c.code === countryCode);
@@ -66,7 +125,17 @@ export function AuthModal({ open, onClose, onAuthed, initialMode = "login" }: Au
     }
   }
 
+  // Pharmacies filtrées selon la recherche
+  const filteredPharmacies = pharmacySearch.trim()
+    ? pharmacies.filter((p) =>
+        p.name.toLowerCase().includes(pharmacySearch.toLowerCase()) ||
+        p.phone1.replace(/\s/g, "").includes(pharmacySearch.replace(/\s/g, ""))
+      )
+    : pharmacies;
+  const selectedPharmacy = pharmacies.find((p) => p.id === selectedPharmacyId) || null;
+
   return (
+    <>
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
@@ -91,10 +160,18 @@ export function AuthModal({ open, onClose, onAuthed, initialMode = "login" }: Au
               <LogoMark size={40} />
               <div>
                 <h2 className="font-display font-extrabold text-xl leading-none">
-                  {mode === "login" ? "Bon retour" : "Créez votre compte"}
+                  {userType === "pharmacist"
+                    ? "Espace pharmacien"
+                    : mode === "login"
+                      ? "Bon retour"
+                      : "Créez votre compte"}
                 </h2>
                 <p className="text-white/75 text-xs mt-1 font-medium">
-                  {mode === "login" ? "Connectez-vous à votre espace sécurisé" : "Espace client sécurisé · 30 secondes"}
+                  {userType === "pharmacist"
+                    ? "Sélectionnez votre pharmacie pour vous connecter"
+                    : mode === "login"
+                      ? "Connectez-vous à votre espace sécurisé"
+                      : "Espace client sécurisé · 30 secondes"}
                 </p>
               </div>
             </div>
@@ -102,14 +179,35 @@ export function AuthModal({ open, onClose, onAuthed, initialMode = "login" }: Au
           </div>
 
           <div className="px-7 py-6 max-h-[70vh] overflow-y-auto">
+            {/* Toggle Patient / Pharmacien */}
             <div className="grid grid-cols-2 p-1 bg-muted rounded-2xl mb-5">
-              <button type="button" onClick={() => { setMode("login"); setError(null); }} className={`py-2 text-xs font-bold rounded-xl transition-all ${mode === "login" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
-                Connexion
+              <button
+                type="button"
+                onClick={() => switchUserType("patient")}
+                className={`py-2 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${userType === "patient" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}
+              >
+                <User className="w-3.5 h-3.5" /> Patient
               </button>
-              <button type="button" onClick={() => { setMode("register"); setError(null); }} className={`py-2 text-xs font-bold rounded-xl transition-all ${mode === "register" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
-                Inscription
+              <button
+                type="button"
+                onClick={() => switchUserType("pharmacist")}
+                className={`py-2 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${userType === "pharmacist" ? "bg-white shadow text-amber-700" : "text-muted-foreground"}`}
+              >
+                <Building2 className="w-3.5 h-3.5" /> Pharmacien
               </button>
             </div>
+
+            {/* Sous-toggle Connexion / Inscription (patients uniquement) */}
+            {userType === "patient" && (
+              <div className="grid grid-cols-2 p-1 bg-muted rounded-2xl mb-5">
+                <button type="button" onClick={() => { setMode("login"); setError(null); }} className={`py-2 text-xs font-bold rounded-xl transition-all ${mode === "login" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
+                  Connexion
+                </button>
+                <button type="button" onClick={() => { setMode("register"); setError(null); }} className={`py-2 text-xs font-bold rounded-xl transition-all ${mode === "register" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
+                  Inscription
+                </button>
+              </div>
+            )}
 
             {error && (
               <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-xl text-xs font-semibold">
@@ -118,70 +216,152 @@ export function AuthModal({ open, onClose, onAuthed, initialMode = "login" }: Au
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {mode === "register" && (
+              {userType === "patient" && mode === "register" && (
                 <Field label="Nom complet" icon={<User className="w-4 h-4" />}>
                   <input type="text" required value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Koffi Mensah" className="auth-input" />
                 </Field>
               )}
 
-              {/* Téléphone avec sélecteur de pays */}
-              <div>
-                <label className="block text-[11px] font-bold tracking-wider text-muted-foreground uppercase mb-1.5">
-                  Numéro WhatsApp
-                </label>
-                <div className="relative flex">
-                  {/* Sélecteur de pays */}
+              {userType === "patient" ? (
+                /* Téléphone avec sélecteur de pays */
+                <div>
+                  <label className="block text-[11px] font-bold tracking-wider text-muted-foreground uppercase mb-1.5">
+                    Numéro WhatsApp
+                  </label>
+                  <div className="relative flex">
+                    {/* Sélecteur de pays */}
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setCountryDropdownOpen(!countryDropdownOpen)}
+                        className="flex items-center gap-1.5 h-full pl-3 pr-2.5 bg-muted border border-r-0 border-border rounded-l-xl text-sm font-bold hover:bg-muted/70 transition-colors"
+                      >
+                        <span className="text-lg">{selectedCountry.flag}</span>
+                        <span className="text-xs">+{selectedCountry.code}</span>
+                        <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                      </button>
+                      {countryDropdownOpen && (
+                        <div className="absolute top-full left-0 mt-1 z-20 bg-white border border-border rounded-xl shadow-xl max-h-60 overflow-y-auto w-56">
+                          {SUPPORTED_COUNTRIES.map((c) => (
+                            <button
+                              key={c.code}
+                              type="button"
+                              onClick={() => {
+                                setCountryCode(c.code);
+                                setCountryDropdownOpen(false);
+                                setPhone(""); // reset phone when country changes
+                              }}
+                              className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-muted transition-colors ${c.code === countryCode ? "bg-emerald-50" : ""}`}
+                            >
+                              <span className="text-lg">{c.flag}</span>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-bold">{c.name}</p>
+                                <p className="text-[10px] text-muted-foreground">+{c.code}</p>
+                              </div>
+                              {c.code === countryCode && <span className="text-emerald-600 text-xs font-bold">✓</span>}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {/* Champ téléphone */}
+                    <div className="relative flex-1">
+                      <input
+                        type="tel"
+                        required
+                        value={phone}
+                        onChange={handlePhoneChange}
+                        placeholder={Array(selectedCountry.phoneLength).fill("0").join("").replace(/(\d{2})/g, "$1 ").trim()}
+                        className="auth-input-phone"
+                        autoComplete="tel-national"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1.5 pl-1">
+                    {selectedCountry.flag} {selectedCountry.name} · {selectedCountry.phoneLength} chiffres · format automatique avec espaces
+                  </p>
+                </div>
+              ) : (
+                /* Mode pharmacien : liste déroulante des pharmacies */
+                <div>
+                  <label className="block text-[11px] font-bold tracking-wider text-muted-foreground uppercase mb-1.5">
+                    Votre pharmacie
+                  </label>
                   <div className="relative">
+                    {/* Bouton déclencheur */}
                     <button
                       type="button"
-                      onClick={() => setCountryDropdownOpen(!countryDropdownOpen)}
-                      className="flex items-center gap-1.5 h-full pl-3 pr-2.5 bg-muted border border-r-0 border-border rounded-l-xl text-sm font-bold hover:bg-muted/70 transition-colors"
+                      onClick={() => setPharmacyDropdownOpen(!pharmacyDropdownOpen)}
+                      className={`w-full flex items-center gap-2.5 px-3 py-3 text-left bg-muted border border-border rounded-xl transition-all ${pharmacyDropdownOpen ? "border-primary bg-white" : "hover:bg-muted/70"}`}
                     >
-                      <span className="text-lg">{selectedCountry.flag}</span>
-                      <span className="text-xs">+{selectedCountry.code}</span>
-                      <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                      <Building2 className="w-4 h-4 text-amber-600 shrink-0" />
+                      {pharmaciesLoading ? (
+                        <span className="text-sm text-muted-foreground flex-1 flex items-center gap-2">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" /> Chargement des pharmacies…
+                        </span>
+                      ) : selectedPharmacy ? (
+                        <span className="flex-1 min-w-0">
+                          <span className="block text-sm font-bold truncate">{selectedPharmacy.name}</span>
+                          <span className="block text-[10px] text-muted-foreground">{selectedPharmacy.phone1}</span>
+                        </span>
+                      ) : (
+                        <span className="text-sm text-muted-foreground flex-1">
+                          {pharmacies.length === 0 ? "Aucune pharmacie disponible" : "Sélectionnez votre pharmacie"}
+                        </span>
+                      )}
+                      <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${pharmacyDropdownOpen ? "rotate-180" : ""}`} />
                     </button>
-                    {countryDropdownOpen && (
-                      <div className="absolute top-full left-0 mt-1 z-20 bg-white border border-border rounded-xl shadow-xl max-h-60 overflow-y-auto w-56">
-                        {SUPPORTED_COUNTRIES.map((c) => (
-                          <button
-                            key={c.code}
-                            type="button"
-                            onClick={() => {
-                              setCountryCode(c.code);
-                              setCountryDropdownOpen(false);
-                              setPhone(""); // reset phone when country changes
-                            }}
-                            className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-muted transition-colors ${c.code === countryCode ? "bg-emerald-50" : ""}`}
-                          >
-                            <span className="text-lg">{c.flag}</span>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs font-bold">{c.name}</p>
-                              <p className="text-[10px] text-muted-foreground">+{c.code}</p>
-                            </div>
-                            {c.code === countryCode && <span className="text-emerald-600 text-xs font-bold">✓</span>}
-                          </button>
-                        ))}
+
+                    {/* Dropdown avec recherche */}
+                    {pharmacyDropdownOpen && (
+                      <div className="absolute top-full left-0 right-0 mt-1 z-20 bg-white border border-border rounded-xl shadow-xl overflow-hidden">
+                        <div className="p-2 border-b border-border">
+                          <div className="relative">
+                            <Search className="w-3.5 h-3.5 text-muted-foreground absolute left-2.5 top-1/2 -translate-y-1/2" />
+                            <input
+                              type="text"
+                              autoFocus
+                              value={pharmacySearch}
+                              onChange={(e) => setPharmacySearch(e.target.value)}
+                              placeholder="Rechercher une pharmacie…"
+                              className="w-full pl-8 pr-3 py-2 text-xs bg-muted border border-border rounded-lg focus:outline-none focus:border-primary focus:bg-white"
+                            />
+                          </div>
+                        </div>
+                        <div className="max-h-56 overflow-y-auto">
+                          {filteredPharmacies.length === 0 ? (
+                            <p className="px-3 py-4 text-xs text-muted-foreground text-center">Aucune pharmacie trouvée.</p>
+                          ) : (
+                            filteredPharmacies.map((p) => (
+                              <button
+                                key={p.id}
+                                type="button"
+                                onClick={() => {
+                                  setSelectedPharmacyId(p.id);
+                                  setPharmacyDropdownOpen(false);
+                                  setPharmacySearch("");
+                                  setError(null);
+                                }}
+                                className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-muted transition-colors ${p.id === selectedPharmacyId ? "bg-amber-50" : ""}`}
+                              >
+                                <Building2 className="w-4 h-4 text-amber-600 shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs font-bold truncate">{p.name}</p>
+                                  <p className="text-[10px] text-muted-foreground">{p.phone1}</p>
+                                </div>
+                                {p.id === selectedPharmacyId && <span className="text-amber-600 text-xs font-bold">✓</span>}
+                              </button>
+                            ))
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
-                  {/* Champ téléphone */}
-                  <div className="relative flex-1">
-                    <input
-                      type="tel"
-                      required
-                      value={phone}
-                      onChange={handlePhoneChange}
-                      placeholder={Array(selectedCountry.phoneLength).fill("0").join("").replace(/(\d{2})/g, "$1 ").trim()}
-                      className="auth-input-phone"
-                      autoComplete="tel-national"
-                    />
-                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1.5 pl-1">
+                    {pharmacies.length} pharmacie(s) disponible(s) · Identifiez-vous avec le mot de passe communiqué par l'administrateur.
+                  </p>
                 </div>
-                <p className="text-[10px] text-muted-foreground mt-1.5 pl-1">
-                  {selectedCountry.flag} {selectedCountry.name} · {selectedCountry.phoneLength} chiffres · format automatique avec espaces
-                </p>
-              </div>
+              )}
 
               <Field label="Mot de passe" icon={<Lock className="w-4 h-4" />}>
                 <div className="relative">
@@ -191,21 +371,44 @@ export function AuthModal({ open, onClose, onAuthed, initialMode = "login" }: Au
                   </button>
                 </div>
               </Field>
-              {mode === "register" && (
-                <p className="text-[10px] text-muted-foreground -mt-2 pl-1">Min. 8 caractères avec 1 lettre et 1 chiffre.</p>
+              {userType === "patient" && mode === "register" && (
+                <p className="text-[10px] text-muted-foreground -mt-2 pl-1">
+                  Min. 8 caractères avec 1 lettre, 1 chiffre et 1 caractère spécial (! @ # $ % & *).
+                </p>
               )}
 
-              <button type="submit" disabled={loading} className="w-full mt-2 brand-gradient text-white py-3.5 rounded-2xl font-bold text-sm shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-60">
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : mode === "login" ? "Se connecter" : "Créer mon compte"}
+              {mode === "login" && (
+                <div className="text-right -mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowRecovery(true)}
+                    className="text-[11px] font-bold text-emerald-600 hover:text-emerald-700 transition-colors"
+                  >
+                    Mot de passe oublié ?
+                  </button>
+                </div>
+              )}
+
+              <button type="submit" disabled={loading || (userType === "pharmacist" && !selectedPharmacyId)} className="w-full mt-2 brand-gradient text-white py-3.5 rounded-2xl font-bold text-sm shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : userType === "pharmacist" ? "Se connecter" : mode === "login" ? "Se connecter" : "Créer mon compte"}
               </button>
             </form>
 
-            <div className="mt-5 pt-4 border-t border-border text-center">
-              <p className="text-[11px] text-muted-foreground">
-                <Sparkles className="w-3 h-3 inline mr-1 text-amber-500" />
-                Espace pharmacien ? Vos identifiants vous sont communiqués par l'administrateur.
-              </p>
-            </div>
+            {userType === "pharmacist" ? (
+              <div className="mt-5 pt-4 border-t border-border text-center">
+                <p className="text-[11px] text-muted-foreground">
+                  <Sparkles className="w-3 h-3 inline mr-1 text-amber-500" />
+                  Mot de passe oublié ? Contactez l'administrateur MediTike.
+                </p>
+              </div>
+            ) : (
+              <div className="mt-5 pt-4 border-t border-border text-center">
+                <p className="text-[11px] text-muted-foreground">
+                  <Sparkles className="w-3 h-3 inline mr-1 text-amber-500" />
+                  Vous êtes pharmacien ? Utilisez le bouton « Pharmacien » ci-dessus.
+                </p>
+              </div>
+            )}
           </div>
 
           <style jsx>{`
@@ -246,6 +449,9 @@ export function AuthModal({ open, onClose, onAuthed, initialMode = "login" }: Au
         </motion.div>
       </motion.div>
     </AnimatePresence>
+
+    <PasswordRecovery open={showRecovery} onClose={() => setShowRecovery(false)} />
+    </>
   );
 }
 

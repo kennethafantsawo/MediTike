@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Building2, Upload, FileText, Users, LogOut,
   Loader2, Plus, Trash2, CheckCircle2, AlertCircle, Phone, MapPin,
   TrendingUp, Activity, Shield, Clock, FileSpreadsheet, Download,
-  Calendar, PencilLine,
+  Calendar, PencilLine, KeyRound, Copy, Check, X,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { KenteDivider } from "@/components/brand/african-pattern";
@@ -808,6 +808,12 @@ function RequestsTab() {
 function UsersTab({ currentUser }: { currentUser: any }) {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  // Mot de passe temporaire affiché dans le modal après réinitialisation
+  const [tempPassword, setTempPassword] = useState<string | null>(null);
+  // Utilisateur concerné par la réinitialisation (pour le récap)
+  const [resetTarget, setResetTarget] = useState<any | null>(null);
+  // ID de l'utilisateur dont le reset est en cours
+  const [resettingId, setResettingId] = useState<string | null>(null);
 
   const load = useCallback(() => {
     fetch("/api/admin/users").then((r) => r.json()).then((data) => { setUsers(data.users || []); setLoading(false); }).catch(() => setLoading(false));
@@ -826,39 +832,196 @@ function UsersTab({ currentUser }: { currentUser: any }) {
     load();
   }
 
+  /** Réinitialise le mot de passe d'un utilisateur et affiche le modal. */
+  async function resetPassword(user: any) {
+    if (user.id === currentUser?.id) {
+      toast.error("Action interdite sur votre propre compte");
+      return;
+    }
+    if (!confirm(`Réinitialiser le mot de passe de ${user.fullName || user.phone} ? Un nouveau mot de passe temporaire sera généré.`)) return;
+    setResettingId(user.id);
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, action: "reset-password" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setResetTarget(user);
+      setTempPassword(data.temporaryPassword);
+      toast.success("Mot de passe réinitialisé");
+    } catch (err: any) {
+      toast.error(err.message || "Erreur lors de la réinitialisation");
+    } finally {
+      setResettingId(null);
+    }
+  }
+
   if (loading) return <div className="text-center py-12"><Loader2 className="w-6 h-6 animate-spin mx-auto" /></div>;
 
   return (
     <div>
       <h1 className="font-display text-2xl font-extrabold mb-1">Utilisateurs</h1>
-      <p className="text-sm text-muted-foreground mb-6">{users.length} utilisateur(s) au total.</p>
+      <p className="text-sm text-muted-foreground mb-2">{users.length} utilisateur(s) au total.</p>
+      <p className="text-xs text-muted-foreground mb-6 flex items-center gap-1.5">
+        <KeyRound className="w-3.5 h-3.5 text-amber-600" />
+        L'identifiant de connexion est le numéro de téléphone. Les mots de passe sont chiffrés : utilisez « Réinitialiser » pour générer un mot de passe temporaire.
+      </p>
       <div className="bg-white rounded-2xl border border-border overflow-hidden overflow-x-auto">
         <table className="w-full">
           <thead className="bg-muted/50">
             <tr>
               <th className="text-left text-xs font-bold uppercase p-3">Nom</th>
-              <th className="text-left text-xs font-bold uppercase p-3 hidden sm:table-cell">Téléphone</th>
+              <th className="text-left text-xs font-bold uppercase p-3 hidden sm:table-cell">Identifiant (téléphone)</th>
               <th className="text-left text-xs font-bold uppercase p-3">Rôle</th>
               <th className="text-left text-xs font-bold uppercase p-3 hidden md:table-cell">Pharmacie</th>
               <th className="text-center text-xs font-bold uppercase p-3">Statut</th>
-              <th className="text-right text-xs font-bold uppercase p-3">Action</th>
+              <th className="text-right text-xs font-bold uppercase p-3">Actions</th>
             </tr>
           </thead>
           <tbody>
             {users.map((u) => (
               <tr key={u.id} className="border-t border-border">
                 <td className="p-3 text-sm font-bold">{u.fullName || "—"}</td>
-                <td className="p-3 hidden sm:table-cell text-sm">{u.phone}</td>
+                <td className="p-3 hidden sm:table-cell text-sm font-mono">{u.phone}</td>
                 <td className="p-3"><span className={`text-[10px] font-bold px-2 py-1 rounded-full ${u.role === "admin" ? "bg-amber-100 text-amber-700" : u.role === "pharmacist" ? "bg-emerald-100 text-emerald-700" : "bg-muted"}`}>{u.role}</span></td>
                 <td className="p-3 hidden md:table-cell text-xs text-muted-foreground">{u.pharmacyName || "—"}</td>
                 <td className="p-3 text-center"><span className={`text-[10px] font-bold px-2 py-1 rounded-full ${u.isActive ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>{u.isActive ? "ACTIF" : "INACTIF"}</span></td>
-                <td className="p-3 text-right"><button onClick={() => toggleActive(u.id, u.isActive)} className="text-xs font-bold text-muted-foreground hover:text-foreground">{u.isActive ? "Désactiver" : "Activer"}</button></td>
+                <td className="p-3 text-right whitespace-nowrap">
+                  <button
+                    onClick={() => resetPassword(u)}
+                    disabled={resettingId === u.id}
+                    className="text-xs font-bold text-amber-700 hover:text-amber-800 disabled:opacity-50 inline-flex items-center gap-1"
+                    title="Générer un nouveau mot de passe temporaire"
+                  >
+                    {resettingId === u.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <KeyRound className="w-3.5 h-3.5" />}
+                    Réinitialiser mdp
+                  </button>
+                  <span className="text-muted-foreground/40 mx-2">·</span>
+                  <button onClick={() => toggleActive(u.id, u.isActive)} className="text-xs font-bold text-muted-foreground hover:text-foreground">{u.isActive ? "Désactiver" : "Activer"}</button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Modal affichant le mot de passe temporaire */}
+      <AnimatePresence>
+        {tempPassword && resetTarget && (
+          <TemporaryPasswordModal
+            user={resetTarget}
+            password={tempPassword}
+            onClose={() => { setTempPassword(null); setResetTarget(null); }}
+          />
+        )}
+      </AnimatePresence>
     </div>
+  );
+}
+
+/**
+ * Modal affichant un mot de passe temporaire généré pour un utilisateur.
+ * Permet de le copier dans le presse-papier.
+ */
+function TemporaryPasswordModal({ user, password, onClose }: { user: any; password: string; onClose: () => void }) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(password);
+      setCopied(true);
+      toast.success("Mot de passe copié");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Impossible de copier automatiquement. Sélectionnez le texte manuellement.");
+    }
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: 20, opacity: 0, scale: 0.98 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: 20, opacity: 0 }}
+        transition={{ type: "spring", damping: 24, stiffness: 280 }}
+        className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* En-tête */}
+        <div className="brand-gradient relative px-6 pt-5 pb-5 text-white">
+          <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors" aria-label="Fermer">
+            <X className="w-4 h-4" />
+          </button>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center">
+              <KeyRound className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="font-display font-extrabold text-lg leading-none">Mot de passe réinitialisé</h2>
+              <p className="text-white/75 text-xs mt-1">Communiquez-le à l'utilisateur</p>
+            </div>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0"><KenteDivider /></div>
+        </div>
+
+        {/* Corps */}
+        <div className="p-6">
+          <p className="text-xs text-muted-foreground mb-1">Compte concerné :</p>
+          <p className="text-sm font-bold mb-4">
+            {user.fullName || "Sans nom"}
+            <span className="text-muted-foreground font-normal"> · {user.phone}</span>
+          </p>
+
+          <label className="block text-[11px] font-bold tracking-wider text-muted-foreground uppercase mb-1.5">
+            Mot de passe temporaire
+          </label>
+          <div className="relative">
+            <input
+              readOnly
+              value={password}
+              onFocus={(e) => e.target.select()}
+              className="w-full px-4 py-3 pr-12 text-base font-mono font-bold tracking-wider bg-muted border border-border rounded-xl focus:outline-none focus:border-primary"
+            />
+            <button
+              onClick={handleCopy}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-white border border-border hover:bg-muted flex items-center justify-center transition-colors"
+              title="Copier"
+              aria-label="Copier le mot de passe"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-muted-foreground" />}
+            </button>
+          </div>
+
+          <div className="mt-4 p-3 bg-amber-50 border-l-4 border-amber-500 rounded-r-xl">
+            <p className="text-xs text-amber-900 font-semibold leading-relaxed">
+              ⚠️ Ce mot de passe est temporaire. L'utilisateur devra le changer à sa prochaine connexion.
+              Ne le communiquez que par un canal sécurisé (en main propre ou appel).
+            </p>
+          </div>
+
+          <div className="flex gap-2 mt-5">
+            <button
+              onClick={handleCopy}
+              className="flex-1 py-3 brand-gradient text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2"
+            >
+              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              {copied ? "Copié !" : "Copier le mot de passe"}
+            </button>
+            <button onClick={onClose} className="flex-1 py-3 bg-muted text-muted-foreground font-bold text-sm rounded-xl">
+              Fermer
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 

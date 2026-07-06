@@ -11,7 +11,7 @@ import { KenteDivider } from "@/components/brand/african-pattern";
 import { formatPrice, relativeTimeFr, MAX_PHOTO_SIZE } from "@/lib/meditike/helpers";
 import { DutyListView } from "@/components/meditike/shared/duty-list-view";
 import { PharmacyRating } from "@/components/meditike/shared/pharmacy-rating";
-import { ChatThread } from "@/components/meditike/shared/chat-thread";
+import { ChatThread, useChatUnread } from "@/components/meditike/shared/chat-thread";
 import { ClientStats } from "@/components/meditike/client/client-stats";
 import { useWhatsAppNotification } from "@/lib/meditike/use-whatsapp-notification";
 import { toast } from "sonner";
@@ -408,6 +408,9 @@ function ResponseCard({ response, user }: { response: Response; user: any }) {
   const p = response.pharmacy;
   const { notify, loading: notifLoading } = useWhatsAppNotification();
   const [chatOpen, setChatOpen] = useState(false);
+  // Compteur de messages non lus (localStorage `meditike_chat_unread_[responseId]`).
+  const unreadCount = useChatUnread(response.id, user?.id || "anonymous", chatOpen);
+
   return (
     <div className="p-3 bg-muted/60 rounded-xl border border-border">
       <div className="flex items-center justify-between mb-2">
@@ -444,9 +447,14 @@ function ResponseCard({ response, user }: { response: Response; user: any }) {
           <button
             type="button"
             onClick={() => setChatOpen(true)}
-            className="flex-1 min-w-[80px] inline-flex items-center justify-center gap-1 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-xs font-bold transition-colors"
+            className="flex-1 min-w-[80px] relative inline-flex items-center justify-center gap-1 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-xs font-bold transition-colors"
           >
             <MessageCircle className="w-3 h-3" /> Discuter
+            {unreadCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white animate-pulse">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
           </button>
           {p.whatsapp && (
             <button
@@ -465,6 +473,14 @@ function ResponseCard({ response, user }: { response: Response; user: any }) {
       {/* Évaluation de la pharmacie — visible uniquement si le produit est disponible */}
       {response.available && (
         <PharmacyRating pharmacyId={p.id} responseId={response.id} />
+      )}
+
+      {/* Badge "Nouveau message" sous la ligne d'actions, si messages non lus */}
+      {unreadCount > 0 && !chatOpen && (
+        <p className="text-[10px] text-red-600 font-bold mt-2 flex items-center gap-1">
+          <MessageCircle className="w-3 h-3" />
+          {unreadCount} nouveau{unreadCount > 1 ? "x" : ""} message{unreadCount > 1 ? "s" : ""}
+        </p>
       )}
 
       {/* Modal de discussion client ↔ pharmacien */}
@@ -486,19 +502,6 @@ function ResponseCard({ response, user }: { response: Response; user: any }) {
               className="bg-background w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl p-3 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between mb-2 px-1">
-                <h3 className="font-display font-bold text-sm">
-                  Discussion avec {p.name}
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setChatOpen(false)}
-                  className="w-8 h-8 rounded-xl bg-muted hover:bg-muted/70 flex items-center justify-center"
-                  aria-label="Fermer la discussion"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
               <ChatThread
                 responseId={response.id}
                 currentUser={{
@@ -507,6 +510,7 @@ function ResponseCard({ response, user }: { response: Response; user: any }) {
                   role: user.role,
                 }}
                 otherUserName={p.name}
+                onClose={() => setChatOpen(false)}
               />
             </motion.div>
           </motion.div>

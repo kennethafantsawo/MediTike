@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, Clock, MapPin, ShieldCheck, Pill, ChevronRight, Sparkles, Smartphone, Lock, Phone, Mail, X, Search } from "lucide-react";
+import { MessageCircle, Clock, MapPin, ShieldCheck, Pill, ChevronRight, Sparkles, Smartphone, Lock, Phone, Mail, X, Search, Download } from "lucide-react";
 import { Logo, LogoMark } from "@/components/brand/logo";
 import { GradientBlob, KenteDivider } from "@/components/brand/african-pattern";
 import { AuthModal } from "@/components/meditike/shared/auth-modal";
@@ -81,6 +81,9 @@ export function Landing({ onAuthed }: LandingProps) {
                   </button>
                   <a href="#garde" className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-white text-foreground font-bold text-sm rounded-2xl border-2 border-border hover:border-emerald-500/40 hover:bg-emerald-50/50 transition-all">
                     <Clock className="w-4 h-4 text-emerald-600" /> Voir les pharmacies de garde
+                  </a>
+                  <a href="https://github.com/kennethafantsawo/MediTike/releases/latest" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-foreground text-background font-bold text-sm rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all">
+                    <Download className="w-4 h-4" /> Télécharger l'app Android
                   </a>
                 </motion.div>
 

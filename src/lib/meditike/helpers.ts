@@ -233,6 +233,9 @@ export function validatePassword(password: string): string | null {
   if (!/[0-9]/.test(password)) {
     return "Le mot de passe doit contenir au moins un chiffre.";
   }
+  if (!/[!@#$%&*]/.test(password)) {
+    return "Le mot de passe doit contenir au moins un caractère spécial (! @ # $ % & *).";
+  }
   return null;
 }
 

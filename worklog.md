@@ -156,3 +156,19 @@ Work Log:
 Stage Summary:
 - Dashboard pharmacien avec 4 métriques + graphique 7 jours + top médicaments
 - Chat interne client ↔ pharmacien via localStorage
+
+---
+Task ID: PERMISSIONS-PASSWORDS
+Agent: general-purpose
+Task: Permissions Android + générateur mots de passe pharmacies
+
+Work Log:
+- Modifié AndroidManifest.xml (permissions localisation, caméra, photos, notifications)
+- Créé scripts/generate-pharmacy-passwords.ts
+- Généré download/04-pharmacy-credentials.csv
+- Généré download/04-pharmacy-users.sql
+
+Stage Summary:
+- 11 permissions Android ajoutées
+- Script de génération de mots de passe fonctionnel
+- Fichiers CSV + SQL prêts pour Supabase

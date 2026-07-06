@@ -7,7 +7,7 @@ import { Download, X } from "lucide-react";
  * Version actuelle de l'application MediTike.
  * Doit rester synchronisée avec le champ `version` de package.json.
  */
-const CURRENT_VERSION = "v1.2";
+const CURRENT_VERSION = "v1.3";
 
 /** Repository GitHub à surveiller (owner/repo). */
 const GITHUB_REPO = "kennethafantsawo/MediTike";
