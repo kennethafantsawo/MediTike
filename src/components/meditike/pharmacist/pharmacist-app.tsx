@@ -3,11 +3,12 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bell, Pill, Clock, CheckCircle2, X, Phone, MapPin, Image as ImageIcon,
-  Loader2, Send, RefreshCw, LogOut, Building2, FileText,
+  Loader2, Send, RefreshCw, LogOut, Building2, FileText, BarChart3,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { formatPrice, relativeTimeFr } from "@/lib/meditike/helpers";
 import { DutyListView } from "@/components/meditike/shared/duty-list-view";
+import { PharmacistStats } from "@/components/meditike/pharmacist/pharmacist-stats";
 import { toast } from "sonner";
 
 interface Photo {
@@ -15,6 +16,14 @@ interface Photo {
   filename: string;
   mimeType: string;
   size: number;
+}
+
+interface PharmacistResponse {
+  id: string;
+  available: boolean;
+  price: number | null;
+  note: string | null;
+  createdAt: string;
 }
 
 interface PharmacistRequest {
@@ -26,7 +35,7 @@ interface PharmacistRequest {
   clientPhone: string | null;
   createdAt: string;
   photos: Photo[];
-  responses: { id: string }[];
+  responses: PharmacistResponse[];
 }
 
 interface PharmacistAppProps {
@@ -35,7 +44,7 @@ interface PharmacistAppProps {
 }
 
 export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
-  const [tab, setTab] = useState<"new" | "responded" | "duty">("new");
+  const [tab, setTab] = useState<"new" | "responded" | "duty" | "stats">("new");
   const [requests, setRequests] = useState<PharmacistRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [responding, setResponding] = useState<string | null>(null);
@@ -88,7 +97,7 @@ export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
       </header>
 
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-6 pb-20">
-        <div className="grid grid-cols-3 p-1 bg-muted rounded-2xl mb-5 sticky top-14 z-20">
+        <div className="grid grid-cols-4 p-1 bg-muted rounded-2xl mb-5 sticky top-14 z-20">
           <button onClick={() => setTab("new")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${tab === "new" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
             <Bell className="w-4 h-4" /> À répondre
             {newRequests.length > 0 && <span className="ml-1 text-[10px] bg-emerald-500 text-white px-1.5 py-0.5 rounded-full">{newRequests.length}</span>}
@@ -100,9 +109,14 @@ export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
           <button onClick={() => setTab("duty")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${tab === "duty" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
             <Building2 className="w-4 h-4" /> Garde
           </button>
+          <button onClick={() => setTab("stats")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${tab === "stats" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
+            <BarChart3 className="w-4 h-4" /> Stats
+          </button>
         </div>
 
-        {loading && tab !== "duty" ? (
+        {tab === "stats" ? (
+          <PharmacistStats />
+        ) : loading && tab !== "duty" ? (
           <div className="text-center py-12"><Loader2 className="w-6 h-6 text-emerald-600 animate-spin mx-auto" /></div>
         ) : tab === "duty" ? (
           <DutyListView readOnly />
@@ -133,21 +147,43 @@ export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
           </div>
         ) : (
           <div className="space-y-3">
-            {respondedRequests.map((req) => (
-              <div key={req.id} className="bg-white border border-border rounded-2xl p-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-display font-bold text-base">{req.productName}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{req.clientName || "Client"} · {relativeTimeFr(req.createdAt)}</p>
-                    {req.note && <p className="text-xs text-muted-foreground italic mt-1">"{req.note}"</p>}
-                    <p className="text-xs text-emerald-700 font-bold mt-1">✓ Vous avez répondu</p>
+            {respondedRequests.map((req) => {
+              const resp = req.responses[0];
+              return (
+                <div key={req.id} className="bg-white border border-border rounded-2xl p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-11 h-11 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-display font-bold text-base">{req.productName}</h3>
+                      <p className="text-xs text-muted-foreground mt-1">{req.clientName || "Client"} · {relativeTimeFr(req.createdAt)}</p>
+                      {req.note && <p className="text-xs text-muted-foreground italic mt-1">"{req.note}"</p>}
+                      {resp && (
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          {resp.available ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full">
+                              <CheckCircle2 className="w-3 h-3" /> Disponible
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[11px] bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full">
+                              <X className="w-3 h-3" /> Indisponible
+                            </span>
+                          )}
+                          {resp.price != null && (
+                            <span className="text-[11px] font-bold text-emerald-700">{formatPrice(resp.price)}</span>
+                          )}
+                          {resp.note && (
+                            <span className="text-[11px] text-muted-foreground italic">"{resp.note}"</span>
+                          )}
+                        </div>
+                      )}
+                      <p className="text-xs text-emerald-700 font-bold mt-2">✓ Vous avez répondu</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>

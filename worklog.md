@@ -1,4 +1,36 @@
 ---
+Task ID: PWA-WHATSAPP
+Agent: general-purpose
+Task: Mode hors-ligne PWA + notifications WhatsApp
+
+Work Log:
+- Amélioré sw.js (cache offline)
+- Créé pwa-install-prompt.tsx
+- Créé API /api/notifications/whatsapp
+- Créé hook use-whatsapp-notification
+- Intégré dans client-app.tsx
+- Lint validé
+
+Stage Summary:
+- PWA offline fonctionnel
+- Notifications WhatsApp par lien direct
+
+---
+Task ID: STATS-RATINGS
+Agent: general-purpose
+Task: Créer vue stats client + système évaluations pharmacies
+
+Work Log:
+- Créé client-stats.tsx
+- Créé pharmacy-rating.tsx
+- Intégré dans client-app.tsx
+- Lint validé
+
+Stage Summary:
+- 2 nouveaux composants créés
+- 1 composant modifié (client-app)
+
+---
 Task ID: PPT-B
 Agent: ppt-expert
 Task: Render MediTike PPT slides 7-11 for Gala FSS 2026
@@ -92,3 +124,19 @@ Stage Summary:
 - Each slide has a unique layout (cover / section+stats / split / 3-card feature / dark timeline / 60-40 tech-stack) — no back-to-back repetition
 - Each slide includes a hidden <aside data-notes class="hidden"> as last body child with 5 short French speaker-note hints
 - Decorative elements (kente bars, ghost numerals, blur orbs, glow orbs, connector arrows, ghost quote mark) tagged with data-decor / aria-hidden="true" to avoid overflow false positives
+
+---
+Task ID: DASHBOARD-CHAT
+Agent: general-purpose
+Task: Tableau de bord pharmacien + Chat client-pharmacien
+
+Work Log:
+- Créé pharmacist-stats.tsx
+- Créé chat-thread.tsx
+- Intégré dans pharmacist-app.tsx (onglet Stats)
+- Intégré dans client-app.tsx (bouton Discuter dans ResponseCard)
+- Lint validé
+
+Stage Summary:
+- Dashboard pharmacien avec 4 métriques + graphique 7 jours + top médicaments
+- Chat interne client ↔ pharmacien via localStorage

@@ -49,14 +49,17 @@ export async function GET(req: NextRequest) {
         take: 100,
       });
     } else if (session.role === "pharmacist") {
-      // Pharmaciens voient les demandes ouvertes non encore répondues par eux
+      // Pharmaciens voient :
+      // - les demandes ouvertes non encore répondues par eux (onglet "À répondre")
+      // - les demandes déjà répondues par eux (onglet "Réponses" + statistiques)
       const respondedByMe = await db.productResponse.findMany({
         where: { pharmacistId: session.userId },
         select: { requestId: true },
       });
       const respondedIds = respondedByMe.map((r) => r.requestId);
 
-      requests = await db.productRequest.findMany({
+      // Demandes ouvertes à répondre
+      const openRequests = await db.productRequest.findMany({
         where: {
           status: "open",
           id: { notIn: respondedIds },
@@ -68,12 +71,45 @@ export async function GET(req: NextRequest) {
           },
           responses: {
             where: { pharmacistId: session.userId },
-            select: { id: true },
+            select: {
+              id: true,
+              available: true,
+              price: true,
+              note: true,
+              createdAt: true,
+            },
           },
         },
         orderBy: { createdAt: "desc" },
         take: 100,
       });
+
+      // Demandes déjà répondues par ce pharmacien (pour "Réponses" + stats)
+      const myAnswered = respondedIds.length
+        ? await db.productRequest.findMany({
+            where: { id: { in: respondedIds } },
+            include: {
+              photos: {
+                where: { deletedAt: null },
+                select: { id: true, filename: true, mimeType: true, size: true },
+              },
+              responses: {
+                where: { pharmacistId: session.userId },
+                select: {
+                  id: true,
+                  available: true,
+                  price: true,
+                  note: true,
+                  createdAt: true,
+                },
+              },
+            },
+            orderBy: { createdAt: "desc" },
+            take: 200,
+          })
+        : [];
+
+      requests = [...openRequests, ...myAnswered];
     } else {
       // Admin: tout
       requests = await db.productRequest.findMany({

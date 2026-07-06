@@ -5,6 +5,7 @@ import { MessageCircle, Clock, MapPin, ShieldCheck, Pill, ChevronRight, Sparkles
 import { Logo, LogoMark } from "@/components/brand/logo";
 import { GradientBlob, KenteDivider } from "@/components/brand/african-pattern";
 import { AuthModal } from "@/components/meditike/shared/auth-modal";
+import { PwaInstallPrompt } from "@/components/meditike/shared/pwa-install-prompt";
 
 interface LandingProps {
   onAuthed: (user: any) => void;
@@ -298,6 +299,8 @@ export function Landing({ onAuthed }: LandingProps) {
       </footer>
 
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} onAuthed={(u) => { setAuthOpen(false); onAuthed(u); }} initialMode={authMode} />
+
+      <PwaInstallPrompt />
     </div>
   );
 }

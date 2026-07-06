@@ -4,11 +4,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle, Send, ImagePlus, X, Loader2, Clock, CheckCircle2,
   Phone, MapPin, Pill, ChevronRight, FileText, AlertCircle, Trash2, RefreshCw, Bell, Building2,
+  BarChart3,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { KenteDivider } from "@/components/brand/african-pattern";
 import { formatPrice, relativeTimeFr, MAX_PHOTO_SIZE } from "@/lib/meditike/helpers";
 import { DutyListView } from "@/components/meditike/shared/duty-list-view";
+import { PharmacyRating } from "@/components/meditike/shared/pharmacy-rating";
+import { ChatThread } from "@/components/meditike/shared/chat-thread";
+import { ClientStats } from "@/components/meditike/client/client-stats";
+import { useWhatsAppNotification } from "@/lib/meditike/use-whatsapp-notification";
 import { toast } from "sonner";
 
 interface Photo {
@@ -53,7 +58,7 @@ interface ClientAppProps {
 }
 
 export function ClientApp({ user, onLogout }: ClientAppProps) {
-  const [view, setView] = useState<"new" | "history" | "duty">("new");
+  const [view, setView] = useState<"new" | "history" | "duty" | "stats">("new");
   const [requests, setRequests] = useState<ClientRequest[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -109,7 +114,7 @@ export function ClientApp({ user, onLogout }: ClientAppProps) {
 
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-6 pb-20">
         {/* TABS */}
-        <div className="grid grid-cols-3 p-1 bg-muted rounded-2xl mb-5 sticky top-14 z-20">
+        <div className="grid grid-cols-4 p-1 bg-muted rounded-2xl mb-5 sticky top-14 z-20">
           <button onClick={() => setView("new")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${view === "new" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
             <MessageCircle className="w-4 h-4" /> Demande
           </button>
@@ -119,6 +124,9 @@ export function ClientApp({ user, onLogout }: ClientAppProps) {
           </button>
           <button onClick={() => setView("duty")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${view === "duty" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
             <Building2 className="w-4 h-4" /> Pharmacies
+          </button>
+          <button onClick={() => setView("stats")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${view === "stats" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
+            <BarChart3 className="w-4 h-4" /> Stats
           </button>
         </div>
 
@@ -138,21 +146,25 @@ export function ClientApp({ user, onLogout }: ClientAppProps) {
                   {activeRequests.length > 0 && (
                     <>
                       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Demandes en cours · {activeRequests.length}</p>
-                      {activeRequests.map((req) => <RequestCard key={req.id} request={req} />)}
+                      {activeRequests.map((req) => <RequestCard key={req.id} request={req} user={user} />)}
                     </>
                   )}
                   {oldRequests.length > 0 && (
                     <>
                       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground pt-4">Demandes passées · {oldRequests.length}</p>
-                      {oldRequests.map((req) => <RequestCard key={req.id} request={req} />)}
+                      {oldRequests.map((req) => <RequestCard key={req.id} request={req} user={user} />)}
                     </>
                   )}
                 </div>
               )}
             </motion.div>
-          ) : (
+          ) : view === "duty" ? (
             <motion.div key="duty" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
               <DutyListView />
+            </motion.div>
+          ) : (
+            <motion.div key="stats" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+              <ClientStats />
             </motion.div>
           )}
         </AnimatePresence>
@@ -335,7 +347,7 @@ function NewRequestForm({ onSubmitted }: { onSubmitted: () => void }) {
   );
 }
 
-function RequestCard({ request }: { request: ClientRequest }) {
+function RequestCard({ request, user }: { request: ClientRequest; user: any }) {
   const [expanded, setExpanded] = useState(request.status === "responded");
   const status = request.status as "open" | "responded" | "expired" | "closed";
 
@@ -383,7 +395,7 @@ function RequestCard({ request }: { request: ClientRequest }) {
           ) : (
             <div className="space-y-2">
               <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Réponses des pharmacies</p>
-              {request.responses.map((resp) => <ResponseCard key={resp.id} response={resp} />)}
+              {request.responses.map((resp) => <ResponseCard key={resp.id} response={resp} user={user} />)}
             </div>
           )}
         </div>
@@ -392,8 +404,10 @@ function RequestCard({ request }: { request: ClientRequest }) {
   );
 }
 
-function ResponseCard({ response }: { response: Response }) {
+function ResponseCard({ response, user }: { response: Response; user: any }) {
   const p = response.pharmacy;
+  const { notify, loading: notifLoading } = useWhatsAppNotification();
+  const [chatOpen, setChatOpen] = useState(false);
   return (
     <div className="p-3 bg-muted/60 rounded-xl border border-border">
       <div className="flex items-center justify-between mb-2">
@@ -418,17 +432,86 @@ function ResponseCard({ response }: { response: Response }) {
       )}
       <p className="text-[10px] text-muted-foreground mb-2">{relativeTimeFr(response.createdAt)}</p>
       {response.available && (
-        <div className="flex gap-2">
-          <a href={`tel:+228${p.phone1.replace(/\s/g, "")}`} className="flex-1 inline-flex items-center justify-center gap-1 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-xs font-bold transition-colors">
+        <div className="flex gap-2 flex-wrap">
+          <a href={`tel:+228${p.phone1.replace(/\s/g, "")}`} className="flex-1 min-w-[80px] inline-flex items-center justify-center gap-1 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-xs font-bold transition-colors">
             <Phone className="w-3 h-3" /> Appeler
           </a>
           {p.whatsapp && (
-            <a href={`https://wa.me/228${p.whatsapp.replace(/\s/g, "").replace("+228", "")}`} target="_blank" rel="noopener noreferrer" className="flex-1 inline-flex items-center justify-center gap-1 py-2 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg text-xs font-bold transition-colors">
+            <a href={`https://wa.me/228${p.whatsapp.replace(/\s/g, "").replace("+228", "")}`} target="_blank" rel="noopener noreferrer" className="flex-1 min-w-[80px] inline-flex items-center justify-center gap-1 py-2 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg text-xs font-bold transition-colors">
               <MessageCircle className="w-3 h-3" /> WhatsApp
             </a>
           )}
+          <button
+            type="button"
+            onClick={() => setChatOpen(true)}
+            className="flex-1 min-w-[80px] inline-flex items-center justify-center gap-1 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-xs font-bold transition-colors"
+          >
+            <MessageCircle className="w-3 h-3" /> Discuter
+          </button>
+          {p.whatsapp && (
+            <button
+              type="button"
+              onClick={() => notify(response.id)}
+              disabled={notifLoading}
+              className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-1 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-xs font-bold transition-colors disabled:opacity-60"
+            >
+              {notifLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Bell className="w-3 h-3" />}
+              Recevoir sur WhatsApp
+            </button>
+          )}
         </div>
       )}
+
+      {/* Évaluation de la pharmacie — visible uniquement si le produit est disponible */}
+      {response.available && (
+        <PharmacyRating pharmacyId={p.id} responseId={response.id} />
+      )}
+
+      {/* Modal de discussion client ↔ pharmacien */}
+      <AnimatePresence>
+        {chatOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+            onClick={() => setChatOpen(false)}
+          >
+            <motion.div
+              initial={{ y: 40, opacity: 0, scale: 0.98 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 40, opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              className="bg-background w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl p-3 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-2 px-1">
+                <h3 className="font-display font-bold text-sm">
+                  Discussion avec {p.name}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setChatOpen(false)}
+                  className="w-8 h-8 rounded-xl bg-muted hover:bg-muted/70 flex items-center justify-center"
+                  aria-label="Fermer la discussion"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <ChatThread
+                responseId={response.id}
+                currentUser={{
+                  id: user.id,
+                  fullName: user.fullName,
+                  role: user.role,
+                }}
+                otherUserName={p.name}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

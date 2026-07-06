@@ -129,6 +129,14 @@ export function formatPrice(amount: number): string {
   return `${Math.round(amount).toLocaleString("fr-FR")} F CFA`;
 }
 
+/** Construit un lien WhatsApp wa.me avec message optionnel. */
+export function buildWhatsAppLink(phone: string, message?: string): string {
+  if (!phone) return "#";
+  const clean = phone.replace(/[^0-9]/g, "");
+  const text = message ? `?text=${encodeURIComponent(message)}` : "";
+  return `https://wa.me/${clean}${text}`;
+}
+
 /** Date ISO -> lundi de cette semaine (UTC). */
 export function getMondayUTC(date: Date = new Date()): Date {
   const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
