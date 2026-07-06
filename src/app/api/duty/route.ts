@@ -41,7 +41,8 @@ export async function GET(req: Request) {
       weekStart,
       duties,
       total: duties.length,
-      availableWeeks: availableWeeks.map((w) => w.weekStart),
+      // Normaliser les dates en format YYYY-MM-DD pour comparaison côté client
+      availableWeeks: availableWeeks.map((w) => new Date(w.weekStart).toISOString().slice(0, 10)),
     });
   } catch (err: any) {
     console.error("[duty GET] error:", err);

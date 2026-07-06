@@ -1,4 +1,20 @@
 ---
+Task ID: UPDATE-MANUAL-DUTY
+Agent: general-purpose
+Task: Vérification mise à jour GitHub + ajout manuel pharmacies de garde
+
+Work Log:
+- Créé update-checker.tsx
+- Créé API /api/admin/duty (GET/POST/DELETE)
+- Modifié admin-app.tsx (section ajout manuel dans Import garde)
+- Ajouté UpdateChecker dans layout.tsx
+- Lint validé
+
+Stage Summary:
+- Vérification auto des mises à jour GitHub toutes les 24h
+- Ajout/suppression manuel de pharmacies de garde par semaine
+
+---
 Task ID: PWA-WHATSAPP
 Agent: general-purpose
 Task: Mode hors-ligne PWA + notifications WhatsApp

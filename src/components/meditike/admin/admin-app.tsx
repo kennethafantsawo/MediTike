@@ -5,10 +5,11 @@ import {
   LayoutDashboard, Building2, Upload, FileText, Users, LogOut,
   Loader2, Plus, Trash2, CheckCircle2, AlertCircle, Phone, MapPin,
   TrendingUp, Activity, Shield, Clock, FileSpreadsheet, Download,
+  Calendar, PencilLine,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { KenteDivider } from "@/components/brand/african-pattern";
-import { formatPrice, relativeTimeFr } from "@/lib/meditike/helpers";
+import { formatPrice, relativeTimeFr, formatDateShortFr } from "@/lib/meditike/helpers";
 import { toast } from "sonner";
 
 interface AdminAppProps {
@@ -379,6 +380,70 @@ function ImportTab() {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // ── Section ajout manuel ─────────────────────────────────────────
+  const [selectedWeek, setSelectedWeek] = useState<string>(""); // YYYY-MM-DD
+  const [duties, setDuties] = useState<any[]>([]);
+  const [availableWeeks, setAvailableWeeks] = useState<string[]>([]);
+  const [weekCounts, setWeekCounts] = useState<Record<string, number>>({});
+  const [loadingDuties, setLoadingDuties] = useState(false);
+  const [manuallyAdding, setManuallyAdding] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const [form, setForm] = useState({
+    name: "",
+    address: "",
+    phone1: "",
+    phone2: "",
+  });
+
+  /** Charge les pharmacies de garde pour une semaine donnée. */
+  const loadDuties = useCallback(async (week: string) => {
+    if (!week) return;
+    setLoadingDuties(true);
+    try {
+      const res = await fetch(`/api/admin/duty?week=${encodeURIComponent(week)}`);
+      const data = await res.json();
+      if (res.ok) {
+        setDuties(data.duties || []);
+        setAvailableWeeks(data.availableWeeks || []);
+        const counts: Record<string, number> = {};
+        for (const w of data.weekCounts || []) {
+          counts[w.weekStart] = w.count;
+        }
+        setWeekCounts(counts);
+      } else {
+        toast.error(data.error || "Erreur de chargement");
+      }
+    } catch {
+      toast.error("Erreur réseau");
+    } finally {
+      setLoadingDuties(false);
+    }
+  }, []);
+
+  // Charge la semaine courante au montage
+  useEffect(() => {
+    fetch("/api/admin/duty")
+      .then((r) => r.json())
+      .then((data) => {
+        setAvailableWeeks(data.availableWeeks || []);
+        const counts: Record<string, number> = {};
+        for (const w of data.weekCounts || []) {
+          counts[w.weekStart] = w.count;
+        }
+        setWeekCounts(counts);
+        if (data.weekStart) {
+          setSelectedWeek(data.weekStart);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Recharge les gardes quand la semaine sélectionnée change
+  useEffect(() => {
+    if (selectedWeek) loadDuties(selectedWeek);
+  }, [selectedWeek, loadDuties]);
+
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -393,6 +458,8 @@ function ImportTab() {
       if (!res.ok) throw new Error(data.error);
       setResult(data);
       toast.success(`${data.weeksImported} semaines importées, ${data.pharmaciesImported} pharmacies`);
+      // Recharger les semaines disponibles après import
+      if (selectedWeek) loadDuties(selectedWeek);
     } catch (err: any) {
       setError(err.message);
       toast.error(err.message);
@@ -402,10 +469,63 @@ function ImportTab() {
     }
   }
 
+  /** Soumission du formulaire d'ajout manuel. */
+  async function handleManualAdd(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.name.trim()) {
+      toast.error("Le nom de la pharmacie est requis");
+      return;
+    }
+    if (!selectedWeek) {
+      toast.error("Veuillez sélectionner une semaine");
+      return;
+    }
+    setManuallyAdding(true);
+    try {
+      const res = await fetch("/api/admin/duty", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          address: form.address,
+          phone1: form.phone1,
+          phone2: form.phone2,
+          weekStart: selectedWeek,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      toast.success(`Pharmacie « ${form.name} » ajoutée pour la semaine`);
+      setForm({ name: "", address: "", phone1: "", phone2: "" });
+      loadDuties(selectedWeek);
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setManuallyAdding(false);
+    }
+  }
+
+  /** Supprime une entrée de garde. */
+  async function handleDelete(id: string, name: string) {
+    if (!confirm(`Supprimer « ${name} » de la liste de garde de cette semaine ?`)) return;
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/admin/duty?id=${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      toast.success("Entrée supprimée");
+      loadDuties(selectedWeek);
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   return (
     <div>
       <h1 className="font-display text-2xl font-extrabold mb-1">Import pharmacies de garde</h1>
-      <p className="text-sm text-muted-foreground mb-6">Importez le fichier officiel du Ministère de la Santé (.xlsx) ou un fichier JSON personnalisé.</p>
+      <p className="text-sm text-muted-foreground mb-6">Importez le fichier officiel du Ministère de la Santé (.xlsx) ou un fichier JSON personnalisé, ou ajoutez une pharmacie manuellement.</p>
 
       <div className="grid lg:grid-cols-2 gap-4 mb-6">
         {/* Dropzone */}
@@ -448,7 +568,7 @@ function ImportTab() {
       {error && <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-xl text-sm font-semibold mb-4"><AlertCircle className="w-4 h-4 inline mr-2" />{error}</div>}
 
       {result && (
-        <div className="bg-white rounded-2xl border border-border p-5">
+        <div className="bg-white rounded-2xl border border-border p-5 mb-6">
           <h3 className="font-display font-bold text-sm mb-3 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Import réussi</h3>
           <div className="grid grid-cols-3 gap-3 mb-4">
             <div className="bg-emerald-50 rounded-xl p-3">
@@ -478,6 +598,176 @@ function ImportTab() {
           </details>
         </div>
       )}
+
+      {/* ── GESTION MANUELLE PAR SEMAINE ───────────────────────────── */}
+      <div className="bg-white rounded-2xl border border-border p-5">
+        <h3 className="font-display font-bold text-sm mb-1 flex items-center gap-2">
+          <PencilLine className="w-4 h-4 text-emerald-600" /> Ajout manuel
+        </h3>
+        <p className="text-xs text-muted-foreground mb-4">
+          Ajoutez ou retirez une pharmacie de garde pour une semaine précise.
+        </p>
+
+        {/* Sélecteur de semaine */}
+        <div className="bg-muted/40 rounded-xl p-3 mb-4">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
+            Semaine de garde (lundi)
+          </label>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="relative flex-1">
+              <Calendar className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="date"
+                value={selectedWeek}
+                onChange={(e) => setSelectedWeek(e.target.value)}
+                className="w-full pl-9 pr-3 py-2.5 text-sm bg-white border border-border rounded-xl font-medium focus:outline-none focus:border-primary"
+              />
+            </div>
+            {availableWeeks.length > 0 && (
+              <select
+                value={selectedWeek}
+                onChange={(e) => setSelectedWeek(e.target.value)}
+                className="px-3 py-2.5 text-sm bg-white border border-border rounded-xl font-medium focus:outline-none focus:border-primary"
+              >
+                <option value="">— Semaines déjà importées —</option>
+                {availableWeeks.map((w) => (
+                  <option key={w} value={w}>
+                    {formatDateShortFr(w)} ({weekCounts[w] || 0} pharmacies)
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+          {selectedWeek && (
+            <p className="text-[10px] text-muted-foreground mt-2">
+              Semaine du <span className="font-bold">{formatDateShortFr(selectedWeek)}</span>
+              {availableWeeks.includes(selectedWeek) && weekCounts[selectedWeek]
+                ? ` · ${weekCounts[selectedWeek]} pharmacie(s) déjà enregistrée(s)`
+                : " · Aucune pharmacie enregistrée pour cette semaine"}
+            </p>
+          )}
+        </div>
+
+        {/* Liste des pharmacies pour la semaine sélectionnée */}
+        <div className="mb-5">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Pharmacies de garde pour cette semaine
+            </h4>
+            <span className="text-[10px] font-bold text-muted-foreground">
+              {duties.length} entrée(s)
+            </span>
+          </div>
+          {loadingDuties ? (
+            <div className="py-6 text-center">
+              <Loader2 className="w-5 h-5 animate-spin mx-auto text-muted-foreground" />
+            </div>
+          ) : duties.length === 0 ? (
+            <div className="py-6 text-center text-xs text-muted-foreground bg-muted/30 rounded-xl">
+              {selectedWeek
+                ? "Aucune pharmacie de garde pour cette semaine. Utilisez le formulaire ci-dessous pour en ajouter une."
+                : "Sélectionnez une semaine pour voir la liste."}
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-72 overflow-y-auto">
+              {duties.map((d) => (
+                <div
+                  key={d.id}
+                  className="flex items-start gap-3 p-3 bg-muted/30 rounded-xl border border-border/60"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
+                    <Building2 className="w-4 h-4 text-amber-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-sm">{d.name}</p>
+                    {d.address && (
+                      <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                        <MapPin className="w-3 h-3" /> {d.address}
+                      </p>
+                    )}
+                    {(d.phone1 || d.phone2) && (
+                      <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                        <Phone className="w-3 h-3" />
+                        {[d.phone1, d.phone2].filter(Boolean).join(" · ")}
+                      </p>
+                    )}
+                    {d.sourceFile && d.sourceFile !== "ajout-manuel" && (
+                      <p className="text-[10px] text-muted-foreground mt-1 italic">
+                        Source : {d.sourceFile}
+                      </p>
+                    )}
+                    {d.sourceFile === "ajout-manuel" && (
+                      <p className="text-[10px] text-emerald-700 font-semibold mt-1">
+                        Ajout manuel
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(d.id, d.name)}
+                    disabled={deletingId === d.id}
+                    aria-label={`Supprimer ${d.name}`}
+                    className="shrink-0 p-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {deletingId === d.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Formulaire d'ajout manuel */}
+        <form onSubmit={handleManualAdd} className="border-t border-border pt-4">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
+            Ajouter une pharmacie pour cette semaine
+          </h4>
+          <div className="grid sm:grid-cols-2 gap-2.5">
+            <input
+              required
+              placeholder="Nom de la pharmacie *"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className="w-full px-3.5 py-2.5 text-sm bg-muted border border-border rounded-xl font-medium focus:outline-none focus:border-primary focus:bg-white"
+            />
+            <input
+              placeholder="Adresse"
+              value={form.address}
+              onChange={(e) => setForm({ ...form, address: e.target.value })}
+              className="w-full px-3.5 py-2.5 text-sm bg-muted border border-border rounded-xl font-medium focus:outline-none focus:border-primary focus:bg-white"
+            />
+            <input
+              placeholder="Téléphone 1"
+              value={form.phone1}
+              onChange={(e) => setForm({ ...form, phone1: e.target.value })}
+              className="w-full px-3.5 py-2.5 text-sm bg-muted border border-border rounded-xl font-medium focus:outline-none focus:border-primary focus:bg-white"
+            />
+            <input
+              placeholder="Téléphone 2"
+              value={form.phone2}
+              onChange={(e) => setForm({ ...form, phone2: e.target.value })}
+              className="w-full px-3.5 py-2.5 text-sm bg-muted border border-border rounded-xl font-medium focus:outline-none focus:border-primary focus:bg-white"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={manuallyAdding || !selectedWeek}
+            className="mt-3 inline-flex items-center gap-1.5 px-5 py-2.5 brand-gradient text-white font-bold text-sm rounded-xl shadow hover:shadow-md disabled:opacity-60 transition-all"
+          >
+            {manuallyAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+            Ajouter
+          </button>
+          {!selectedWeek && (
+            <p className="text-[10px] text-muted-foreground mt-1.5">
+              Sélectionnez d'abord une semaine ci-dessus.
+            </p>
+          )}
+        </form>
+      </div>
     </div>
   );
 }
