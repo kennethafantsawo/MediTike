@@ -3,11 +3,12 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle, Send, ImagePlus, X, Loader2, Clock, CheckCircle2,
-  Phone, MapPin, Pill, ChevronRight, FileText, AlertCircle, Trash2, RefreshCw, Bell,
+  Phone, MapPin, Pill, ChevronRight, FileText, AlertCircle, Trash2, RefreshCw, Bell, Building2,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { KenteDivider } from "@/components/brand/african-pattern";
 import { formatPrice, relativeTimeFr, MAX_PHOTO_SIZE } from "@/lib/meditike/helpers";
+import { DutyListView } from "@/components/meditike/shared/duty-list-view";
 import { toast } from "sonner";
 
 interface Photo {
@@ -52,7 +53,7 @@ interface ClientAppProps {
 }
 
 export function ClientApp({ user, onLogout }: ClientAppProps) {
-  const [view, setView] = useState<"new" | "history">("new");
+  const [view, setView] = useState<"new" | "history" | "duty">("new");
   const [requests, setRequests] = useState<ClientRequest[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -108,13 +109,16 @@ export function ClientApp({ user, onLogout }: ClientAppProps) {
 
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-6 pb-20">
         {/* TABS */}
-        <div className="grid grid-cols-2 p-1 bg-muted rounded-2xl mb-5 sticky top-14 z-20">
-          <button onClick={() => setView("new")} className={`py-2.5 text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${view === "new" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
-            <MessageCircle className="w-4 h-4" /> Nouvelle demande
+        <div className="grid grid-cols-3 p-1 bg-muted rounded-2xl mb-5 sticky top-14 z-20">
+          <button onClick={() => setView("new")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${view === "new" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
+            <MessageCircle className="w-4 h-4" /> Demande
           </button>
-          <button onClick={() => setView("history")} className={`py-2.5 text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${view === "history" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
+          <button onClick={() => setView("history")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${view === "history" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
             <Clock className="w-4 h-4" /> Mes demandes
             {requests.length > 0 && <span className="ml-1 text-[10px] bg-muted-foreground/20 px-1.5 py-0.5 rounded-full">{requests.length}</span>}
+          </button>
+          <button onClick={() => setView("duty")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${view === "duty" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
+            <Building2 className="w-4 h-4" /> Pharmacies
           </button>
         </div>
 
@@ -123,7 +127,7 @@ export function ClientApp({ user, onLogout }: ClientAppProps) {
             <motion.div key="new" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
               <NewRequestForm onSubmitted={() => { setView("history"); loadRequests(); }} />
             </motion.div>
-          ) : (
+          ) : view === "history" ? (
             <motion.div key="history" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
               {loading ? (
                 <div className="text-center py-12"><Loader2 className="w-6 h-6 text-emerald-600 animate-spin mx-auto" /></div>
@@ -145,6 +149,10 @@ export function ClientApp({ user, onLogout }: ClientAppProps) {
                   )}
                 </div>
               )}
+            </motion.div>
+          ) : (
+            <motion.div key="duty" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+              <DutyListView />
             </motion.div>
           )}
         </AnimatePresence>

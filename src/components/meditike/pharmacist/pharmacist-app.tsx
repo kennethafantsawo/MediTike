@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { formatPrice, relativeTimeFr } from "@/lib/meditike/helpers";
+import { DutyListView } from "@/components/meditike/shared/duty-list-view";
 import { toast } from "sonner";
 
 interface Photo {
@@ -34,7 +35,7 @@ interface PharmacistAppProps {
 }
 
 export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
-  const [tab, setTab] = useState<"new" | "responded">("new");
+  const [tab, setTab] = useState<"new" | "responded" | "duty">("new");
   const [requests, setRequests] = useState<PharmacistRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [responding, setResponding] = useState<string | null>(null);
@@ -87,19 +88,24 @@ export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
       </header>
 
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-6 pb-20">
-        <div className="grid grid-cols-2 p-1 bg-muted rounded-2xl mb-5 sticky top-14 z-20">
-          <button onClick={() => setTab("new")} className={`py-2.5 text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${tab === "new" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
+        <div className="grid grid-cols-3 p-1 bg-muted rounded-2xl mb-5 sticky top-14 z-20">
+          <button onClick={() => setTab("new")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${tab === "new" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
             <Bell className="w-4 h-4" /> À répondre
             {newRequests.length > 0 && <span className="ml-1 text-[10px] bg-emerald-500 text-white px-1.5 py-0.5 rounded-full">{newRequests.length}</span>}
           </button>
-          <button onClick={() => setTab("responded")} className={`py-2.5 text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${tab === "responded" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
-            <CheckCircle2 className="w-4 h-4" /> Mes réponses
+          <button onClick={() => setTab("responded")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${tab === "responded" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
+            <CheckCircle2 className="w-4 h-4" /> Réponses
             {respondedRequests.length > 0 && <span className="ml-1 text-[10px] bg-muted-foreground/20 px-1.5 py-0.5 rounded-full">{respondedRequests.length}</span>}
+          </button>
+          <button onClick={() => setTab("duty")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${tab === "duty" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
+            <Building2 className="w-4 h-4" /> Garde
           </button>
         </div>
 
-        {loading ? (
+        {loading && tab !== "duty" ? (
           <div className="text-center py-12"><Loader2 className="w-6 h-6 text-emerald-600 animate-spin mx-auto" /></div>
+        ) : tab === "duty" ? (
+          <DutyListView readOnly />
         ) : tab === "new" ? (
           newRequests.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-2xl border border-border">
