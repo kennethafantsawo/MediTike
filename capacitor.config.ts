@@ -18,7 +18,7 @@ const config: CapacitorConfig = {
   backgroundColor: "#0f5132",
   server: {
     // URL de production Vercel — l'APK charge l'app depuis ici
-    url: "https://meditike.vercel.app",
+    url: "https://medi-tike.vercel.app",
     cleartext: false,
     androidScheme: "https",
   },
