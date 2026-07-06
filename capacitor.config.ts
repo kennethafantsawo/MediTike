@@ -1,34 +1,15 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 /**
- * Configuration Capacitor pour build APK Android et IPA iOS.
+ * Configuration Capacitor pour MediTike.
  *
- * Étapes pour activer le build mobile:
- * 1. Installer Capacitor:
- *    bun add @capacitor/core @capacitor/cli @capacitor/android @capacitor/ios
- *    bunx cap init MediTike tg.meditike.app --web-dir=out
+ * Mode hybride : l'APK charge l'app depuis l'URL Vercel (webview).
+ * Avantages :
+ * - Pas besoin d'export statique (préserve routes API + middleware)
+ * - Mises à jour automatiques (pas besoin de republisher l'APK)
+ * - L'APK est un wrapper natif avec accès aux fonctionnalités mobiles
  *
- * 2. Build le web:
- *    bun run build
- *
- * 3. Ajouter plateformes:
- *    bunx cap add android
- *    bunx cap add ios
- *
- * 4. Sync le code web vers les plateformes:
- *    bunx cap sync
- *
- * 5. Build APK (Android):
- *    cd android && ./gradlew assembleDebug
- *    # APK généré dans android/app/build/outputs/apk/debug/app-debug.apk
- *
- * 6. Build iOS (nécessite macOS + Xcode):
- *    cd ios && pod install
- *    bunx cap open ios
- *    # Dans Xcode: Product > Archive
- *
- * 7. Pour mettre à jour après changements web:
- *    bun run build && bunx cap sync
+ * Pour changer l'URL de production, modifiez server.androidScheme + url ci-dessous.
  */
 const config: CapacitorConfig = {
   appId: "tg.meditike.app",
@@ -36,6 +17,9 @@ const config: CapacitorConfig = {
   webDir: "out",
   backgroundColor: "#0f5132",
   server: {
+    // URL de production Vercel — l'APK charge l'app depuis ici
+    url: "https://meditike.vercel.app",
+    cleartext: false,
     androidScheme: "https",
   },
   android: {
@@ -57,12 +41,6 @@ const config: CapacitorConfig = {
       iosSpinnerStyle: "small",
       splashFullScreen: true,
       splashImmersive: true,
-    },
-    PushNotifications: {
-      presentationOptions: ["badge", "sound", "alert"],
-    },
-    Camera: {
-      permissions: ["Camera"],
     },
   },
 };
