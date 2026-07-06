@@ -2,100 +2,319 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>MediTike — La sécurité avant tout</title>
+<title>MediTike — Équipe & contact</title>
+<link rel="stylesheet" href="global.css">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<link rel="stylesheet" href="global.css">
+<style>
+  body { background: var(--bg-dark); }
+  .kente-top, .kente-bottom {
+    position: absolute; left: 0; right: 0;
+  }
+  .kente-top { top: 0; }
+  .kente-bottom { bottom: 0; }
+  .bg-glow {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 720px; height: 720px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(184,153,104,0.10) 0%, rgba(184,153,104,0) 60%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+  .bg-glow-2 {
+    position: absolute;
+    top: -100px; left: -100px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(15,81,50,0.45) 0%, rgba(15,81,50,0) 70%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+  .logo-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-icon-dark {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    box-shadow: 0 6px 18px rgba(184,153,104,0.25);
+  }
+  .logo-icon-dark .material-icons { font-size: 22px; }
+  .logo-text {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--fg-light);
+    letter-spacing: -0.01em;
+  }
+  .display-title {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    color: var(--fg-light);
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: -0.025em;
+  }
+  .h3-muted-light {
+    font-family: var(--font-body);
+    font-weight: 500;
+    color: var(--muted-light);
+    font-size: 18px;
+    line-height: 1.4;
+  }
+  .accent-bar-light {
+    width: 28px; height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .section-tag-light {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--accent-light);
+  }
+  .panel {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    padding: 26px 28px;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .panel-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--fg-light);
+    font-size: 22px;
+    letter-spacing: -0.015em;
+    margin-bottom: 14px;
+  }
+  .vision-text {
+    font-family: var(--font-body);
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: rgba(245, 243, 239, 0.85);
+  }
+  .vision-text .accent-word {
+    color: var(--accent-light);
+    font-weight: 600;
+  }
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--border-light);
+  }
+  .stat-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .stat-chip-num {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 26px;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.02em;
+  }
+  .stat-chip-label {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--muted-light);
+    margin-top: 6px;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+  }
+  .contact-list {
+    list-style: none;
+    margin-top: 4px;
+  }
+  .contact-list li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border-light);
+    font-family: var(--font-body);
+    font-size: 14.5px;
+    color: var(--fg-light);
+  }
+  .contact-list li:last-child {
+    border-bottom: none;
+  }
+  .contact-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: rgba(184,153,104,0.12);
+    border: 1px solid rgba(184,153,104,0.30);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-light);
+    flex-shrink: 0;
+  }
+  .contact-icon .material-icons { font-size: 18px; }
+  .contact-label {
+    font-family: var(--font-body);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--muted-light);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .contact-value {
+    font-family: var(--font-body);
+    font-size: 14.5px;
+    color: var(--fg-light);
+    font-weight: 600;
+  }
+  .contact-value.font-num {
+    font-family: var(--font-num);
+    font-weight: 700;
+  }
+  .badge-android {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(184,153,104,0.15);
+    border: 1px solid rgba(184,153,104,0.40);
+    color: var(--accent-light);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    margin-top: 16px;
+    align-self: flex-start;
+  }
+  .badge-android .material-icons { font-size: 16px; }
+  .bottom-mention {
+    position: absolute;
+    bottom: 28px; left: 0; right: 0;
+    text-align: center;
+    font-family: var(--font-num);
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--muted-light);
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .bottom-mention .material-icons { font-size: 13px; }
+</style>
 </head>
 <body>
-<div class="slide">
-  <!-- Decorative blur -->
-  <div data-decor aria-hidden="true" style="position:absolute; right:-120px; top:-120px; width:340px; height:340px; border-radius:50%; background:radial-gradient(circle, rgba(184,153,104,0.18) 0%, rgba(184,153,104,0) 70%); pointer-events:none;"></div>
+<div class="slide slide-dark">
+  <div class="kente-bar kente-top" data-decor aria-hidden="true"></div>
+  <div class="kente-bar kente-bottom" data-decor aria-hidden="true"></div>
+  <div class="bg-glow" data-decor aria-hidden="true"></div>
+  <div class="bg-glow-2" data-decor aria-hidden="true"></div>
 
-  <!-- Top row -->
-  <div class="flex justify-between items-start">
-    <div class="flex items-baseline gap-4">
-      <span class="font-display" style="font-size:64px; color:var(--accent); line-height:1; letter-spacing:-0.03em;">05</span>
-      <span class="font-num" style="font-size:14px; color:var(--muted); letter-spacing:0.1em;">/ 06</span>
+  <!-- Top centered logo + title -->
+  <div class="text-center relative z-10 pt-2">
+    <div class="logo-row">
+      <div class="logo-icon-dark"><i class="material-icons">add</i></div>
+      <span class="logo-text">MediTike</span>
     </div>
-    <div class="flex items-center gap-2" style="font-size:11px; color:var(--muted); letter-spacing:0.18em; text-transform:uppercase;">
-      <span class="kente-bar" data-decor aria-hidden="true" style="width:42px; height:3px;"></span>
-      <span>Confidentialité</span>
+    <h1 class="display-title mt-5">Parlons-nous</h1>
+    <div class="flex items-center justify-center gap-3 mt-4">
+      <div class="accent-bar-light"></div>
+      <h3 class="h3-muted-light">MediTike — La santé à portée de main</h3>
+      <div class="accent-bar-light"></div>
     </div>
   </div>
 
-  <!-- Title block -->
-  <div style="margin-top:14px; margin-bottom:20px;">
-    <h1 class="font-display" style="font-size:44px; color:var(--primary); line-height:1.1; margin-bottom:8px;">La sécurité avant tout</h1>
-    <h3 style="font-size:22px; color:var(--muted); font-weight:500;">Vos informations sont protégées</h3>
+  <!-- 2-column body -->
+  <div class="grid grid-cols-2 gap-7 mt-7 relative z-10 flex-1">
+
+    <!-- Vision -->
+    <div class="panel">
+      <div class="flex items-center gap-2 mb-3">
+        <i class="material-icons" style="font-size:16px; color: var(--accent-light);">visibility</i>
+        <span class="section-tag-light">NOTRE VISION</span>
+      </div>
+      <div class="panel-title">Notre vision</div>
+      <p class="vision-text">
+        Devenir la plateforme de référence pour l'accès aux médicaments en <span class="accent-word">Afrique de l'Ouest</span>. En 5 ans : 5 pays, 1000 pharmacies, 1 million de patients servis.
+      </p>
+      <div class="stat-row">
+        <div class="stat-chip">
+          <span class="stat-chip-num font-num">5</span>
+          <span class="stat-chip-label">PAYS · HORIZON 5 ANS</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-chip-num font-num">1000</span>
+          <span class="stat-chip-label">PHARMACIES PARTENAIRES</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-chip-num font-num">1M</span>
+          <span class="stat-chip-label">PATIENTS SERVIS</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div class="panel">
+      <div class="flex items-center gap-2 mb-3">
+        <i class="material-icons" style="font-size:16px; color: var(--accent-light);">contact_mail</i>
+        <span class="section-tag-light">CONTACT</span>
+      </div>
+      <div class="panel-title">Contact</div>
+      <ul class="contact-list">
+        <li>
+          <div class="contact-icon"><i class="material-icons">phone</i></div>
+          <div>
+            <div class="contact-label">Téléphone</div>
+            <div class="contact-value font-num">+228 96 41 72 70</div>
+          </div>
+        </li>
+        <li>
+          <div class="contact-icon"><i class="material-icons">mail</i></div>
+          <div>
+            <div class="contact-label">Email</div>
+            <div class="contact-value">contact@meditike.tg</div>
+          </div>
+        </li>
+        <li>
+          <div class="contact-icon"><i class="material-icons">place</i></div>
+          <div>
+            <div class="contact-label">Localisation</div>
+            <div class="contact-value">Lomé, Togo</div>
+          </div>
+        </li>
+      </ul>
+      <div class="badge-android">
+        <i class="material-icons">android</i>
+        Application Android disponible
+      </div>
+    </div>
+
   </div>
 
-  <!-- 4x2 grid -->
-  <div class="grid grid-cols-3 gap-4" style="flex:1; min-height:0;">
-
-    <!-- Card 1 -->
-    <div class="card flex flex-col" style="padding:16px;">
-      <div style="width:42px; height:42px; border-radius:10px; background:rgba(15,81,50,0.08); display:flex; align-items:center; justify-content:center; margin-bottom:12px;">
-        <i class="material-icons" style="font-size:22px; color:var(--primary);">lock</i>
-      </div>
-      <h4 class="font-display" style="font-size:16px; color:var(--fg); font-weight:700; line-height:1.25; margin-bottom:6px;">Mots de passe protégés</h4>
-      <p style="font-size:12.5px; color:var(--muted); line-height:1.55;">Vos mots de passe sont chiffrés. Même nous, nous ne pouvons pas les voir.</p>
-    </div>
-
-    <!-- Card 2 -->
-    <div class="card flex flex-col" style="padding:16px;">
-      <div style="width:42px; height:42px; border-radius:10px; background:rgba(15,81,50,0.08); display:flex; align-items:center; justify-content:center; margin-bottom:12px;">
-        <i class="material-icons" style="font-size:22px; color:var(--primary);">vpn_key</i>
-      </div>
-      <h4 class="font-display" style="font-size:16px; color:var(--fg); font-weight:700; line-height:1.25; margin-bottom:6px;">Connexion sécurisée</h4>
-      <p style="font-size:12.5px; color:var(--muted); line-height:1.55;">Quand vous vous connectez, c'est chiffré de bout en bout. Personne ne peut intercepter vos informations.</p>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="card flex flex-col" style="padding:16px; border-left:3px solid var(--accent);">
-      <div style="width:42px; height:42px; border-radius:10px; background:rgba(184,153,104,0.14); display:flex; align-items:center; justify-content:center; margin-bottom:12px;">
-        <i class="material-icons" style="font-size:22px; color:var(--accent);">photo_library</i>
-      </div>
-      <h4 class="font-display" style="font-size:16px; color:var(--fg); font-weight:700; line-height:1.25; margin-bottom:6px;">Photos éphémères</h4>
-      <p style="font-size:12.5px; color:var(--muted); line-height:1.55;">Les photos que vous envoyez sont supprimées toutes seules après 72 heures (ou 7 jours si pas de réponse).</p>
-    </div>
-
-    <!-- Card 4 -->
-    <div class="card flex flex-col" style="padding:16px; border-left:3px solid var(--accent);">
-      <div style="width:42px; height:42px; border-radius:10px; background:rgba(184,153,104,0.14); display:flex; align-items:center; justify-content:center; margin-bottom:12px;">
-        <i class="material-icons" style="font-size:22px; color:var(--accent);">cloud_off</i>
-      </div>
-      <h4 class="font-display" style="font-size:16px; color:var(--fg); font-weight:700; line-height:1.25; margin-bottom:6px;">Photos privées</h4>
-      <p style="font-size:12.5px; color:var(--muted); line-height:1.55;">Vos photos sont dans un coffre-fort numérique. Seuls vous et les pharmaciens peuvent les voir.</p>
-    </div>
-
-    <!-- Card 5 -->
-    <div class="card flex flex-col" style="padding:16px; border-left:3px solid var(--accent);">
-      <div style="width:42px; height:42px; border-radius:10px; background:rgba(184,153,104,0.14); display:flex; align-items:center; justify-content:center; margin-bottom:12px;">
-        <i class="material-icons" style="font-size:22px; color:var(--accent);">verified_user</i>
-      </div>
-      <h4 class="font-display" style="font-size:16px; color:var(--fg); font-weight:700; line-height:1.25; margin-bottom:6px;">Vérifications</h4>
-      <p style="font-size:12.5px; color:var(--muted); line-height:1.55;">On vérifie chaque photo envoyée : sa taille, son type, pour éviter les fichiers dangereux.</p>
-    </div>
-
-    <!-- Card 8 -->
-    <div class="card flex flex-col" style="padding:16px; border-left:3px solid var(--accent);">
-      <div style="width:42px; height:42px; border-radius:10px; background:rgba(184,153,104,0.14); display:flex; align-items:center; justify-content:center; margin-bottom:12px;">
-        <i class="material-icons" style="font-size:22px; color:var(--accent);">https</i>
-      </div>
-      <h4 class="font-display" style="font-size:16px; color:var(--fg); font-weight:700; line-height:1.25; margin-bottom:6px;">Connexion chiffrée</h4>
-      <p style="font-size:12.5px; color:var(--muted); line-height:1.55;">Le site utilise une connexion chiffrée, comme les banques. Vos données voyagent en toute sécurité.</p>
-    </div>
-
+  <!-- Bottom mention -->
+  <div class="bottom-mention relative z-10">
+    <i class="material-icons">language</i>
+    <span>medi-tike.vercel.app</span>
   </div>
 </div>
-<aside data-notes class="hidden">
-  <ul>
-    <li>Insister sur l'auto-suppression des photos après 72 heures ou 7 jours.</li>
-    <li>Rassurer : même l'équipe MediTike ne peut pas voir les mots de passe.</li>
-    <li>Mentionner que la connexion est chiffrée comme pour les banques.</li>
-    <li>Conclure : confidentialité et sécurité sont au cœur du projet.</li>
-  </ul>
-</aside>
 </body>
 </html>

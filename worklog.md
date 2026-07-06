@@ -211,3 +211,30 @@ Work Log:
 Stage Summary:
 - Admin peut supprimer définitivement pharmacies et demandes
 - Client peut changer son mot de passe et modifier son profil
+
+---
+Task ID: PITCH-B
+Agent: slide-rendering-sub-agent
+Task: Rendu des slides 5-7 du pitch deck investisseur MediTike (slides[4:7])
+
+Work Log:
+- Lu slides_brief.json et global.css dans /home/z/my-project/download/slides/
+- Lu slides existantes (01, 03, 04) pour alignement visuel (palette vert forêt #0f5132 + bronze #b89968 + crème #faf8f4, typographies Sora / Plus Jakarta Sans / JetBrains Mono)
+- Rendu slide_05.html — « Modèle d'affaires » : layout 3 colonnes équilibrées, chaque card avec border-top (primary / accent / primary), icon-tile Material Icons (person / store / handshake), price-block héroïque avec doubles bordures pointillées, tags B2C/B2B/B2G décoratifs. Toutes les mentions verbatim (« Gratuit », « 5 000 F/mois », « Sur devis ») préservées
+- Rendu slide_06.html — « La concurrence » : tableau comparatif HTML <table> 3 colonnes × 5 lignes, colonne MediTike mise en évidence (bandeau accent bronze 4px à gauche, fond rgba accent 6%, badge TEMPS RÉEL dans l'en-tête). 5 critères verbatim (Liste de garde / Contact pharmacie / Disponibilité médicament / Couverture géographique / Photos ordonnance). Carte citation en bas avec border-left accent bronze, citation intégralement verbatim
+- Rendu slide_07.html — « Équipe & contact » : fond sombre (.slide-dark #0f1f1a), bande kente (.kente-bar) en haut ET en bas (position absolute), logo MediTike centré en haut (logo-mark-dark), titre display 56px fg-light « Parlons-nous », sous-titre muted-light. Deux panneaux glassmorphism (rgba blanc 0.04 + backdrop-blur) : à gauche « Notre vision » avec texte verbatim + 3 stat-chips (5 / 1000 / 1M) extraites du texte ; à droite « Contact » avec 3 lignes verbatim (téléphone font-num, email, Lomé Togo) et badge « Application Android disponible ». Mention discrète medi-tike.vercel.app centrée en bas
+- Tous les contenus en français, every fact verbatim, aucune invention de contenu (les chips de slide 7 reprennent les chiffres déjà présents dans le texte de vision)
+- Material Icons uniquement (person, store, handshake, payments, list_alt, call, medication, public, photo_camera, bolt, compare_arrows, visibility, contact_mail, phone, mail, place, android, language, add)
+- Polices : Sora (heading), Plus Jakarta Sans (body), JetBrains Mono (numérique) via global.css
+- Palette stricte : #0f5132 / #b89968 / #faf8f4 (+ variants primary-light #1a6b4a, accent-light #d4b888, bg-dark #0f1f1a)
+- Éléments décoratifs marqués data-decor / aria-hidden="true" (ghost-coin, ghost-leaf, ghost-grid, bg-glow, kente bars) pour exclure du check d'overflow
+- Slides écrites via Write (overwrite) aux chemins /home/z/my-project/download/slides/slide_05.html, slide_06.html, slide_07.html
+
+Stage Summary:
+- 3 slides produites, chacune avec un layout unique (3-col price cards / comparison table / dark centered 2-col closing)
+- Densité verbatim respectée : tous les titres, sous-titres, prix, descriptions, lignes de contact, citation rendus à l'identique
+- Slide 7 correctly applies .slide-dark and .kente-bar classes from global.css (top + bottom kente)
+- Stylesheet chargée via chemin relatif <link rel="stylesheet" href="global.css"> sur les 3 fichiers
+- Tailwind CDN + Material Icons chargés sur les 3 fichiers
+- Canvas 1280×720, overflow-hidden via .slide, padding 56×72 respecté
+

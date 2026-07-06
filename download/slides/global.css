@@ -1,23 +1,21 @@
-/* MediTike — Global Stylesheet — Présentation simple */
+/* MediTike — Pitch Investisseur — Global Stylesheet */
 
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
 
 :root {
-  /* Palette — sobre, cohérente avec le site */
-  --bg: #faf8f4;            /* crème doux */
-  --bg-dark: #0f1f1a;       /* vert forêt foncé (slides sombres) */
-  --primary: #0f5132;       /* vert forêt — brand principal */
+  --bg: #faf8f4;
+  --bg-dark: #0f1f1a;
+  --primary: #0f5132;
   --primary-light: #1a6b4a;
-  --accent: #b89968;        /* bronze terreux */
+  --accent: #b89968;
   --accent-light: #d4b888;
-  --fg: #1a2b22;            /* texte sombre sur fond clair */
-  --fg-light: #f5f3ef;      /* texte clair sur fond sombre */
+  --fg: #1a2b22;
+  --fg-light: #f5f3ef;
   --muted: #6b7c72;
   --muted-light: rgba(245, 243, 239, 0.7);
   --border: #e5e0d5;
   --border-light: rgba(245, 243, 239, 0.12);
 
-  /* Typography tokens */
   --font-heading: 'Sora', sans-serif;
   --font-body: 'Plus Jakarta Sans', sans-serif;
   --font-num: 'JetBrains Mono', monospace;
@@ -55,17 +53,14 @@ body {
   color: var(--fg-light);
 }
 
-/* Kente divider — bande colorée sobre */
 .kente-bar {
   height: 4px;
   background: linear-gradient(90deg, var(--primary) 0%, var(--primary) 33%, var(--accent) 33%, var(--accent) 66%, var(--primary) 66%, var(--primary) 100%);
 }
 
-/* Typography utilities */
 .font-display { font-family: var(--font-heading); font-weight: 800; letter-spacing: -0.02em; }
 .font-num { font-family: var(--font-num); font-weight: 700; }
 
-/* Cards */
 .card {
   background: white;
   border: 1px solid var(--border);
@@ -81,7 +76,6 @@ body {
   backdrop-filter: blur(8px);
 }
 
-/* Accent badge */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -101,7 +95,6 @@ body {
   border: 1px solid rgba(245, 243, 239, 0.2);
 }
 
-/* Numbers big */
 .stat-num {
   font-family: var(--font-heading);
   font-weight: 800;
@@ -113,7 +106,6 @@ body {
   color: transparent;
 }
 
-/* Footer line */
 .slide-footer {
   position: absolute;
   bottom: 24px;
@@ -130,7 +122,6 @@ body {
 
 .slide-footer-dark { color: var(--muted-light); }
 
-/* Logo mark */
 .logo-mark {
   display: inline-flex;
   align-items: center;

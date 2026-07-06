@@ -2,181 +2,56 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>MediTike — Notre idée</title>
+<title>MediTike — La solution</title>
 <link rel="stylesheet" href="global.css">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<style>
-  body { background: var(--bg); }
-  .ghost-num {
-    position: absolute;
-    top: 36px; right: 60px;
-    font-family: var(--font-heading);
-    font-weight: 800;
-    font-size: 220px;
-    line-height: 1;
-    color: rgba(184,153,104,0.07);
-    letter-spacing: -0.05em;
-    pointer-events: none;
-  }
-  .section-num {
-    font-family: var(--font-heading);
-    font-weight: 800;
-    color: var(--accent);
-    font-size: 22px;
-    letter-spacing: 0.18em;
-  }
-  .h1 {
-    font-family: var(--font-heading);
-    font-weight: 800;
-    color: var(--primary);
-    font-size: 44px;
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-  }
-  .accent-bar {
-    width: 36px; height: 3px;
-    background: var(--accent);
-    border-radius: 2px;
-  }
-  .idea-card {
-    background: white;
-    border: 1px solid var(--border);
-    border-left: 4px solid var(--accent);
-    border-radius: 14px;
-    padding: 28px 30px;
-    position: relative;
-    box-shadow: 0 6px 20px rgba(15,81,50,0.04);
-  }
-  .idea-quote {
-    position: absolute;
-    top: 16px; right: 22px;
-    font-family: var(--font-heading);
-    font-size: 60px;
-    line-height: 1;
-    color: rgba(184,153,104,0.18);
-    pointer-events: none;
-  }
-  .idea-text {
-    font-family: var(--font-body);
-    font-size: 15.5px;
-    line-height: 1.7;
-    color: #2c3a32;
-  }
-  .obj-card {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 18px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    transition: all 0.2s;
-  }
-  .obj-num {
-    flex-shrink: 0;
-    width: 38px; height: 38px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: 16px;
-  }
-  .obj-text {
-    font-family: var(--font-body);
-    font-size: 13.5px;
-    line-height: 1.5;
-    color: #2c3a32;
-  }
-  .col-title {
-    font-family: var(--font-heading);
-    font-weight: 700;
-    color: var(--primary);
-    font-size: 18px;
-    letter-spacing: -0.01em;
-  }
-</style>
 </head>
 <body>
 <div class="slide">
-  <div class="ghost-num" data-decor aria-hidden="true">02</div>
+  <!-- Titre -->
+  <div style="margin-bottom:36px;">
+    <h1 class="font-display" style="font-size:44px;color:var(--primary);line-height:1.1;">La solution MediTike</h1>
+    <p style="font-size:22px;color:var(--muted);margin-top:6px;">Une demande. Plusieurs réponses. Un seul déplacement.</p>
+  </div>
 
-  <!-- Header -->
-  <div class="relative z-10">
-    <div class="section-num mb-3">02 / 06</div>
-    <h1 class="h1">Notre idée</h1>
-    <div class="flex items-center gap-3 mt-3">
-      <div class="accent-bar"></div>
-      <span class="text-[#6b7c72]" style="font-size:15px;">Une seule demande, plusieurs réponses, un seul déplacement.</span>
+  <!-- 3 étapes -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;flex:1;align-items:center;">
+    <!-- Étape 01 -->
+    <div style="text-align:center;">
+      <div class="font-display" style="font-size:64px;color:var(--accent);line-height:1;margin-bottom:16px;">01</div>
+      <div style="width:56px;height:56px;border-radius:16px;background:rgba(15,81,50,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <i class="material-icons" style="font-size:28px;color:var(--primary);">send</i>
+      </div>
+      <h3 class="font-display" style="font-size:18px;color:var(--fg);margin-bottom:10px;font-weight:700;">Le patient envoie sa demande</h3>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6;">Il décrit le médicament, ajoute une photo si besoin. Sa demande part à toutes les pharmacies de garde en un clic.</p>
+    </div>
+
+    <!-- Étape 02 -->
+    <div style="text-align:center;">
+      <div class="font-display" style="font-size:64px;color:var(--accent);line-height:1;margin-bottom:16px;">02</div>
+      <div style="width:56px;height:56px;border-radius:16px;background:rgba(15,81,50,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <i class="material-icons" style="font-size:28px;color:var(--primary);">notifications_active</i>
+      </div>
+      <h3 class="font-display" style="font-size:18px;color:var(--fg);margin-bottom:10px;font-weight:700;">Les pharmacies répondent</h3>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6;">Les pharmaciens voient la demande en direct. Ils répondent : disponible, prix en FCFA, message.</p>
+    </div>
+
+    <!-- Étape 03 -->
+    <div style="text-align:center;">
+      <div class="font-display" style="font-size:64px;color:var(--accent);line-height:1;margin-bottom:16px;">03</div>
+      <div style="width:56px;height:56px;border-radius:16px;background:rgba(15,81,50,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <i class="material-icons" style="font-size:28px;color:var(--primary);">chat</i>
+      </div>
+      <h3 class="font-display" style="font-size:18px;color:var(--fg);margin-bottom:10px;font-weight:700;">Le patient contacte la pharmacie</h3>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6;">Un clic sur WhatsApp ou Appeler. Le traitement l'attend. Moins de 5 minutes au total.</p>
     </div>
   </div>
 
-  <!-- 2-column body -->
-  <div class="grid grid-cols-2 gap-8 mt-7 relative z-10 flex-1">
-
-    <!-- Left: L'idée -->
-    <div class="flex flex-col">
-      <div class="flex items-center gap-2 mb-3">
-        <span class="material-icons text-[#b89968]" style="font-size:18px;">lightbulb</span>
-        <span class="font-display text-[#0f5132]" style="font-size:13px; letter-spacing:0.12em;">L'IDÉE</span>
-      </div>
-      <div class="idea-card flex-1 flex flex-col">
-        <div class="idea-quote" data-decor>«</div>
-        <div class="col-title mb-3">L'idée</div>
-        <p class="idea-text">
-          Et si on pouvait, depuis son téléphone, envoyer une seule demande de médicament à toutes les pharmacies de garde en même temps ? Les pharmaciens voient la demande, répondent directement, et le patient sait tout de suite où aller.
-        </p>
-        <p class="idea-text mt-3">
-          Plus besoin d'appeler 5 ou 10 pharmacies : <span class="font-semibold text-[#0f5132]">une demande, plusieurs réponses, un seul déplacement.</span>
-        </p>
-        <div class="flex items-center gap-2 mt-auto pt-5">
-          <span class="material-icons text-[#0f5132]" style="font-size:16px;">smartphone</span>
-          <span class="text-[#6b7c72]" style="font-size:12px; letter-spacing:0.04em;">UNE IDÉE SIMPLE, POUR UN PROBLÈME RÉEL</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right: 4 objectifs -->
-    <div class="flex flex-col">
-      <div class="flex items-center gap-2 mb-3">
-        <span class="material-icons text-[#b89968]" style="font-size:18px;">flag</span>
-        <span class="font-display text-[#0f5132]" style="font-size:13px; letter-spacing:0.12em;">CE QU'ON VEUT ACCOMPLIR</span>
-      </div>
-      <div class="col-title mb-3">Ce qu'on veut accomplir</div>
-
-      <div class="flex flex-col gap-2.5 flex-1">
-        <div class="obj-card">
-          <div class="obj-num">1</div>
-          <div class="obj-text">Passer de <span class="font-semibold text-[#0f5132]">30 minutes à moins de 5 minutes</span> pour trouver une pharmacie qui a le médicament.</div>
-        </div>
-        <div class="obj-card">
-          <div class="obj-num">2</div>
-          <div class="obj-text">Rendre la liste officielle des pharmacies de garde accessible à tout le monde, <span class="font-semibold text-[#0f5132]">en temps réel</span>.</div>
-        </div>
-        <div class="obj-card">
-          <div class="obj-num">3</div>
-          <div class="obj-text">Protéger la vie privée des patients : leurs photos sont <span class="font-semibold text-[#0f5132]">supprimées automatiquement</span> après quelques jours.</div>
-        </div>
-        <div class="obj-card">
-          <div class="obj-num">4</div>
-          <div class="obj-text">Un outil simple, gratuit, qui marche <span class="font-semibold text-[#0f5132]">même avec une connexion internet lente</span>.</div>
-        </div>
-      </div>
-    </div>
-
+  <!-- Badge -->
+  <div style="text-align:center;margin-top:24px;">
+    <span class="badge" style="font-size:14px;padding:8px 20px;">⏱ Moins de 5 minutes pour tout le parcours</span>
   </div>
 </div>
-
-<aside data-notes class="hidden">
-- Présenter l'idée simplement : une demande, plusieurs réponses, un seul déplacement.
-- Insister sur le gain de temps : 30 minutes à moins de 5 minutes.
-- Lister les 4 objectifs concrets, un par un, sans jargon.
-- Mentionner la protection de la vie privée (photos supprimées automatiquement).
-- Souligner que l'outil reste gratuit et accessible même avec une connexion lente.
-</aside>
 </body>
 </html>

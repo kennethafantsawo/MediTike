@@ -2,29 +2,18 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>MediTike — Les outils qu'on utilise</title>
+<title>MediTike — La concurrence</title>
 <link rel="stylesheet" href="global.css">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
   body { background: var(--bg); }
-  .ghost-num {
-    position: absolute;
-    top: 36px; right: 60px;
+  .section-tag {
     font-family: var(--font-heading);
-    font-weight: 800;
-    font-size: 220px;
-    line-height: 1;
-    color: rgba(184,153,104,0.07);
-    letter-spacing: -0.05em;
-    pointer-events: none;
-  }
-  .section-num {
-    font-family: var(--font-heading);
-    font-weight: 800;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.22em;
     color: var(--accent);
-    font-size: 22px;
-    letter-spacing: 0.18em;
   }
   .h1 {
     font-family: var(--font-heading);
@@ -34,193 +23,231 @@
     line-height: 1.05;
     letter-spacing: -0.02em;
   }
+  .h3-muted {
+    font-family: var(--font-body);
+    font-weight: 500;
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.4;
+  }
   .accent-bar {
     width: 36px; height: 3px;
     background: var(--accent);
     border-radius: 2px;
   }
-  .tool-card {
+  .ghost-grid {
+    position: absolute;
+    top: 60px; right: -100px;
+    width: 380px; height: 380px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(15,81,50,0.06) 0%, rgba(15,81,50,0) 70%);
+    filter: blur(36px);
+    pointer-events: none;
+  }
+
+  /* Comparison table */
+  .comp-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
     background: white;
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(15,81,50,0.04);
+  }
+  .comp-table thead th {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
     padding: 14px 18px;
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
+    text-align: left;
+    background: #faf8f4;
+    border-bottom: 2px solid var(--primary);
   }
-  .tool-card.bp { border-left: 4px solid var(--primary); }
-  .tool-card.ba { border-left: 4px solid var(--accent); }
-  .tool-icon {
-    flex-shrink: 0;
-    width: 38px; height: 38px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
+  .comp-table thead th.crit-h {
+    color: var(--muted);
+    width: 28%;
+  }
+  .comp-table thead th.other-h {
+    color: var(--muted);
+    width: 36%;
+  }
+  .comp-table thead th.mt-h {
+    color: var(--accent);
+    background: rgba(184,153,104,0.10);
+    border-left: 4px solid var(--accent);
+    position: relative;
+  }
+  .comp-table thead th.mt-h .mt-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    background: var(--accent);
     color: white;
+    border-radius: 999px;
+    font-size: 10px;
+    margin-left: 8px;
+    letter-spacing: 0.10em;
   }
-  .tool-icon.ip { background: linear-gradient(135deg, var(--primary), var(--primary-light)); }
-  .tool-icon.ia { background: linear-gradient(135deg, var(--accent), var(--accent-light)); }
-  .tool-icon .material-icons { font-size: 20px; }
-  .tool-title {
+  .comp-table tbody td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    line-height: 1.5;
+    vertical-align: middle;
+    color: #2c3a32;
+  }
+  .comp-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .crit-cell {
     font-family: var(--font-heading);
     font-weight: 700;
     color: var(--primary);
-    font-size: 15px;
-    letter-spacing: -0.01em;
-    margin-bottom: 4px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
-  .tool-desc {
-    font-family: var(--font-body);
-    font-size: 12.5px;
-    line-height: 1.55;
-    color: #2c3a32;
+  .crit-cell .material-icons {
+    font-size: 18px;
+    color: var(--accent);
+    flex-shrink: 0;
   }
-  .stat-mini {
+  .other-cell {
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .other-cell .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #c8bca8;
+    flex-shrink: 0;
+  }
+  .mt-cell {
+    color: var(--primary);
+    background: rgba(184,153,104,0.06);
+    border-left: 4px solid var(--accent);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .mt-cell .material-icons {
+    font-size: 16px;
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+
+  /* Bottom quote card */
+  .quote-card {
     background: white;
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px 16px;
+    border-left: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 16px 22px;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-    overflow: hidden;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 12px rgba(15,81,50,0.03);
   }
-  .stat-mini::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--primary), var(--accent));
-  }
-  .stat-mini-num {
+  .quote-mark {
     font-family: var(--font-heading);
     font-weight: 800;
-    font-size: 36px;
-    line-height: 1;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    letter-spacing: -0.02em;
-  }
-  .stat-mini-label {
-    font-family: var(--font-body);
-    font-size: 12px;
-    line-height: 1.4;
-    color: var(--muted);
-    margin-top: 8px;
-  }
-  .col-tag {
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 0.14em;
+    font-size: 44px;
     color: var(--accent);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .quote-text {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--fg);
+    font-style: italic;
+    font-weight: 500;
+  }
+  .quote-text .accent-word {
+    color: var(--primary);
+    font-weight: 700;
+    font-style: normal;
   }
 </style>
 </head>
 <body>
 <div class="slide">
-  <div class="ghost-num" data-decor aria-hidden="true">04</div>
+  <div class="ghost-grid" data-decor aria-hidden="true"></div>
 
   <!-- Header -->
   <div class="relative z-10">
-    <div class="section-num mb-3">04 / 06</div>
-    <h1 class="h1">Les outils qu'on utilise</h1>
+    <div class="flex items-center justify-between mb-3">
+      <div class="section-tag">06 — CONCURRENCE</div>
+      <div class="flex items-center gap-2 text-[#6b7c72]" style="font-size:12px; letter-spacing:0.08em; font-weight:600;">
+        <i class="material-icons" style="font-size:14px; color:#b89968;">compare_arrows</i>
+        <span>ANALYSE COMPARATIVE</span>
+      </div>
+    </div>
+    <h1 class="h1">La concurrence</h1>
     <div class="flex items-center gap-3 mt-3">
       <div class="accent-bar"></div>
-      <span class="text-[#6b7c72]" style="font-size:15px;">Des technologies modernes, pour un résultat fiable et rapide</span>
+      <h3 class="h3-muted">MediTike est la seule solution temps réel centrée patient</h3>
     </div>
   </div>
 
-  <!-- Body 60/40 -->
-  <div class="grid mt-7 relative z-10 flex-1 gap-7" style="grid-template-columns: 60% 1fr;">
+  <!-- Comparison table -->
+  <div class="mt-6 relative z-10">
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th class="crit-h">Critère</th>
+          <th class="other-h">Solutions actuelles</th>
+          <th class="mt-h">MediTike<span class="mt-badge"><i class="material-icons" style="font-size:11px;">bolt</i>TEMPS RÉEL</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="crit-cell"><i class="material-icons">list_alt</i>Liste de garde</td>
+          <td class="other-cell"><span class="dot"></span>PDF Ministère, difficile à trouver</td>
+          <td class="mt-cell"><i class="material-icons">bolt</i>Temps réel dans l'app</td>
+        </tr>
+        <tr>
+          <td class="crit-cell"><i class="material-icons">call</i>Contact pharmacie</td>
+          <td class="other-cell"><span class="dot"></span>Appels un par un</td>
+          <td class="mt-cell"><i class="material-icons">bolt</i>Une demande → toutes les pharmacies</td>
+        </tr>
+        <tr>
+          <td class="crit-cell"><i class="material-icons">medication</i>Disponibilité médicament</td>
+          <td class="other-cell"><span class="dot"></span>Inconnue avant déplacement</td>
+          <td class="mt-cell"><i class="material-icons">bolt</i>Réponse en direct avec prix</td>
+        </tr>
+        <tr>
+          <td class="crit-cell"><i class="material-icons">public</i>Couverture géographique</td>
+          <td class="other-cell"><span class="dot"></span>Lomé principalement</td>
+          <td class="mt-cell"><i class="material-icons">bolt</i>7 villes + extension CEDEAO</td>
+        </tr>
+        <tr>
+          <td class="crit-cell"><i class="material-icons">photo_camera</i>Photos ordonnance</td>
+          <td class="other-cell"><span class="dot"></span>Non supporté</td>
+          <td class="mt-cell"><i class="material-icons">bolt</i>Auto-supprimées 72h</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-    <!-- LEFT: 4 tools -->
-    <div class="flex flex-col">
-      <div class="flex items-center gap-2 mb-3">
-        <span class="material-icons text-[#b89968]" style="font-size:16px;">build</span>
-        <span class="col-tag">LES OUTILS</span>
-      </div>
-      <div class="flex flex-col gap-2.5 flex-1">
-
-        <div class="tool-card bp">
-          <div class="tool-icon ip"><span class="material-icons">language</span></div>
-          <div class="flex-1">
-            <div class="tool-title">L'application web</div>
-            <p class="tool-desc">C'est le site internet que les patients et pharmaciens utilisent. Il s'ouvre dans n'importe quel navigateur (Chrome, Safari, Firefox) sur téléphone ou ordinateur. Pas besoin d'installer quoi que ce soit.</p>
-          </div>
-        </div>
-
-        <div class="tool-card bp">
-          <div class="tool-icon ip"><span class="material-icons">storage</span></div>
-          <div class="flex-1">
-            <div class="tool-title">La base de données</div>
-            <p class="tool-desc">C'est là qu'on stocke toutes les informations : les comptes utilisateurs, les pharmacies, les demandes, les réponses. C'est sécurisé et hébergé par un service professionnel spécialisé.</p>
-          </div>
-        </div>
-
-        <div class="tool-card ba">
-          <div class="tool-icon ia"><span class="material-icons">photo_library</span></div>
-          <div class="flex-1">
-            <div class="tool-title">Le stockage des photos</div>
-            <p class="tool-desc">Quand un patient envoie une photo, elle est gardée dans un coffre-fort numérique privé. Personne d'autre que le patient et les pharmaciens ne peut la voir. Et elle est supprimée automatiquement après quelques jours.</p>
-          </div>
-        </div>
-
-        <div class="tool-card ba">
-          <div class="tool-icon ia"><span class="material-icons">autorenew</span></div>
-          <div class="flex-1">
-            <div class="tool-title">Les tâches automatiques</div>
-            <p class="tool-desc">Tous les jours, le système fait le ménage tout seul : il supprime les anciennes photos, met à jour la liste des pharmacies de garde, et marque les vieilles demandes comme expirées. Personne n'a besoin de le faire à la main.</p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- RIGHT: En chiffres 2x2 -->
-    <div class="flex flex-col">
-      <div class="flex items-center gap-2 mb-3">
-        <span class="material-icons text-[#b89968]" style="font-size:16px;">insights</span>
-        <span class="col-tag">EN CHIFFRES</span>
-      </div>
-      <div class="grid grid-cols-2 gap-3 flex-1">
-        <div class="stat-mini">
-          <div>
-            <div class="stat-mini-num">8</div>
-          </div>
-          <div class="stat-mini-label">types d'informations stockées</div>
-        </div>
-        <div class="stat-mini">
-          <div>
-            <div class="stat-mini-num">~100</div>
-          </div>
-          <div class="stat-mini-label">pharmacies de garde participantes</div>
-        </div>
-        <div class="stat-mini">
-          <div>
-            <div class="stat-mini-num">7</div>
-          </div>
-          <div class="stat-mini-label">villes togolaises couvertes</div>
-        </div>
-        <div class="stat-mini">
-          <div>
-            <div class="stat-mini-num">24/7</div>
-          </div>
-          <div class="stat-mini-label">disponible jour et nuit</div>
-        </div>
-      </div>
-    </div>
-
+  <!-- Bottom quote -->
+  <div class="quote-card mt-5 relative z-10">
+    <div class="quote-mark">«</div>
+    <p class="quote-text">
+      <span class="accent-word">MediTike</span> est la première plateforme togolaise à digitaliser le circuit complet de demande de médicaments, du patient à la pharmacie.
+    </p>
   </div>
 </div>
-
-<aside data-notes class="hidden">
-- Expliquer chaque outil simplement, comme à quelqu'un qui ne connaît rien à l'informatique.
-- Outil 1 : l'application web = un site internet, sans installation.
-- Outil 2 : la base de données = un coffre sécurisé pour toutes les informations.
-- Outil 3 : le stockage des photos = un coffre-fort privé, avec suppression automatique.
-- Outil 4 : les tâches automatiques = le système fait le ménage tout seul chaque jour.
-</aside>
 </body>
 </html>
