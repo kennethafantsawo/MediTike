@@ -1,20 +1,13 @@
-// MediTike — Schéma Prisma pour Supabase PostgreSQL (PRODUCTION)
-// =====================================================
-// Pour utiliser en production sur Vercel + Supabase:
-// 1. Remplacez prisma/schema.prisma par ce fichier
-// 2. Configurez DATABASE_URL dans .env (connexion Supabase)
-// 3. Exécutez : bun run db:push
-// 4. Exécutez : bun scripts/seed.ts
-// =====================================================
+// MediTike — Schéma Prisma (projet sérieux v2)
+// Plateforme de demande de médicaments auprès des pharmacies du Togo
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -33,9 +26,6 @@ model User {
   productRequests  ProductRequest[]
   productResponses ProductResponse[]
   auditLogs        AuditLog[]
-
-  @@index([role])
-  @@index([isActive])
 }
 
 model Pharmacy {
@@ -48,7 +38,7 @@ model Pharmacy {
   city         String   @default("Lomé")
   district     String?
   isActive     Boolean  @default(true)
-  createdById  String?
+  createdById  String?  // admin who created it
   createdByName String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -56,49 +46,48 @@ model Pharmacy {
   users           User[]
   dutySchedules   PharmacyDuty[]
   productResponses ProductResponse[]
-
-  @@index([isActive])
-  @@index([city])
 }
 
+// Pharmacies de garde hebdomadaires (import du fichier xlsx du Ministère)
 model PharmacyDuty {
   id          String   @id @default(cuid())
-  pharmacyId  String?
+  pharmacyId  String?  // link to registered pharmacy if matched by name
   pharmacy    Pharmacy? @relation(fields: [pharmacyId], references: [id], onDelete: SetNull)
-  name        String
-  address     String?
+  name        String   // raw name from xlsx
+  address     String?  // raw address from xlsx
   phone1      String?
   phone2      String?
-  weekStart   DateTime
-  weekEnd     DateTime
-  sourceFile  String?
+  weekStart   DateTime // Monday 00:00 UTC
+  weekEnd     DateTime  // next Monday 00:00 UTC
+  sourceFile  String?  // filename of the xlsx/json imported
   importedAt  DateTime @default(now())
 
   @@unique([name, weekStart])
   @@index([weekStart])
 }
 
+// Demande client (produit recherché)
 model ProductRequest {
   id           String   @id @default(cuid())
   clientId     String
   client       User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  productName  String
-  note         String?
-  status       String   @default("open") // "draft" | "open" | "responded" | "expired" | "closed"
+  productName  String   // médicament demandé
+  note         String?  // note optionnelle du client
+  status       String   @default("open") // "open" | "responded" | "expired" | "closed"
   clientName   String?
   clientPhone  String?
   photos       Photo[]
   responses    ProductResponse[]
-  notifiedPharmacies Int @default(0)
+  notifiedPharmacies Int @default(0) // nombre de pharmacies notifiées
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  expiresAt    DateTime?
+  expiresAt    DateTime? // 7 jours après création si pas de réponse
 
   @@index([status])
   @@index([createdAt])
-  @@index([clientId])
 }
 
+// Réponse pharmacien
 model ProductResponse {
   id            String   @id @default(cuid())
   requestId     String
@@ -108,39 +97,40 @@ model ProductResponse {
   pharmacyId    String
   pharmacy      Pharmacy @relation(fields: [pharmacyId], references: [id])
   available     Boolean
-  price         Float?
+  price         Float?   // FCFA
   note          String?
-  read          Boolean  @default(false)
+  read          Boolean  @default(false) // client a-t-il vu la réponse ?
   createdAt     DateTime @default(now())
 
   @@index([requestId])
   @@index([pharmacistId])
-  @@index([pharmacyId])
 }
 
+// Photos attachées aux demandes — auto-suppression programmée
 model Photo {
   id           String   @id @default(cuid())
   requestId    String
   request      ProductRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  filename     String
+  filename     String   // nom du fichier sur disque (hashé)
   originalName String
   mimeType     String
-  size         Int
-  sha256       String
+  size         Int      // bytes
+  sha256       String   // hash pour intégrité
   uploadedAt   DateTime @default(now())
-  deleteAt     DateTime
-  deletedAt    DateTime?
+  deleteAt     DateTime // calculé : 72h après réponse OU 7j après création si pas de réponse
+  deletedAt    DateTime? // null = encore présent, date = supprimé
 
   @@index([deleteAt])
   @@index([requestId])
 }
 
+// Journal d'audit admin (toutes les actions sensibles)
 model AuditLog {
   id        String   @id @default(cuid())
   adminId   String
   admin     User     @relation(fields: [adminId], references: [id])
-  action    String
-  details   Json?
+  action    String   // "create_pharmacy" | "delete_pharmacy" | "import_duty" | "create_admin" | ...
+  details   String?  // JSON string
   ip        String?
   createdAt DateTime @default(now())
 
@@ -148,6 +138,7 @@ model AuditLog {
   @@index([createdAt])
 }
 
+// Statistiques agrégées (cache pour admin dashboard)
 model AppStat {
   id        String   @id @default(cuid())
   key       String   @unique
