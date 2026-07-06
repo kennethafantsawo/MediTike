@@ -84,5 +84,6 @@ server.log
 *.pid
 .zscripts/dev.pid
 
-# APK Android (trop gros pour git, servi depuis /public)
-/public/MediTike.apk
+# NOTE: /public/MediTike.apk DOIT être versionné (servi par Vercel)
+# Ne pas l'ajouter au gitignore
+
