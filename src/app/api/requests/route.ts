@@ -16,8 +16,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
     }
 
+    // Permet aux pharmaciens de récupérer leurs propres demandes (créées en tant que client)
+    const { searchParams } = new URL(req.url);
+    const mode = searchParams.get("mode");
+
     let requests;
-    if (session.role === "client") {
+    if (session.role === "client" || (session.role === "pharmacist" && mode === "my")) {
       requests = await db.productRequest.findMany({
         where: {
           clientId: session.userId,
@@ -154,9 +158,11 @@ export async function POST(req: NextRequest) {
     if (!session) {
       return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
     }
-    if (session.role !== "client") {
+    // Les clients ET les pharmaciens peuvent créer des demandes
+    // (les pharmaciens peuvent aussi avoir besoin de médicaments)
+    if (session.role !== "client" && session.role !== "pharmacist") {
       return NextResponse.json(
-        { error: "Réservé aux clients" },
+        { error: "Réservé aux utilisateurs connectés" },
         { status: 403 }
       );
     }

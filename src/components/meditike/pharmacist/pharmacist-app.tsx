@@ -3,9 +3,10 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bell, Pill, Clock, CheckCircle2, X, Phone, MapPin, Image as ImageIcon,
-  Loader2, Send, RefreshCw, LogOut, Building2, FileText, BarChart3,
+  Loader2, Send, RefreshCw, LogOut, Building2, FileText, BarChart3, MessageCircle,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
+import { KenteDivider } from "@/components/brand/african-pattern";
 import { formatPrice, relativeTimeFr } from "@/lib/meditike/helpers";
 import { DutyListView } from "@/components/meditike/shared/duty-list-view";
 import { PharmacistStats } from "@/components/meditike/pharmacist/pharmacist-stats";
@@ -48,6 +49,7 @@ export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
   const [requests, setRequests] = useState<PharmacistRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [responding, setResponding] = useState<string | null>(null);
+  const [showRequestModal, setShowRequestModal] = useState(false);
 
   const load = useCallback(() => {
     fetch("/api/requests")
@@ -86,6 +88,13 @@ export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
                 <Bell className="w-3 h-3" /> {newRequests.length} nouvelle{newRequests.length > 1 ? "s" : ""}
               </span>
             )}
+            <button
+              onClick={() => setShowRequestModal(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 brand-gradient text-white text-xs font-bold rounded-xl shadow-sm hover:shadow-md transition-all"
+              title="Faire une demande de médicament"
+            >
+              <MessageCircle className="w-3.5 h-3.5" /> Demander
+            </button>
             <button onClick={() => { load(); toast.success("Actualisé"); }} className="w-9 h-9 rounded-xl bg-muted hover:bg-muted/70 flex items-center justify-center" aria-label="Rafraîchir">
               <RefreshCw className="w-4 h-4" />
             </button>
@@ -187,7 +196,118 @@ export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
           </div>
         )}
       </main>
+
+      {/* Modal : faire une demande (pharmacien peut aussi chercher un médicament) */}
+      <AnimatePresence>
+        {showRequestModal && (
+          <PharmacistRequestModal
+            onClose={() => setShowRequestModal(false)}
+            onSubmitted={() => {
+              setShowRequestModal(false);
+              toast.success("Demande envoyée aux pharmacies partenaires !");
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
+  );
+}
+
+function PharmacistRequestModal({ onClose, onSubmitted }: { onClose: () => void; onSubmitted: () => void }) {
+  const [productName, setProductName] = useState("");
+  const [note, setNote] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!productName.trim()) {
+      toast.error("Veuillez saisir le nom du médicament");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productName: productName.trim(),
+          note: note.trim() || null,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      onSubmitted();
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: 40, opacity: 0, scale: 0.98 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: 20, opacity: 0 }}
+        transition={{ type: "spring", damping: 24, stiffness: 280 }}
+        className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="brand-gradient relative px-7 pt-6 pb-5 text-white">
+          <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center" aria-label="Fermer">
+            <X className="w-4 h-4" />
+          </button>
+          <h2 className="font-display font-extrabold text-xl">Faire une demande</h2>
+          <p className="text-white/75 text-xs mt-1">Cherchez un médicament auprès des autres pharmacies</p>
+          <div className="absolute bottom-0 left-0 right-0"><KenteDivider /></div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div>
+            <label className="block text-[11px] font-bold tracking-wider text-muted-foreground uppercase mb-1.5">
+              Médicament recherché *
+            </label>
+            <input
+              type="text"
+              required
+              value={productName}
+              onChange={(e) => setProductName(e.target.value)}
+              placeholder="Ex: Amoxicilline 500mg..."
+              maxLength={200}
+              className="w-full px-4 py-3 text-sm bg-muted border border-border rounded-xl font-medium focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all"
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-bold tracking-wider text-muted-foreground uppercase mb-1.5">
+              Note (optionnel)
+            </label>
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Précisions : dosage, quantité..."
+              rows={3}
+              maxLength={500}
+              className="w-full px-4 py-3 text-sm bg-muted border border-border rounded-xl font-medium focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all resize-none"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full brand-gradient text-white py-3.5 rounded-2xl font-bold text-sm shadow-lg hover:shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+          >
+            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+            Envoyer ma demande
+          </button>
+        </form>
+      </motion.div>
+    </motion.div>
   );
 }
 

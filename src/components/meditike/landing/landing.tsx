@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { MessageCircle, Clock, MapPin, ShieldCheck, Pill, ChevronRight, Sparkles, Smartphone, Lock, Phone, Mail } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MessageCircle, Clock, MapPin, ShieldCheck, Pill, ChevronRight, Sparkles, Smartphone, Lock, Phone, Mail, X, Search } from "lucide-react";
 import { Logo, LogoMark } from "@/components/brand/logo";
 import { GradientBlob, KenteDivider } from "@/components/brand/african-pattern";
 import { AuthModal } from "@/components/meditike/shared/auth-modal";
@@ -309,6 +309,8 @@ function DutyPreview() {
   const [duties, setDuties] = useState<any[]>([]);
   const [weekLabel, setWeekLabel] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showAllModal, setShowAllModal] = useState(false);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetch("/api/duty")
@@ -372,13 +374,95 @@ function DutyPreview() {
             ))}
           </div>
         )}
-        {duties.length > 6 && (
+        {duties.length > 0 && (
           <div className="mt-8 text-center">
-            <a href="#garde" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-border rounded-xl text-sm font-bold hover:border-emerald-500/40 hover:bg-emerald-50/50 transition-all">
-              Voir les {duties.length} pharmacies
-            </a>
+            <button
+              onClick={() => setShowAllModal(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-border rounded-xl text-sm font-bold hover:border-emerald-500/40 hover:bg-emerald-50/50 transition-all"
+            >
+              Voir les {duties.length} pharmacie{duties.length > 1 ? "s" : ""} de garde
+            </button>
           </div>
         )}
+
+        {/* Modal : toutes les pharmacies de garde */}
+        <AnimatePresence>
+          {showAllModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
+              onClick={() => setShowAllModal(false)}
+            >
+              <motion.div
+                initial={{ y: 40, opacity: 0, scale: 0.98 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ y: 20, opacity: 0 }}
+                transition={{ type: "spring", damping: 24, stiffness: 280 }}
+                className="w-full sm:max-w-2xl bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Header */}
+                <div className="brand-gradient relative px-6 pt-5 pb-4 text-white shrink-0">
+                  <button onClick={() => setShowAllModal(false)} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors" aria-label="Fermer">
+                    <X className="w-4 h-4" />
+                  </button>
+                  <h3 className="font-display font-extrabold text-xl">Pharmacies de garde</h3>
+                  <p className="text-white/75 text-xs mt-1">Semaine du {weekLabel || "..."} · {duties.length} pharmacies</p>
+                  <div className="absolute bottom-0 left-0 right-0"><KenteDivider /></div>
+                </div>
+
+                {/* Recherche */}
+                <div className="p-4 border-b border-border shrink-0">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <input
+                      type="text"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Rechercher par nom, quartier..."
+                      className="w-full pl-9 pr-3 py-2.5 text-sm bg-muted border border-border rounded-xl focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Liste scrollable */}
+                <div className="overflow-y-auto p-4 space-y-2">
+                  {duties
+                    .filter((d) => {
+                      if (!search) return true;
+                      const q = search.toLowerCase();
+                      return d.name.toLowerCase().includes(q) || (d.address || "").toLowerCase().includes(q) || (d.phone1 || "").includes(q);
+                    })
+                    .map((d) => (
+                      <div key={d.id} className="bg-white border border-border rounded-2xl p-4 hover:shadow-sm transition-shadow">
+                        <h4 className="font-display font-bold text-base mb-1">Pharmacie {d.name}</h4>
+                        {d.address && (
+                          <div className="flex items-start gap-1.5 text-xs text-muted-foreground mb-2">
+                            <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                            <span>{d.address}</span>
+                          </div>
+                        )}
+                        <div className="flex gap-2">
+                          {d.phone1 && (
+                            <a href={`tel:+228${d.phone1.replace(/\s/g, "")}`} className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold transition-colors">
+                              <Smartphone className="w-3.5 h-3.5" /> {d.phone1}
+                            </a>
+                          )}
+                          {d.phone2 && (
+                            <a href={`tel:+228${d.phone2.replace(/\s/g, "")}`} className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl text-xs font-bold transition-colors">
+                              <Smartphone className="w-3.5 h-3.5" /> {d.phone2}
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );

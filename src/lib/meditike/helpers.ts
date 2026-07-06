@@ -137,12 +137,41 @@ export function buildWhatsAppLink(phone: string, message?: string): string {
   return `https://wa.me/${clean}${text}`;
 }
 
-/** Date ISO -> lundi de cette semaine (UTC). */
+/**
+ * Retourne le lundi de la semaine de garde active.
+ *
+ * Règle MediTike : la liste de garde change chaque lundi à 7h00 UTC.
+ * - Si on est lundi AVANT 7h UTC → on est encore sur la semaine précédente
+ * - Sinon → on est sur la semaine du lundi courant
+ *
+ * @param date date de référence (défaut: maintenant)
+ * @returns le lundi à 00:00 UTC de la semaine active
+ */
 export function getMondayUTC(date: Date = new Date()): Date {
-  const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
-  const day = d.getUTCDay(); // 0 = Sunday
-  const diff = d.getUTCDate() - day + (day === 0 ? -6 : 1); // adjust to Monday
-  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), diff));
+  // Travailler en UTC
+  const dayOfWeek = date.getUTCDay(); // 0 = Sunday, 1 = Monday, ...
+  const hour = date.getUTCHours();
+
+  // Calculer le lundi de la semaine actuelle
+  let mondayDate: Date;
+  if (dayOfWeek === 1) {
+    // Lundi : si avant 7h UTC, on prend le lundi précédent
+    if (hour < 7) {
+      const d = new Date(date);
+      d.setUTCDate(d.getUTCDate() - 7);
+      mondayDate = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+    } else {
+      mondayDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    }
+  } else {
+    // Autre jour : remonter au lundi le plus proche
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // 0 (dimanche) → -6, sinon 1-day
+    const d = new Date(date);
+    d.setUTCDate(d.getUTCDate() + diff);
+    mondayDate = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  }
+
+  return mondayDate;
 }
 
 /** Formate une date en français. */
