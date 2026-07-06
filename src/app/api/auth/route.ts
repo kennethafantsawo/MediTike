@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { setSession, getSession, clearSession, getClientIP } from "@/lib/meditike/session";
-import { normalizeTogoPhone, validatePassword, validateTogoPhone } from "@/lib/meditike/helpers";
+import { normalizePhone, validatePassword } from "@/lib/meditike/helpers";
 import { DEFAULT_ADMIN } from "@/lib/meditike/config";
 
 /**
@@ -21,10 +21,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const cleanPhone = normalizeTogoPhone(phone);
-    if (!validateTogoPhone(cleanPhone)) {
+    // Normaliser le numéro de téléphone (accepte tous les indicatifs pays)
+    // Le client envoie déjà le numéro au format +XXXYYYYYYYYY
+    const cleanPhone = phone.startsWith("+")
+      ? phone.replace(/[^0-9+]/g, "")
+      : normalizePhone(phone);
+    if (!cleanPhone || !/^\+\d{6,15}$/.test(cleanPhone)) {
       return NextResponse.json(
-        { error: "Numéro togolais invalide. Format: 8 chiffres (ex: 90 12 34 56)." },
+        { error: "Numéro de téléphone invalide. Vérifiez votre indicatif pays et votre numéro." },
         { status: 400 }
       );
     }

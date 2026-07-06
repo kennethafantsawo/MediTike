@@ -1,9 +1,10 @@
 "use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, Phone, User, Loader2, X, Eye, EyeOff, Sparkles } from "lucide-react";
+import { Lock, Phone, User, Loader2, X, Eye, EyeOff, Sparkles, ChevronDown } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { KenteDivider } from "@/components/brand/african-pattern";
+import { SUPPORTED_COUNTRIES, formatPhoneInput, normalizePhone, validatePhone } from "@/lib/meditike/helpers";
 
 interface AuthModalProps {
   open: boolean;
@@ -15,20 +16,36 @@ interface AuthModalProps {
 export function AuthModal({ open, onClose, onAuthed, initialMode = "login" }: AuthModalProps) {
   const [mode, setMode] = useState<"login" | "register">(initialMode);
   const [fullName, setFullName] = useState("");
+  const [countryCode, setCountryCode] = useState("228"); // Togo par défaut
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
 
   if (!open) return null;
+
+  const selectedCountry = SUPPORTED_COUNTRIES.find((c) => c.code === countryCode) || SUPPORTED_COUNTRIES[0];
+
+  function handlePhoneChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const formatted = formatPhoneInput(e.target.value);
+    setPhone(formatted);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
-      const body: any = { phone, password };
+      // Normaliser le numéro avec l'indicatif pays choisi
+      const normalizedPhone = normalizePhone(phone, countryCode);
+      if (!validatePhone(phone, countryCode)) {
+        const country = SUPPORTED_COUNTRIES.find((c) => c.code === countryCode);
+        throw new Error(`Numéro invalide. ${country?.name || "Togo"} attendu : ${country?.phoneLength || 8} chiffres.`);
+      }
+
+      const body: any = { phone: normalizedPhone, password };
       if (mode === "register") {
         body.action = "register";
         body.fullName = fullName;
@@ -107,10 +124,64 @@ export function AuthModal({ open, onClose, onAuthed, initialMode = "login" }: Au
                 </Field>
               )}
 
-              <Field label="Numéro WhatsApp (Togo)" icon={<Phone className="w-4 h-4" />}>
-                <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Ex: 90 12 34 56" className="auth-input" />
-              </Field>
-              <p className="text-[10px] text-muted-foreground -mt-2 pl-1">8 chiffres → automatiquement au format <span className="font-semibold">+228</span></p>
+              {/* Téléphone avec sélecteur de pays */}
+              <div>
+                <label className="block text-[11px] font-bold tracking-wider text-muted-foreground uppercase mb-1.5">
+                  Numéro WhatsApp
+                </label>
+                <div className="relative flex">
+                  {/* Sélecteur de pays */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setCountryDropdownOpen(!countryDropdownOpen)}
+                      className="flex items-center gap-1.5 h-full pl-3 pr-2.5 bg-muted border border-r-0 border-border rounded-l-xl text-sm font-bold hover:bg-muted/70 transition-colors"
+                    >
+                      <span className="text-lg">{selectedCountry.flag}</span>
+                      <span className="text-xs">+{selectedCountry.code}</span>
+                      <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                    </button>
+                    {countryDropdownOpen && (
+                      <div className="absolute top-full left-0 mt-1 z-20 bg-white border border-border rounded-xl shadow-xl max-h-60 overflow-y-auto w-56">
+                        {SUPPORTED_COUNTRIES.map((c) => (
+                          <button
+                            key={c.code}
+                            type="button"
+                            onClick={() => {
+                              setCountryCode(c.code);
+                              setCountryDropdownOpen(false);
+                              setPhone(""); // reset phone when country changes
+                            }}
+                            className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-muted transition-colors ${c.code === countryCode ? "bg-emerald-50" : ""}`}
+                          >
+                            <span className="text-lg">{c.flag}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold">{c.name}</p>
+                              <p className="text-[10px] text-muted-foreground">+{c.code}</p>
+                            </div>
+                            {c.code === countryCode && <span className="text-emerald-600 text-xs font-bold">✓</span>}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  {/* Champ téléphone */}
+                  <div className="relative flex-1">
+                    <input
+                      type="tel"
+                      required
+                      value={phone}
+                      onChange={handlePhoneChange}
+                      placeholder={Array(selectedCountry.phoneLength).fill("0").join("").replace(/(\d{2})/g, "$1 ").trim()}
+                      className="auth-input-phone"
+                      autoComplete="tel-national"
+                    />
+                  </div>
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-1.5 pl-1">
+                  {selectedCountry.flag} {selectedCountry.name} · {selectedCountry.phoneLength} chiffres · format automatique avec espaces
+                </p>
+              </div>
 
               <Field label="Mot de passe" icon={<Lock className="w-4 h-4" />}>
                 <div className="relative">
@@ -149,6 +220,23 @@ export function AuthModal({ open, onClose, onAuthed, initialMode = "login" }: Au
               transition: all 0.2s;
             }
             :global(.auth-input:focus) {
+              outline: none;
+              border-color: var(--primary);
+              box-shadow: 0 0 0 3px oklch(0.55 0.13 165 / 0.15);
+              background: white;
+            }
+            :global(.auth-input-phone) {
+              width: 100%;
+              padding: 0.625rem 0.875rem;
+              font-size: 0.875rem;
+              background: var(--muted);
+              border: 1px solid var(--border);
+              border-radius: 0 0.875rem 0.875rem 0;
+              font-weight: 500;
+              transition: all 0.2s;
+              letter-spacing: 0.05em;
+            }
+            :global(.auth-input-phone:focus) {
               outline: none;
               border-color: var(--primary);
               box-shadow: 0 0 0 3px oklch(0.55 0.13 165 / 0.15);

@@ -1,31 +1,127 @@
 /**
- * Helpers MediTike — formatage téléphone Togo, devises, dates, validation.
+ * Helpers MediTike — formatage téléphone multi-pays, devises, dates, validation.
  */
 
-/** Normalise un numéro de téléphone togolais en format international +228XXXXXXXX. */
-export function normalizeTogoPhone(input: string): string {
-  if (!input) return "";
-  let clean = input.replace(/[^0-9+]/g, "");
-  if (!clean) return "";
-  const digitsOnly = clean.replace("+", "");
-  if (digitsOnly.length === 8) return "+228" + digitsOnly;
-  if (digitsOnly.length === 11 && digitsOnly.startsWith("228")) return "+" + digitsOnly;
-  if (!clean.startsWith("+")) return "+228" + clean;
-  return clean;
+/** Pays supportés avec indicatif international. */
+export interface Country {
+  code: string;      // indicatif sans le +, ex: "228"
+  name: string;      // nom affiché
+  flag: string;      // emoji drapeau
+  phoneLength: number; // nombre de chiffres du numéro local (sans indicatif)
 }
 
-/** Formate pour affichage: +228 XX XX XX XX */
-export function formatTogoPhone(input: string): string {
+export const SUPPORTED_COUNTRIES: Country[] = [
+  { code: "228", name: "Togo", flag: "🇹🇬", phoneLength: 8 },
+  { code: "229", name: "Bénin", flag: "🇧🇯", phoneLength: 8 },
+  { code: "225", name: "Côte d'Ivoire", flag: "🇨🇮", phoneLength: 10 },
+  { code: "233", name: "Ghana", flag: "🇬🇭", phoneLength: 9 },
+  { code: "226", name: "Burkina Faso", flag: "🇧🇫", phoneLength: 8 },
+  { code: "221", name: "Sénégal", flag: "🇸🇳", phoneLength: 9 },
+  { code: "223", name: "Mali", flag: "🇲🇱", phoneLength: 8 },
+  { code: "227", name: "Niger", flag: "🇳🇪", phoneLength: 8 },
+  { code: "224", name: "Guinée", flag: "🇬🇳", phoneLength: 9 },
+  { code: "237", name: "Cameroun", flag: "🇨🇲", phoneLength: 9 },
+  { code: "33", name: "France", flag: "🇫🇷", phoneLength: 9 },
+  { code: "1", name: "USA/Canada", flag: "🇺🇸", phoneLength: 10 },
+];
+
+/** Trouve un pays par son code indicatif. */
+export function findCountryByCode(code: string): Country | undefined {
+  return SUPPORTED_COUNTRIES.find((c) => c.code === code);
+}
+
+/**
+ * Normalise un numéro de téléphone avec indicatif pays.
+ * @param input numéro saisi (chiffres uniquement, ou avec espaces)
+ * @param countryCode code indicatif sans le + (ex: "228" pour Togo)
+ * @returns format international: +228XXXXXXXX
+ */
+export function normalizePhone(input: string, countryCode: string = "228"): string {
+  if (!input) return "";
+  // Extraire uniquement les chiffres
+  const digits = input.replace(/[^0-9]/g, "");
+  if (!digits) return "";
+
+  // Si l'utilisateur a déjà tapé l'indicatif, on le retire
+  const country = findCountryByCode(countryCode);
+  const expectedLength = country?.phoneLength || 8;
+
+  // Si le nombre de chiffres correspond exactement à la longueur locale
+  if (digits.length === expectedLength) {
+    return `+${countryCode}${digits}`;
+  }
+
+  // Si l'utilisateur a tapé l'indicatif + les chiffres locaux
+  if (digits.length === countryCode.length + expectedLength && digits.startsWith(countryCode)) {
+    return `+${digits}`;
+  }
+
+  // Si ça commence déjà par +, on garde tel quel
+  if (input.startsWith("+")) {
+    return input.replace(/[^0-9+]/g, "");
+  }
+
+  // Fallback: on préfixe avec l'indicatif
+  return `+${countryCode}${digits}`;
+}
+
+/**
+ * Formate un numéro de téléphone pour affichage avec espaces.
+ * Ex: "90123456" → "90 12 34 56"
+ * Ex: "+22890123456" → "+228 90 12 34 56"
+ * @param input numéro saisi ou stocké
+ * @param countryCode indicatif pour le formatage (défaut: 228 Togo)
+ */
+export function formatPhone(input: string, countryCode: string = "228"): string {
   if (!input) return "";
   const clean = input.replace(/[^0-9]/g, "");
-  if (clean.length === 8) {
-    return `+228 ${clean.slice(0, 2)} ${clean.slice(2, 4)} ${clean.slice(4, 6)} ${clean.slice(6, 8)}`;
+
+  // Si on a un numéro avec indicatif
+  if (clean.startsWith(countryCode) && clean.length > countryCode.length) {
+    const local = clean.slice(countryCode.length);
+    return `+${countryCode} ${groupDigits(local)}`;
   }
-  if (clean.length === 11 && clean.startsWith("228")) {
-    const m = clean.slice(3);
-    return `+228 ${m.slice(0, 2)} ${m.slice(2, 4)} ${m.slice(4, 6)} ${m.slice(6, 8)}`;
+
+  // Si c'est juste le numéro local
+  if (clean.length <= (findCountryByCode(countryCode)?.phoneLength || 8)) {
+    return groupDigits(clean);
   }
+
   return input;
+}
+
+/** Regroupe les chiffres par 2 pour la lisibilité. */
+function groupDigits(digits: string): string {
+  const groups: string[] = [];
+  for (let i = 0; i < digits.length; i += 2) {
+    groups.push(digits.slice(i, i + 2));
+  }
+  return groups.join(" ");
+}
+
+/**
+ * Formate un numéro en temps réel pendant la saisie.
+ * Ajoute automatiquement des espaces tous les 2 chiffres.
+ * @param input ce que l'utilisateur tape
+ * @returns texte formaté avec espaces
+ */
+export function formatPhoneInput(input: string): string {
+  // Garder uniquement les chiffres
+  const digits = input.replace(/[^0-9]/g, "");
+  if (!digits) return "";
+  // Grouper par 2
+  return groupDigits(digits);
+}
+
+// ─── Compatibilité avec l'ancien code (alias) ──────────────────
+/** @deprecated Utilisez normalizePhone(input, countryCode) à la place */
+export function normalizeTogoPhone(input: string): string {
+  return normalizePhone(input, "228");
+}
+
+/** @deprecated Utilisez formatPhone(input, countryCode) à la place */
+export function formatTogoPhone(input: string): string {
+  return formatPhone(input, "228");
 }
 
 /** Formate un prix en FCFA. */
@@ -107,6 +203,20 @@ export function validatePassword(password: string): string | null {
 export function validateTogoPhone(input: string): boolean {
   const normalized = normalizeTogoPhone(input);
   return /^\+228\d{8}$/.test(normalized);
+}
+
+/**
+ * Valide un numéro de téléphone avec indicatif pays.
+ * @param input numéro saisi
+ * @param countryCode indicatif (ex: "228" pour Togo)
+ * @returns true si le numéro est valide pour ce pays
+ */
+export function validatePhone(input: string, countryCode: string = "228"): boolean {
+  const country = findCountryByCode(countryCode);
+  if (!country) return false;
+  const normalized = normalizePhone(input, countryCode);
+  const expectedLength = countryCode.length + country.phoneLength;
+  return new RegExp(`^\\+${countryCode}\\d{${country.phoneLength}}$`).test(normalized);
 }
 
 /** Génère un identifiant aléatoire sécurisé (URL admin secrète). */

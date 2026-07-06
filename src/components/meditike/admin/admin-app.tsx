@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { KenteDivider } from "@/components/brand/african-pattern";
-import { formatPrice, relativeTimeFr, validateTogoPhone } from "@/lib/meditike/helpers";
+import { formatPrice, relativeTimeFr } from "@/lib/meditike/helpers";
 import { toast } from "sonner";
 
 interface AdminAppProps {
@@ -357,7 +357,7 @@ function NewPharmacyModal({ onClose, onCreated }: { onClose: () => void; onCreat
 
           <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground pt-3">Compte pharmacien</div>
           <input required placeholder="Nom pharmacien (optionnel)" value={form.pharmacistFullName} onChange={(e) => setForm({ ...form, pharmacistFullName: e.target.value })} className="admin-input" />
-          <input required placeholder="Téléphone pharmacien (login) *" value={form.pharmacistPhone} onChange={(e) => setForm({ ...form, pharmacistPhone: e.target.value })} className="admin-input" />
+          <input required placeholder="Téléphone pharmacien (+228XXXXXXXX) *" value={form.pharmacistPhone} onChange={(e) => setForm({ ...form, pharmacistPhone: e.target.value })} className="admin-input" />
           <input required type="password" placeholder="Mot de passe pharmacien * (min 8 car.)" value={form.pharmacistPassword} onChange={(e) => setForm({ ...form, pharmacistPassword: e.target.value })} className="admin-input" />
 
           <div className="flex gap-2 pt-2">

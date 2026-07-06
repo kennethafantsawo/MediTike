@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAdmin, logAdminAction } from "@/lib/meditike/admin-guard";
-import { normalizeTogoPhone, validateTogoPhone, validatePassword } from "@/lib/meditike/helpers";
+import { normalizePhone, validatePassword } from "@/lib/meditike/helpers";
 import bcrypt from "bcryptjs";
 
 /**
@@ -60,9 +60,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Téléphone du pharmacien requis" }, { status: 400 });
     }
 
-    const cleanPharmaPhone = normalizeTogoPhone(pharmacistPhone);
-    if (!validateTogoPhone(cleanPharmaPhone)) {
-      return NextResponse.json({ error: "Téléphone pharmacien invalide" }, { status: 400 });
+    // Accepter tous les indicatifs pays (le numéro doit commencer par +)
+    const cleanPharmaPhone = pharmacistPhone.startsWith("+")
+      ? pharmacistPhone.replace(/[^0-9+]/g, "")
+      : normalizePhone(pharmacistPhone);
+    if (!cleanPharmaPhone || !/^\+\d{6,15}$/.test(cleanPharmaPhone)) {
+      return NextResponse.json({ error: "Téléphone pharmacien invalide (format attendu: +XXX numéro)" }, { status: 400 });
     }
 
     const pwdError = validatePassword(pharmacistPassword || "");
