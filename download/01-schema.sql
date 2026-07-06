@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS "AuditLog" (
   "adminId" TEXT NOT NULL,
   action TEXT NOT NULL,
   details JSONB,
-  ip INET DEFAULT 'unknown'::INET,
+  ip INET,
   "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS "AuditLog_adminId_idx" ON "AuditLog"("adminId");

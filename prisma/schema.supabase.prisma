@@ -141,7 +141,7 @@ model AuditLog {
   admin     User     @relation(fields: [adminId], references: [id])
   action    String
   details   Json?
-  ip        String? @default("unknown")::Inet
+  ip        String?
   createdAt DateTime @default(now())
 
   @@index([adminId])
