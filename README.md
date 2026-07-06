@@ -212,19 +212,6 @@ La liste officielle du Ministère de la Santé du Togo est intégrée :
 
 ---
 
-## 🔑 Comptes de démonstration
-
-| Rôle | Téléphone | Mot de passe |
-|---|---|---|
-| Admin | `+228 90 00 00 01` | `AdminMediTike2024!` |
-| Client | `+228 90 12 34 56` | `Client2024!` |
-| Pharmacien (Tokoin) | `+228 22 25 45 45` | `Pharma2024!` |
-| Pharmacien (Centrale) | `+228 22 12 00 00` | `Pharma2024!` |
-
-⚠️ **En production** : changez ces mots de passe après la première initialisation.
-
----
-
 ## 📂 Structure du projet
 
 ```
