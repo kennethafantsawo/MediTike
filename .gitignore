@@ -83,3 +83,6 @@ server.log
 # Process IDs & runtime files
 *.pid
 .zscripts/dev.pid
+
+# APK Android (trop gros pour git, servi depuis /public)
+/public/MediTike.apk

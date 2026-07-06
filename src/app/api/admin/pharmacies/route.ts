@@ -139,8 +139,17 @@ export async function POST(req: NextRequest) {
 }
 
 /**
- * DELETE /api/admin/pharmacies — désactive une pharmacie (ne supprime pas)
- * Body: { pharmacyId }
+ * DELETE /api/admin/pharmacies — désactive, réactive ou supprime une pharmacie
+ * Query params:
+ *   - id: ID pharmacie (requis)
+ *   - action: "deactivate" (défaut) | "activate" | "delete"
+ *
+ * - action=deactivate : désactive la pharmacie + ses pharmaciens (comportement historique)
+ * - action=activate   : réactive la pharmacie + ses pharmaciens
+ * - action=delete     : supprime définitivement si la pharmacie n'a pas d'historique
+ *                       de réponses. Sinon, désactive pour préserver l'historique.
+ *                       Les comptes pharmaciens sans historique sont supprimés ;
+ *                       ceux avec historique sont désactivés.
  */
 export async function DELETE(req: NextRequest) {
   const guard = await requireAdmin();
@@ -149,16 +158,124 @@ export async function DELETE(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const pharmacyId = searchParams.get("id");
+    const action = searchParams.get("action") || "deactivate";
+
     if (!pharmacyId) {
       return NextResponse.json({ error: "ID pharmacie requis" }, { status: 400 });
     }
 
-    const pharmacy = await db.pharmacy.update({
+    const pharmacy = await db.pharmacy.findUnique({
+      where: { id: pharmacyId },
+      include: {
+        _count: {
+          select: {
+            productResponses: true,
+          },
+        },
+      },
+    });
+
+    if (!pharmacy) {
+      return NextResponse.json({ error: "Pharmacie introuvable" }, { status: 404 });
+    }
+
+    // ── action=activate : réactiver la pharmacie ───────────────────
+    if (action === "activate") {
+      await db.pharmacy.update({
+        where: { id: pharmacyId },
+        data: { isActive: true },
+      });
+      await db.user.updateMany({
+        where: { pharmacyId },
+        data: { isActive: true },
+      });
+      await logAdminAction(guard.session.userId, "activate_pharmacy", {
+        pharmacyId,
+        pharmacyName: pharmacy.name,
+      }, req);
+      return NextResponse.json({ ok: true, action: "activated" });
+    }
+
+    // ── action=delete : supprimer définitivement (si pas d'historique) ─
+    if (action === "delete") {
+      const hasHistory = pharmacy._count.productResponses > 0;
+
+      if (hasHistory) {
+        // Préserver l'historique : désactiver au lieu de supprimer
+        await db.pharmacy.update({
+          where: { id: pharmacyId },
+          data: { isActive: false },
+        });
+        await db.user.updateMany({
+          where: { pharmacyId },
+          data: { isActive: false },
+        });
+        await logAdminAction(
+          guard.session.userId,
+          "delete_pharmacy_downgraded",
+          {
+            pharmacyId,
+            pharmacyName: pharmacy.name,
+            reason: "Historique de réponses — désactivation au lieu de suppression",
+          },
+          req
+        );
+        return NextResponse.json({
+          ok: true,
+          action: "deactivated",
+          message:
+            "Cette pharmacie a de l'historique. Elle a été désactivée au lieu d'être supprimée.",
+        });
+      }
+
+      // Pas d'historique côté pharmacie : on peut supprimer complètement.
+      // On distingue les pharmaciens selon qu'ils ont (ou non) des réponses
+      // (par ex. s'ils ont changé de pharmacie par le passé).
+      const pharmacists = await db.user.findMany({
+        where: { pharmacyId },
+        include: {
+          _count: {
+            select: { productResponses: true },
+          },
+        },
+      });
+
+      let pharmacistsDeleted = 0;
+      let pharmacistsDeactivated = 0;
+
+      await db.$transaction(async (tx) => {
+        for (const pharma of pharmacists) {
+          if (pharma._count.productResponses > 0) {
+            // Conserver l'historique : désactiver et détacher
+            await tx.user.update({
+              where: { id: pharma.id },
+              data: { isActive: false, pharmacyId: null },
+            });
+            pharmacistsDeactivated++;
+          } else {
+            await tx.user.delete({ where: { id: pharma.id } });
+            pharmacistsDeleted++;
+          }
+        }
+        // PharmacyDuty.onDelete = SetNull → Prisma gère la nullification
+        await tx.pharmacy.delete({ where: { id: pharmacyId } });
+      });
+
+      await logAdminAction(guard.session.userId, "delete_pharmacy", {
+        pharmacyId,
+        pharmacyName: pharmacy.name,
+        pharmacistsDeleted,
+        pharmacistsDeactivated,
+      }, req);
+
+      return NextResponse.json({ ok: true, action: "deleted" });
+    }
+
+    // ── action=deactivate (défaut) : désactiver ───────────────────
+    await db.pharmacy.update({
       where: { id: pharmacyId },
       data: { isActive: false },
     });
-
-    // Désactiver aussi les comptes pharmaciens liés
     await db.user.updateMany({
       where: { pharmacyId },
       data: { isActive: false },
@@ -169,7 +286,7 @@ export async function DELETE(req: NextRequest) {
       pharmacyName: pharmacy.name,
     }, req);
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, action: "deactivated" });
   } catch (err: any) {
     console.error("[admin pharmacies DELETE] error:", err);
     return NextResponse.json(

@@ -82,7 +82,7 @@ export function Landing({ onAuthed }: LandingProps) {
                   <a href="#garde" className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-white text-foreground font-bold text-sm rounded-2xl border-2 border-border hover:border-emerald-500/40 hover:bg-emerald-50/50 transition-all">
                     <Clock className="w-4 h-4 text-emerald-600" /> Voir les pharmacies de garde
                   </a>
-                  <a href="https://github.com/kennethafantsawo/MediTike/releases/latest" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-foreground text-background font-bold text-sm rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all">
+                  <a href="/MediTike.apk" download="MediTike.apk" className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-foreground text-background font-bold text-sm rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all">
                     <Download className="w-4 h-4" /> Télécharger l'app Android
                   </a>
                 </motion.div>

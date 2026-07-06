@@ -233,10 +233,34 @@ function PharmaciesTab() {
 
   async function toggleActive(id: string, current: boolean) {
     if (!confirm(current ? "Désactiver cette pharmacie ? Les pharmaciens liés ne pourront plus se connecter." : "Réactiver cette pharmacie ?")) return;
-    const res = await fetch(`/api/admin/pharmacies?id=${id}`, { method: "DELETE" });
+    const action = current ? "deactivate" : "activate";
+    const res = await fetch(`/api/admin/pharmacies?id=${id}&action=${action}`, { method: "DELETE" });
     const data = await res.json();
     if (!res.ok) { toast.error(data.error); return; }
     toast.success(current ? "Pharmacie désactivée" : "Pharmacie réactivée");
+    load();
+  }
+
+  /**
+   * Supprime définitivement une pharmacie. Si elle a de l'historique
+   * (réponses liées), l'API la désactive à la place et renvoie un message.
+   */
+  async function deletePharmacy(id: string, name: string, responsesCount: number) {
+    const hasHistory = responsesCount > 0;
+    const confirmMsg = hasHistory
+      ? `« ${name} » a de l'historique (${responsesCount} réponse(s)). Elle sera désactivée au lieu d'être supprimée. Continuer ?`
+      : `Êtes-vous sûr de vouloir supprimer définitivement la pharmacie « ${name} » ? Cette action est irréversible.`;
+    if (!confirm(confirmMsg)) return;
+    const res = await fetch(`/api/admin/pharmacies?id=${id}&action=delete`, { method: "DELETE" });
+    const data = await res.json();
+    if (!res.ok) { toast.error(data.error); return; }
+    if (data.action === "deactivated") {
+      toast.success("Pharmacie désactivée (historique préservé)", {
+        description: data.message,
+      });
+    } else {
+      toast.success("Pharmacie supprimée définitivement");
+    }
     load();
   }
 
@@ -286,9 +310,19 @@ function PharmaciesTab() {
                     </span>
                   </td>
                   <td className="p-3 text-right">
-                    <button onClick={() => toggleActive(p.id, p.isActive)} className="text-xs font-bold text-muted-foreground hover:text-foreground">
-                      {p.isActive ? "Désactiver" : "Activer"}
-                    </button>
+                    <div className="inline-flex items-center gap-3">
+                      <button onClick={() => toggleActive(p.id, p.isActive)} className="text-xs font-bold text-muted-foreground hover:text-foreground">
+                        {p.isActive ? "Désactiver" : "Activer"}
+                      </button>
+                      <button
+                        onClick={() => deletePharmacy(p.id, p.name, p._count?.productResponses || 0)}
+                        className="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:text-red-700 hover:bg-red-50 px-2 py-1 rounded-lg transition-colors"
+                        title="Supprimer définitivement"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        Supprimer
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -775,10 +809,37 @@ function ImportTab() {
 function RequestsTab() {
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetch("/api/requests").then((r) => r.json()).then((data) => { setRequests(data.requests || []); setLoading(false); }).catch(() => setLoading(false));
+  const load = useCallback(() => {
+    fetch("/api/requests")
+      .then((r) => r.json())
+      .then((data) => { setRequests(data.requests || []); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  /** Supprime une demande après confirmation. */
+  async function handleDelete(req: any) {
+    const responsesCount = req.responses?.length || 0;
+    const msg = responsesCount > 0
+      ? `Supprimer la demande « ${req.productName} » ? Les ${responsesCount} réponse(s) et photos liées seront aussi supprimées. Cette action est irréversible.`
+      : `Supprimer la demande « ${req.productName} » ? Les photos liées seront aussi supprimées. Cette action est irréversible.`;
+    if (!confirm(msg)) return;
+    setDeletingId(req.id);
+    try {
+      const res = await fetch(`/api/admin/requests?id=${req.id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      toast.success("Demande supprimée");
+      load();
+    } catch (err: any) {
+      toast.error(err.message || "Erreur lors de la suppression");
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   return (
     <div>
@@ -797,6 +858,15 @@ function RequestsTab() {
                 <p className="text-xs text-emerald-700 font-bold mt-0.5">{req.responses?.length || 0} réponse(s)</p>
               </div>
               <span className="text-[10px] font-bold uppercase px-2 py-1 rounded-full bg-muted">{req.status}</span>
+              <button
+                onClick={() => handleDelete(req)}
+                disabled={deletingId === req.id}
+                aria-label={`Supprimer la demande ${req.productName}`}
+                title="Supprimer définitivement"
+                className="shrink-0 p-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {deletingId === req.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+              </button>
             </div>
           ))}
         </div>

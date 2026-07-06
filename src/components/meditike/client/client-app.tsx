@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle, Send, ImagePlus, X, Loader2, Clock, CheckCircle2,
   Phone, MapPin, Pill, ChevronRight, FileText, AlertCircle, Trash2, RefreshCw, Bell, Building2,
-  BarChart3,
+  BarChart3, Settings,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { KenteDivider } from "@/components/brand/african-pattern";
@@ -13,6 +13,7 @@ import { DutyListView } from "@/components/meditike/shared/duty-list-view";
 import { PharmacyRating } from "@/components/meditike/shared/pharmacy-rating";
 import { ChatThread, useChatUnread } from "@/components/meditike/shared/chat-thread";
 import { ClientStats } from "@/components/meditike/client/client-stats";
+import { ClientSettings } from "@/components/meditike/client/client-settings";
 import { useWhatsAppNotification } from "@/lib/meditike/use-whatsapp-notification";
 import { toast } from "sonner";
 
@@ -57,8 +58,9 @@ interface ClientAppProps {
   onLogout: () => void;
 }
 
-export function ClientApp({ user, onLogout }: ClientAppProps) {
-  const [view, setView] = useState<"new" | "history" | "duty" | "stats">("new");
+export function ClientApp({ user: initialUser, onLogout }: ClientAppProps) {
+  const [view, setView] = useState<"new" | "history" | "duty" | "stats" | "settings">("new");
+  const [user, setUser] = useState(initialUser);
   const [requests, setRequests] = useState<ClientRequest[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -114,7 +116,7 @@ export function ClientApp({ user, onLogout }: ClientAppProps) {
 
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-6 pb-20">
         {/* TABS */}
-        <div className="grid grid-cols-4 p-1 bg-muted rounded-2xl mb-5 sticky top-14 z-20">
+        <div className="grid grid-cols-5 p-1 bg-muted rounded-2xl mb-5 sticky top-14 z-20">
           <button onClick={() => setView("new")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${view === "new" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
             <MessageCircle className="w-4 h-4" /> Demande
           </button>
@@ -127,6 +129,9 @@ export function ClientApp({ user, onLogout }: ClientAppProps) {
           </button>
           <button onClick={() => setView("stats")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${view === "stats" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
             <BarChart3 className="w-4 h-4" /> Stats
+          </button>
+          <button onClick={() => setView("settings")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${view === "settings" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
+            <Settings className="w-4 h-4" /> Paramètres
           </button>
         </div>
 
@@ -162,9 +167,13 @@ export function ClientApp({ user, onLogout }: ClientAppProps) {
             <motion.div key="duty" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
               <DutyListView />
             </motion.div>
-          ) : (
+          ) : view === "stats" ? (
             <motion.div key="stats" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
               <ClientStats />
+            </motion.div>
+          ) : (
+            <motion.div key="settings" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+              <ClientSettings onProfileUpdated={(fullName) => setUser({ ...user, fullName })} />
             </motion.div>
           )}
         </AnimatePresence>

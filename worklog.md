@@ -172,3 +172,42 @@ Stage Summary:
 - 11 permissions Android ajoutées
 - Script de génération de mots de passe fonctionnel
 - Fichiers CSV + SQL prêts pour Supabase
+
+---
+Task ID: APK-VERSION-UPDATE
+Agent: general-purpose
+Task: APK dans public + API version + update-checker depuis le site
+
+Work Log:
+- Copié APK dans /public/MediTike.apk
+- Créé /public/version.json
+- Créé /api/version route
+- Refait update-checker.tsx (vérifie /version.json au lieu de GitHub)
+- Ajouté téléchargement + installation directe
+- Modifié bouton landing page (lien /MediTike.apk au lieu de GitHub)
+- Ajouté /public/MediTike.apk au .gitignore
+- Lint validé
+
+Stage Summary:
+- APK téléchargeable directement depuis le site
+- Vérification mise à jour depuis /version.json (pas GitHub)
+- Téléchargement + installation directe dans l'app
+
+
+---
+Task ID: ADMIN-DELETE-CLIENT-SETTINGS
+Agent: general-purpose
+Task: Admin suppression pharmacies + demandes + client paramètres
+
+Work Log:
+- Modifié API /api/admin/pharmacies (DELETE avec action=delete)
+- Créé API /api/admin/requests (DELETE)
+- Créé API /api/client/settings (GET/PATCH)
+- Créé client-settings.tsx
+- Modifié admin-app.tsx (boutons suppression)
+- Modifié client-app.tsx (onglet Paramètres)
+- Lint validé
+
+Stage Summary:
+- Admin peut supprimer définitivement pharmacies et demandes
+- Client peut changer son mot de passe et modifier son profil
