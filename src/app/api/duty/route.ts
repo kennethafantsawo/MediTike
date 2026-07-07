@@ -8,7 +8,24 @@ import { getMondayUTC } from "@/lib/meditike/helpers";
  * Query params: ?week=YYYY-MM-DD (lundi)
  *
  * Pas d'auth requise: c'est une info publique.
+ * Optimisé : cache en mémoire 5 minutes pour réduire la charge DB.
  */
+
+// Cache en mémoire simple (5 minutes)
+const CACHE_TTL = 5 * 60 * 1000; // 5 min
+const cache = new Map<string, { data: any; expires: number }>();
+
+function getCached(key: string): any | null {
+  const entry = cache.get(key);
+  if (entry && entry.expires > Date.now()) return entry.data;
+  if (entry) cache.delete(key);
+  return null;
+}
+
+function setCached(key: string, data: any) {
+  cache.set(key, { data, expires: Date.now() + CACHE_TTL });
+}
+
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
@@ -25,24 +42,49 @@ export async function GET(req: Request) {
     }
     weekStart.setUTCHours(0, 0, 0, 0);
 
-    const duties = await db.pharmacyDuty.findMany({
-      where: { weekStart },
-      orderBy: [{ name: "asc" }],
-    });
+    // Clé de cache basée sur la semaine
+    const cacheKey = `duty_${weekStart.toISOString().slice(0, 10)}`;
+    const cached = getCached(cacheKey);
+    if (cached) {
+      return NextResponse.json(cached, {
+        headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },
+      });
+    }
 
-    // Compter les semaines disponibles pour navigation
-    const availableWeeks = await db.pharmacyDuty.groupBy({
-      by: ["weekStart"],
-      orderBy: { weekStart: "asc" },
-      take: 30,
-    });
+    // Requêtes parallèles pour optimiser
+    const [duties, availableWeeks] = await Promise.all([
+      db.pharmacyDuty.findMany({
+        where: { weekStart },
+        orderBy: [{ name: "asc" }],
+        select: {
+          id: true,
+          name: true,
+          address: true,
+          phone1: true,
+          phone2: true,
+          weekStart: true,
+          weekEnd: true,
+        },
+      }),
+      db.pharmacyDuty.groupBy({
+        by: ["weekStart"],
+        orderBy: { weekStart: "asc" },
+        take: 30,
+      }),
+    ]);
 
-    return NextResponse.json({
+    const responseData = {
       weekStart,
       duties,
       total: duties.length,
-      // Normaliser les dates en format YYYY-MM-DD pour comparaison côté client
       availableWeeks: availableWeeks.map((w) => new Date(w.weekStart).toISOString().slice(0, 10)),
+    };
+
+    // Mettre en cache
+    setCached(cacheKey, responseData);
+
+    return NextResponse.json(responseData, {
+      headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },
     });
   } catch (err: any) {
     console.error("[duty GET] error:", err);

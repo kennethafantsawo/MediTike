@@ -10,6 +10,7 @@ import { LogoMark } from "@/components/brand/logo";
 import { KenteDivider } from "@/components/brand/african-pattern";
 import { formatPrice, relativeTimeFr, MAX_PHOTO_SIZE } from "@/lib/meditike/helpers";
 import { DutyListView } from "@/components/meditike/shared/duty-list-view";
+import { InAppNotifications } from "@/components/meditike/shared/in-app-notifications";
 import { PharmacyRating } from "@/components/meditike/shared/pharmacy-rating";
 import { ChatThread, useChatUnread } from "@/components/meditike/shared/chat-thread";
 import { ClientStats } from "@/components/meditike/client/client-stats";
@@ -76,9 +77,14 @@ export function ClientApp({ user: initialUser, onLogout }: ClientAppProps) {
 
   useEffect(() => {
     loadRequests();
-    // Polling toutes les 30s pour les nouvelles réponses
-    const interval = setInterval(loadRequests, 30000);
-    return () => clearInterval(interval);
+    // Polling optimisé : 45s, pause quand onglet non visible
+    let interval: NodeJS.Timeout | null = null;
+    const start = () => { if (!interval) interval = setInterval(loadRequests, 45000); };
+    const stop = () => { if (interval) { clearInterval(interval); interval = null; } };
+    const onVisibility = () => { document.hidden ? stop() : start(); };
+    start();
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => { stop(); document.removeEventListener("visibilitychange", onVisibility); };
   }, [loadRequests]);
 
   const unreadCount = requests.reduce(
@@ -525,6 +531,8 @@ function ResponseCard({ response, user }: { response: Response; user: any }) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <InAppNotifications type="client" />
     </div>
   );
 }

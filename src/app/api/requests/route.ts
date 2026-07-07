@@ -135,7 +135,10 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    return NextResponse.json({ requests });
+    return NextResponse.json(
+      { requests },
+      { headers: { "Cache-Control": "private, no-cache" } }
+    );
   } catch (err: any) {
     console.error("[requests GET] error:", err);
     return NextResponse.json(

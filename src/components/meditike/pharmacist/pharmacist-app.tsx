@@ -13,6 +13,7 @@ import {
   normalizePhone, findCountryByCode,
 } from "@/lib/meditike/helpers";
 import { DutyListView } from "@/components/meditike/shared/duty-list-view";
+import { InAppNotifications } from "@/components/meditike/shared/in-app-notifications";
 import { PharmacistStats } from "@/components/meditike/pharmacist/pharmacist-stats";
 import { PharmacistSettings } from "@/components/meditike/pharmacist/pharmacist-settings";
 import { toast } from "sonner";
@@ -68,9 +69,14 @@ export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
 
   useEffect(() => {
     load();
-    // Polling toutes les 20s pour nouvelles demandes
-    const interval = setInterval(load, 20000);
-    return () => clearInterval(interval);
+    // Polling optimisé : 30s, pause quand onglet non visible
+    let interval: NodeJS.Timeout | null = null;
+    const start = () => { if (!interval) interval = setInterval(load, 30000); };
+    const stop = () => { if (interval) { clearInterval(interval); interval = null; } };
+    const onVisibility = () => { document.hidden ? stop() : start(); };
+    start();
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => { stop(); document.removeEventListener("visibilitychange", onVisibility); };
   }, [load]);
 
   const newRequests = requests.filter((r) => r.responses.length === 0);
@@ -219,6 +225,8 @@ export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
           />
         )}
       </AnimatePresence>
+
+      <InAppNotifications type="pharmacist" />
     </div>
   );
 }
