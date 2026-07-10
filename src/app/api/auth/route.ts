@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
-import { setSession, getSession, clearSession } from "@/lib/meditike/session";
+import { setSession, getSession, clearSession, getClientIP } from "@/lib/meditike/session";
 import { normalizePhone, validatePassword } from "@/lib/meditike/helpers";
+import { rateLimit, getRateLimitIdentifier } from "@/lib/meditike/rate-limit";
 
 /**
  * POST /api/auth — inscription client, login (tous rôles)
@@ -13,6 +14,15 @@ import { normalizePhone, validatePassword } from "@/lib/meditike/helpers";
  */
 export async function POST(req: NextRequest) {
   try {
+    // ── Rate limiting : 5 tentatives par minute par IP ──
+    const ip = getRateLimitIdentifier(req);
+    const rl = rateLimit(ip, { windowMs: 60 * 1000, max: 5 });
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: "Trop de tentatives. Patientez 1 minute." },
+        { status: 429, headers: { "Retry-After": "60" } }
+      );
+    }
     const body = await req.json();
     const { action, phone, password, fullName, pharmacyId } = body;
 
