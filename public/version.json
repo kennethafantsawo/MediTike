@@ -1,5 +1,5 @@
 {
-  "version": "v1.5",
+  "version": "v1.6",
   "versionCode": 6,
   "apkUrl": "/MediTike.apk",
   "releaseNotes": "Notifications push système (comme WhatsApp) + plugin local-notifications Android",

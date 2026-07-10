@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { Bell, CheckCircle2, BellRing } from "lucide-react";
+import { Bell, CheckCircle2 } from "lucide-react";
 
 interface PushNotificationsProps {
   type: "client" | "pharmacist";
@@ -23,157 +23,217 @@ interface RequestData {
 /**
  * Notifications push système (comme WhatsApp)
  *
- * - Demande la permission de notifications au démarrage
- * - Continue le polling MÊME quand l'app est en arrière-plan
- * - Affiche des notifications système (Notification API) quand l'app n'est pas visible
- * - Affiche des toasts quand l'app est visible
- * - Le service worker gère l'affichage et le clic sur notification
+ * Logique :
+ * 1. Au premier démarrage : enregistre tous les IDs actuels comme "baseline" (SANS notifier)
+ * 2. Ensuite : poll toutes les 15s, compare avec le baseline
+ * 3. Nouveaux éléments → notification système (si app cachée) ou toast (si app visible)
+ * 4. Le polling continue MÊME quand l'app est en arrière-plan
  */
 export function PushNotifications({ type }: PushNotificationsProps) {
-  const [permission, setPermission] = useState<NotificationPermission>("default");
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const typeRef = useRef(type);
+  const isInitializedRef = useRef(false);
+
   useEffect(() => {
     typeRef.current = type;
   }, [type]);
 
-  // Demander la permission au démarrage
+  // Demander la permission de notifications
   useEffect(() => {
     if (typeof window === "undefined" || !("Notification" in window)) return;
 
     if (Notification.permission === "default") {
-      // Attendre 5s après le chargement pour ne pas être trop intrusif
       const timer = setTimeout(() => {
         Notification.requestPermission().then((perm) => {
-          setPermission(perm);
+          console.log("[PushNotifications] Permission:", perm);
           if (perm === "granted") {
-            toast.success("🔔 Notifications activées ! Vous serez prévenu même quand l'app est en arrière-plan.", {
+            toast.success("🔔 Notifications activées ! Vous serez prévenu même en arrière-plan.", {
               duration: 5000,
             });
           }
         });
-      }, 5000);
+      }, 3000);
       return () => clearTimeout(timer);
     } else {
-      setPermission(Notification.permission);
+      console.log("[PushNotifications] Permission déjà:", Notification.permission);
     }
   }, []);
 
-  // Polling + notifications
+  // Polling principal
   useEffect(() => {
-    let isChecking = false;
+    /** Affiche une notification système */
+    function showSystemNotification(title: string, body: string, url: string) {
+      if (typeof window === "undefined") return;
 
-    async function checkForNewItems() {
-      if (isChecking) return; // Éviter les chevauchements
-      isChecking = true;
+      if ("Notification" in window && Notification.permission !== "granted") {
+        console.log("[PushNotifications] Pas de permission pour les notifications système");
+        return;
+      }
+
+      if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.ready.then((registration) => {
+          registration.showNotification(title, {
+            body,
+            icon: "/logo.svg",
+            badge: "/logo.svg",
+            vibrate: [200, 100, 200],
+            data: { url },
+            tag: "meditike-push",
+            requireInteraction: false,
+            silent: false,
+          });
+          console.log("[PushNotifications] Notification système affichée via SW");
+        }).catch((err) => {
+          console.log("[PushNotifications] Erreur SW:", err);
+          try {
+            const notif = new Notification(title, { body, icon: "/logo.svg" });
+            notif.onclick = () => { window.focus(); notif.close(); };
+          } catch {}
+        });
+      } else if ("Notification" in window && Notification.permission === "granted") {
+        try {
+          const notif = new Notification(title, { body, icon: "/logo.svg", tag: "meditike-push" });
+          notif.onclick = () => { window.focus(); notif.close(); };
+          console.log("[PushNotifications] Notification système affichée directement");
+        } catch (err) {
+          console.log("[PushNotifications] Erreur notification:", err);
+        }
+      }
+    }
+
+    async function check() {
+      const currentType = typeRef.current;
+      const knownKey =
+        currentType === "client"
+          ? "meditike_push_known_v2"
+          : "meditike_push_known_pharma_v2";
+      const baselineKey =
+        currentType === "client"
+          ? "meditike_push_baseline_v2"
+          : "meditike_push_baseline_pharma_v2";
 
       try {
-        const currentType = typeRef.current;
         const res = await fetch("/api/requests");
-        if (!res.ok) return;
+        if (!res.ok) {
+          console.log("[PushNotifications] API error:", res.status);
+          return;
+        }
         const data = await res.json();
         const requests: RequestData[] = data.requests || [];
 
-        const knownIdsKey =
-          currentType === "client"
-            ? "meditike_known_response_ids"
-            : "meditike_known_request_ids";
-
+        // Charger les IDs connus
         let knownIds: string[] = [];
         try {
-          const raw = localStorage.getItem(knownIdsKey);
+          const raw = localStorage.getItem(knownKey);
           knownIds = raw ? JSON.parse(raw) : [];
         } catch {
           knownIds = [];
         }
 
+        // Vérifier si le baseline a déjà été fait
+        const baselineDone = localStorage.getItem(baselineKey) === "true";
+
+        if (!baselineDone) {
+          // PREMIER DÉMARRAGE : enregistrer tous les IDs actuels comme baseline SANS notifier
+          const allIds: string[] = [];
+          if (currentType === "client") {
+            for (const req of requests) {
+              if (req.responses) {
+                for (const resp of req.responses) {
+                  allIds.push(resp.id);
+                }
+              }
+            }
+          } else {
+            for (const req of requests) {
+              allIds.push(req.id);
+            }
+          }
+          localStorage.setItem(knownKey, JSON.stringify(allIds));
+          localStorage.setItem(baselineKey, "true");
+          console.log(`[PushNotifications] Baseline défini: ${allIds.length} IDs connus (pas de notification au démarrage)`);
+          isInitializedRef.current = true;
+          return;
+        }
+
+        // Vérifications suivantes : détecter les NOUVEAUX éléments
         const isAppVisible = !document.hidden;
+        const newItems: Array<{ title: string; body: string; url: string }> = [];
+        const allCurrentIds: string[] = [];
 
         if (currentType === "client") {
           // Côté client : détecter nouvelles réponses
-          const allResponseIds: string[] = [];
-          const newResponses: Array<{ pharmacyName: string; productName: string; responseId: string }> = [];
-
           for (const req of requests) {
             if (req.responses) {
               for (const resp of req.responses) {
-                allResponseIds.push(resp.id);
+                allCurrentIds.push(resp.id);
                 if (!knownIds.includes(resp.id)) {
-                  newResponses.push({
-                    pharmacyName: resp.pharmacy?.name || "Une pharmacie",
-                    productName: req.productName,
-                    responseId: resp.id,
+                  newItems.push({
+                    title: "🎉 Réponse reçue sur MediTike",
+                    body: `${resp.pharmacy?.name || "Une pharmacie"} a répondu à votre demande de "${req.productName}"`,
+                    url: "/",
                   });
                 }
               }
             }
           }
-
-          if (newResponses.length > 0) {
-            // Vibrer
-            if (typeof navigator !== "undefined" && navigator.vibrate) {
-              navigator.vibrate([200, 100, 200]);
-            }
-
-            for (const resp of newResponses.slice(0, 3)) {
-              const title = "🎉 Réponse reçue";
-              const body = `${resp.pharmacyName} a répondu à votre demande de "${resp.productName}"`;
-
-              if (isAppVisible) {
-                // App visible : toast
-                toast.success(body, {
-                  duration: 8000,
-                  icon: <CheckCircle2 className="w-4 h-4 text-emerald-600" />,
-                });
-              } else {
-                // App en arrière-plan : notification système
-                showSystemNotification(title, body, "/");
-              }
-            }
-          }
-
-          localStorage.setItem(knownIdsKey, JSON.stringify(allResponseIds));
         } else {
           // Côté pharmacien : détecter nouvelles demandes
-          const allRequestIds = requests.map((r) => r.id);
-          const newRequests = requests.filter((r) => !knownIds.includes(r.id));
-
-          if (newRequests.length > 0) {
-            if (typeof navigator !== "undefined" && navigator.vibrate) {
-              navigator.vibrate([200, 100, 200, 100, 200]);
-            }
-
-            for (const req of newRequests.slice(0, 3)) {
-              const title = "🔔 Nouvelle demande";
-              const body = `"${req.productName}"${req.clientName ? ` par ${req.clientName}` : ""}`;
-
-              if (isAppVisible) {
-                toast.success(body, {
-                  duration: 8000,
-                  icon: <Bell className="w-4 h-4 text-emerald-600" />,
-                });
-              } else {
-                showSystemNotification(title, body, "/");
-              }
+          for (const req of requests) {
+            allCurrentIds.push(req.id);
+            if (!knownIds.includes(req.id)) {
+              newItems.push({
+                title: "🔔 Nouvelle demande sur MediTike",
+                body: `"${req.productName}"${req.clientName ? ` par ${req.clientName}` : ""}`,
+                url: "/",
+              });
             }
           }
-
-          localStorage.setItem(knownIdsKey, JSON.stringify(allRequestIds));
         }
-      } catch {
-        // Silencieux
-      } finally {
-        isChecking = false;
+
+        // Mettre à jour les IDs connus
+        localStorage.setItem(knownKey, JSON.stringify(allCurrentIds));
+
+        // S'il y a de nouveaux éléments, notifier
+        if (newItems.length > 0) {
+          console.log(`[PushNotifications] ${newItems.length} nouveau(x) élément(s) détecté(s) !`);
+
+          // Vibrer
+          if (typeof navigator !== "undefined" && navigator.vibrate) {
+            navigator.vibrate([200, 100, 200]);
+          }
+
+          // Notifier (max 3 d'un coup)
+          for (const item of newItems.slice(0, 3)) {
+            if (isAppVisible) {
+              // App visible → toast
+              toast.success(item.body, {
+                duration: 8000,
+                icon: currentType === "client" ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                ) : (
+                  <Bell className="w-4 h-4 text-emerald-600" />
+                ),
+              });
+            }
+
+            // TOUJOURS afficher la notification système (même si app visible)
+            // pour que l'utilisateur la voie même s'il est sur une autre app
+            showSystemNotification(item.title, item.body, item.url);
+          }
+        }
+      } catch (err) {
+        console.log("[PushNotifications] Erreur:", err);
       }
     }
 
-    // Démarrage différé (3s)
+    // Démarrage différé (2s)
     const startDelay = setTimeout(() => {
-      checkForNewItems();
-      // IMPORTANT : le polling continue MÊME quand l'app est en arrière-plan
-      // (contrairement aux autres pollings qui s'arrêtent)
-      intervalRef.current = setInterval(checkForNewItems, 20000);
-    }, 3000);
+      console.log("[PushNotifications] Démarrage du polling...");
+      check();
+      // Polling toutes les 15 secondes — CONTINUE en arrière-plan
+      intervalRef.current = setInterval(check, 15000);
+    }, 2000);
 
     return () => {
       clearTimeout(startDelay);
@@ -181,37 +241,5 @@ export function PushNotifications({ type }: PushNotificationsProps) {
     };
   }, []);
 
-  /** Affiche une notification système via le service worker */
-  function showSystemNotification(title: string, body: string, url: string) {
-    if (typeof window === "undefined") return;
-
-    // Si on a un service worker, utiliser showNotification (meilleur support)
-    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.showNotification(title, {
-          body,
-          icon: "/logo.svg",
-          badge: "/logo.svg",
-          vibrate: [200, 100, 200],
-          data: { url },
-          tag: "meditike-push",
-          requireInteraction: false,
-        });
-      });
-    } else if ("Notification" in window && Notification.permission === "granted") {
-      // Fallback : notification directe
-      const notif = new Notification(title, {
-        body,
-        icon: "/logo.svg",
-        badge: "/logo.svg",
-        tag: "meditike-push",
-      });
-      notif.onclick = () => {
-        window.focus();
-        notif.close();
-      };
-    }
-  }
-
-  return null; // Composant invisible
+  return null;
 }
