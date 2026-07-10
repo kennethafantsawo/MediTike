@@ -10,7 +10,7 @@ import { LogoMark } from "@/components/brand/logo";
 import { KenteDivider } from "@/components/brand/african-pattern";
 import { formatPrice, relativeTimeFr, MAX_PHOTO_SIZE } from "@/lib/meditike/helpers";
 import { DutyListView } from "@/components/meditike/shared/duty-list-view";
-import { InAppNotifications } from "@/components/meditike/shared/in-app-notifications";
+import { PushNotifications } from "@/components/meditike/shared/push-notifications";
 import { PharmacyRating } from "@/components/meditike/shared/pharmacy-rating";
 import { ChatThread, useChatUnread } from "@/components/meditike/shared/chat-thread";
 import { ClientStats } from "@/components/meditike/client/client-stats";
@@ -532,7 +532,7 @@ function ResponseCard({ response, user }: { response: Response; user: any }) {
         )}
       </AnimatePresence>
 
-      <InAppNotifications type="client" />
+      <PushNotifications type="client" />
     </div>
   );
 }

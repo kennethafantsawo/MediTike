@@ -13,7 +13,7 @@ import {
   normalizePhone, findCountryByCode,
 } from "@/lib/meditike/helpers";
 import { DutyListView } from "@/components/meditike/shared/duty-list-view";
-import { InAppNotifications } from "@/components/meditike/shared/in-app-notifications";
+import { PushNotifications } from "@/components/meditike/shared/push-notifications";
 import { PharmacistStats } from "@/components/meditike/pharmacist/pharmacist-stats";
 import { PharmacistSettings } from "@/components/meditike/pharmacist/pharmacist-settings";
 import { toast } from "sonner";
@@ -226,7 +226,7 @@ export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
         )}
       </AnimatePresence>
 
-      <InAppNotifications type="pharmacist" />
+      <PushNotifications type="pharmacist" />
     </div>
   );
 }

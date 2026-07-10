@@ -9,7 +9,7 @@ import { Capacitor } from "@capacitor/core";
  * Version actuelle de l'application MediTike.
  * Doit rester synchronisée avec /public/version.json et package.json.
  */
-const CURRENT_VERSION = "v1.4";
+const CURRENT_VERSION = "v1.5";
 
 /** Endpoint local qui retourne les métadonnées de la dernière release. */
 const VERSION_URL = "/version.json";
