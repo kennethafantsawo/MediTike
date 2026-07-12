@@ -75,20 +75,15 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Construction du message pré-rempli ────────────────────────
-    const clientName = session.fullName || "client";
+    // ⚠️ SÉCURITÉ : Ne JAMAIS inclure de données médicales dans l'URL WhatsApp
+    // (le nom du médicament, les notes, etc. sont des données de santé)
     const pharmacyName = response.pharmacy.name;
-    const productName = response.request.productName;
 
     const parts: string[] = [
-      `Bonjour ${clientName}, la pharmacie ${pharmacyName} a répondu à votre demande de ${productName}.`,
-      response.available ? "Disponible." : "Indisponible.",
+      `Bonjour, la pharmacie ${pharmacyName} a répondu à votre demande sur MediTike.`,
+      response.available ? "Le produit est disponible." : "Le produit n'est pas disponible.",
     ];
-    if (response.available && typeof response.price === "number") {
-      parts.push(`Prix : ${formatPrice(response.price)}.`);
-    }
-    if (response.note) {
-      parts.push(`Note : ${response.note}`);
-    }
+    // PAS de prix, PAS de note, PAS de nom de médicament dans l'URL
     parts.push("Connectez-vous sur MediTike pour voir les détails.");
     const message = parts.join(" ");
 

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/meditike/session";
 import { calculatePhotoDeletionDate } from "@/lib/meditike/helpers";
+import { sanitizeRequestBody, containsInjection } from "@/lib/meditike/sanitizer";
+import { rateLimit, getRateLimitIdentifier } from "@/lib/meditike/rate-limit";
 
 /**
  * POST /api/requests/[id]/responses
@@ -27,6 +29,13 @@ export async function POST(
         { error: "Réservé aux pharmaciens actifs" },
         { status: 403 }
       );
+    }
+
+    // ── Rate limiting : 20 réponses/min par pharmacien ──
+    const ip = getRateLimitIdentifier(req, session.userId);
+    const rl = rateLimit(ip, { windowMs: 60 * 1000, max: 20 });
+    if (!rl.allowed) {
+      return NextResponse.json({ error: "Trop de réponses. Patientez 1 minute." }, { status: 429 });
     }
 
     const { id } = await params;

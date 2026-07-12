@@ -285,8 +285,8 @@ export function calculatePhotoDeletionDate(
   return new Date(requestCreatedAt.getTime() + 7 * 24 * 60 * 60 * 1000); // +7j
 }
 
-/** Taille maximale des photos en bytes (2 Mo). */
-export const MAX_PHOTO_SIZE = 2 * 1024 * 1024;
+/** Taille maximale des photos en bytes (1 Mo — anti Denial of Wallet). */
+export const MAX_PHOTO_SIZE = 1 * 1024 * 1024;
 
 /** Types MIME autorisés pour les photos. */
 export const ALLOWED_PHOTO_MIME_TYPES = [
