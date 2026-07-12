@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { setSession, getSession, clearSession, getClientIP } from "@/lib/meditike/session";
 import { normalizePhone, validatePassword } from "@/lib/meditike/helpers";
 import { rateLimit, getRateLimitIdentifier } from "@/lib/meditike/rate-limit";
+import { sanitizeRequestBody, containsInjection } from "@/lib/meditike/sanitizer";
 
 /**
  * POST /api/auth — inscription client, login (tous rôles)
@@ -23,7 +24,13 @@ export async function POST(req: NextRequest) {
         { status: 429, headers: { "Retry-After": "60" } }
       );
     }
-    const body = await req.json();
+    const rawBody = await req.json();
+    // ── Sanitization anti-XSS / anti-injection ──
+    if (containsInjection(rawBody)) {
+      console.warn(`[SECURITY] Injection bloquée sur /api/auth depuis IP: ${getRateLimitIdentifier(req)}`);
+      return NextResponse.json({ error: "Entrée invalide." }, { status: 400 });
+    }
+    const body = sanitizeRequestBody(rawBody);
     const { action, phone, password, fullName, pharmacyId } = body;
 
     if (!password) {

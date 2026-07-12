@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/meditike/session";
 import { calculatePhotoDeletionDate } from "@/lib/meditike/helpers";
+import { sanitizeRequestBody, containsInjection } from "@/lib/meditike/sanitizer";
+import { rateLimit, getRateLimitIdentifier } from "@/lib/meditike/rate-limit";
 
 /**
  * GET /api/requests
@@ -170,7 +172,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { productName, note, photoIds, draftRequestId } = await req.json();
+    // ── Rate limiting : 10 demandes par minute ──
+    const ip = getRateLimitIdentifier(req, session.userId);
+    const rl = rateLimit(ip, { windowMs: 60 * 1000, max: 10 });
+    if (!rl.allowed) {
+      return NextResponse.json({ error: "Trop de demandes. Patientez 1 minute." }, { status: 429 });
+    }
+
+    const rawBody = await req.json();
+    // ── Sanitization anti-XSS ──
+    if (containsInjection(rawBody)) {
+      console.warn(`[SECURITY] Injection bloquée sur /api/requests par user: ${session.userId}`);
+      return NextResponse.json({ error: "Entrée invalide." }, { status: 400 });
+    }
+    const { productName, note, photoIds, draftRequestId } = sanitizeRequestBody(rawBody);
 
     if (!productName?.trim() || productName.trim().length < 2) {
       return NextResponse.json(
