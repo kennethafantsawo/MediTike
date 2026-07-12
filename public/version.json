@@ -1,7 +1,7 @@
 {
-  "version": "v1.7",
-  "versionCode": 6,
+  "version": "v1.8",
+  "versionCode": 4,
   "apkUrl": "/MediTike.apk",
-  "releaseNotes": "Notifications push système (comme WhatsApp) + plugin local-notifications Android",
-  "releaseDate": "2026-07-10"
+  "releaseNotes": "Permissions Android + connexion pharmacien + chat + notifications",
+  "releaseDate": "2026-07-06"
 }

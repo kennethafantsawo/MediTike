@@ -297,7 +297,10 @@ export function Landing({ onAuthed }: LandingProps) {
           </div>
           <div className="mt-8 pt-6 border-t border-background/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-background/50">
             <p>© {new Date().getFullYear()} MediTike.</p>
-            <a href="/confidentialite" className="hover:text-background transition-colors">Politique de confidentialité</a>
+            <div className="flex gap-4">
+              <a href="/confidentialite" className="hover:text-background transition-colors">Confidentialité</a>
+              <a href="/conditions" className="hover:text-background transition-colors">Conditions</a>
+            </div>
           </div>
         </div>
       </footer>
