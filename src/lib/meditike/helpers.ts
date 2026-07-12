@@ -297,10 +297,33 @@ export const ALLOWED_PHOTO_MIME_TYPES = [
   "image/heif",
 ];
 
+/** Types MIME explicitement REJETÉS (dangereux). */
+export const BLOCKED_PHOTO_MIME_TYPES = [
+  "image/svg+xml",
+  "text/html",
+  "text/plain",
+  "application/javascript",
+  "application/x-httpd-php",
+  "application/octet-stream",
+];
+
 /** Extensions autorisées. */
 export const ALLOWED_PHOTO_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"];
 
+/** Extensions explicitement REJETÉES. */
+export const BLOCKED_PHOTO_EXTENSIONS = [".svg", ".html", ".htm", ".js", ".php", ".exe", ".bat"];
+
 /** Vérifie si un type MIME est autorisé. */
 export function isAllowedPhotoType(mimeType: string): boolean {
-  return ALLOWED_PHOTO_MIME_TYPES.includes(mimeType.toLowerCase());
+  const mt = mimeType.toLowerCase();
+  // Rejet explicite des types dangereux
+  if (BLOCKED_PHOTO_MIME_TYPES.includes(mt)) return false;
+  return ALLOWED_PHOTO_MIME_TYPES.includes(mt);
+}
+
+/** Vérifie si une extension est autorisée (et pas dans la liste bloquée). */
+export function isAllowedPhotoExtension(filename: string): boolean {
+  const ext = filename.toLowerCase().match(/\.[^.]+$/)?.[0] || "";
+  if (BLOCKED_PHOTO_EXTENSIONS.includes(ext)) return false;
+  return ALLOWED_PHOTO_EXTENSIONS.includes(ext);
 }
