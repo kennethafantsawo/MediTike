@@ -29,12 +29,12 @@ const nextConfig: NextConfig = {
           },
           // ── CSP : strict mais fonctionnel ──
           // 'unsafe-inline' + 'unsafe-eval' requis par Next.js 16 (Turbopack, hydration)
-          // 'strict-dynamic' activé pour les scripts de confiance
+          // PAS de 'strict-dynamic' car il désactive 'unsafe-inline' et casse Next.js
           {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'strict-dynamic' https://cdn.tailwindcss.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https:",
