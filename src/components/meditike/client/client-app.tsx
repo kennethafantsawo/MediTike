@@ -15,6 +15,7 @@ import { PharmacyRating } from "@/components/meditike/shared/pharmacy-rating";
 import { ChatThread, useChatUnread } from "@/components/meditike/shared/chat-thread";
 import { ClientStats } from "@/components/meditike/client/client-stats";
 import { ClientSettings } from "@/components/meditike/client/client-settings";
+import { TPCView } from "@/components/meditike/client/tpc-view";
 import { useWhatsAppNotification } from "@/lib/meditike/use-whatsapp-notification";
 import { toast } from "sonner";
 
@@ -60,7 +61,7 @@ interface ClientAppProps {
 }
 
 export function ClientApp({ user: initialUser, onLogout }: ClientAppProps) {
-  const [view, setView] = useState<"new" | "history" | "duty" | "stats" | "settings">("new");
+  const [view, setView] = useState<"new" | "history" | "duty" | "stats" | "settings" | "tpc">("new");
   const [user, setUser] = useState(initialUser);
   const [requests, setRequests] = useState<ClientRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -81,7 +82,7 @@ export function ClientApp({ user: initialUser, onLogout }: ClientAppProps) {
     let interval: NodeJS.Timeout | null = null;
     const start = () => { if (!interval) interval = setInterval(loadRequests, 45000); };
     const stop = () => { if (interval) { clearInterval(interval); interval = null; } };
-    const onVisibility = () => { document.hidden ? stop() : start(); };
+    const onVisibility = () => { if (document.hidden) stop(); else start(); };
     start();
     document.addEventListener("visibilitychange", onVisibility);
     return () => { stop(); document.removeEventListener("visibilitychange", onVisibility); };
@@ -122,7 +123,7 @@ export function ClientApp({ user: initialUser, onLogout }: ClientAppProps) {
 
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-6 pb-20">
         {/* TABS */}
-        <div className="grid grid-cols-5 p-1 bg-muted rounded-2xl mb-5 sticky top-14 z-20">
+        <div className="grid grid-cols-6 p-1 bg-muted rounded-2xl mb-5 sticky top-14 z-20">
           <button onClick={() => setView("new")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${view === "new" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
             <MessageCircle className="w-4 h-4" /> Demande
           </button>
@@ -138,6 +139,9 @@ export function ClientApp({ user: initialUser, onLogout }: ClientAppProps) {
           </button>
           <button onClick={() => setView("settings")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${view === "settings" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
             <Settings className="w-4 h-4" /> Paramètres
+          </button>
+          <button onClick={() => setView("tpc")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${view === "tpc" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
+            <FileText className="w-4 h-4" /> TPC
           </button>
         </div>
 
@@ -177,9 +181,13 @@ export function ClientApp({ user: initialUser, onLogout }: ClientAppProps) {
             <motion.div key="stats" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
               <ClientStats />
             </motion.div>
-          ) : (
+          ) : view === "settings" ? (
             <motion.div key="settings" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
               <ClientSettings onProfileUpdated={(fullName) => setUser({ ...user, fullName })} />
+            </motion.div>
+          ) : (
+            <motion.div key="tpc" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+              <TPCView />
             </motion.div>
           )}
         </AnimatePresence>

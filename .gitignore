@@ -87,3 +87,4 @@ server.log
 # NOTE: /public/MediTike.apk DOIT être versionné (servi par Vercel)
 # Ne pas l'ajouter au gitignore
 
+download/MediTike-Cles-Secrets.md

@@ -1,4 +1,35 @@
 ---
+Task ID: TPC-MODULE
+Agent: general-purpose
+Task: Module TPC complet (API + UI client + UI pharmacien + PDF reçu)
+
+Work Log:
+- Copié les modèles TPCOrder et TPCPhoto dans prisma/schema.prisma (rapatriement depuis schema.sqlite.prisma) + ajouté back-relations sur User et Pharmacy + prisma db push + prisma generate
+- Installé jspdf@4.2.1 (bun add jspdf)
+- Créé API /api/tpc (GET: listes commandes TPC selon rôle; POST: création commande statut "sent", rate limit 5/min)
+- Créé API /api/tpc/[id] (GET: détail commande; PATCH: 5 actions confirm-availability, submit-payment, confirm-payment avec génération numéro REC-AAAA-XXXX, complete, reject)
+- Créé API /api/tpc/[id]/upload-photo (upload ordonnance, max 1 Mo, validation MIME + extension + magic bytes JPEG/PNG/WebP, hash SHA256, rate limit 10/min)
+- Créé API /api/tpc/[id]/upload-payment (upload preuve de paiement, même validation, rate limit 5/min)
+- Créé API /api/tpc-photos/[id] (sert photos ordonnance + preuve paiement via ?type=payment, vérifie ownership client/pharmacien/admin, jamais supprimée)
+- Créé tpc-receipt.tsx (composant PDF jsPDF avec en-tête MediTike vert forêt/bronze, numéro de reçu, date, patient, pharmacie, montant FCFA, méthode paiement, note pharmacie, signature numérique)
+- Créé tpc-view.tsx (UI client: vue création avec upload 3 photos max + note, vue liste cartes colorées par statut, modal paiement Mobile Money/Cash avec upload capture, bouton téléchargement reçu)
+- Créé pharmacist-tpc-view.tsx (UI pharmacien: cartes commandes avec fil d'Ariane statut, photos ordonnance cliquables, preuve paiement visible, boutons selon statut: Confirmer disponibilité + montant / Confirmer paiement reçu / Générer le reçu PDF + marquer completed)
+- Intégré onglet TPC (icône FileText) dans client-app.tsx (grille 6 onglets)
+- Intégré onglet TPC (icône ClipboardList) dans pharmacist-app.tsx (grille 6 onglets)
+- Lint validé: 0 erreur, 0 warning (aussi nettoyé 2 warnings pré-existants)
+- TypeScript validé: 0 erreur sur fichiers TPC (erreurs pré-existantes inchangées sur autres routes)
+
+Stage Summary:
+- Module TPC complet avec 6 statuts (sent → available → awaiting_payment → paid → completed, et rejected)
+- 2 types d'upload sécurisés (ordonnance + preuve paiement) avec validation magic bytes
+- Reçu PDF auto-généré avec jsPDF, numéro unique REC-{année}-{compteur 4 chiffres}, signature numérique
+- Historique permanent (TPCOrder et TPCPhoto n'ont pas de deleteAt — jamais auto-supprimés)
+- Reçu PDF téléchargeable côté patient (statut completed) ET côté pharmacien (re-téléchargement)
+- Possibilité de refuser une commande (statut rejected) avec raison optionnelle
+- Méthodes de paiement: Mobile Money (avec capture obligatoire) ou Cash (espèces en pharmacie)
+- Numéro de reçu incrémental par année (recherche du dernier numero de l'année puis +1)
+
+---
 Task ID: UPDATE-MANUAL-DUTY
 Agent: general-purpose
 Task: Vérification mise à jour GitHub + ajout manuel pharmacies de garde

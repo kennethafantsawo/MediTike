@@ -26,6 +26,7 @@ model User {
   productRequests  ProductRequest[]
   productResponses ProductResponse[]
   auditLogs        AuditLog[]
+  tpcOrders        TPCOrder[]
 }
 
 model Pharmacy {
@@ -46,6 +47,7 @@ model Pharmacy {
   users           User[]
   dutySchedules   PharmacyDuty[]
   productResponses ProductResponse[]
+  tpcOrders       TPCOrder[]
 }
 
 // Pharmacies de garde hebdomadaires (import du fichier xlsx du Ministère)
@@ -144,4 +146,59 @@ model AppStat {
   key       String   @unique
   value     Int
   updatedAt DateTime @updatedAt
+}
+
+// ─── TPC (Traitement des Pathologies Chroniques) ──────────────
+// Le patient envoie son ordonnance TPC, la pharmacie confirme
+// la disponibilité et le montant, le patient paie, puis un reçu
+// PDF est généré. Les reçus ne sont JAMAIS auto-supprimés.
+model TPCOrder {
+  id             String   @id @default(cuid())
+  clientId       String
+  client         User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  pharmacyId     String?
+  pharmacy       Pharmacy? @relation(fields: [pharmacyId], references: [id], onDelete: SetNull)
+  pharmacistId   String?  // pharmacien qui traite
+  status         String   @default("sent") // "sent" | "available" | "awaiting_payment" | "paid" | "completed" | "rejected"
+  clientName     String?
+  clientPhone    String?
+  // Ordonnance photos (PAS d'auto-suppression pour TPC)
+  photos         TPCPhoto[]
+  // Montant total (défini par la pharmacie)
+  totalAmount    Float?
+  // Preuve de paiement (screenshot du paiement mobile money)
+  paymentMethod  String?  // "mobile_money" | "cash"
+  paymentProofFilename String? // nom du fichier preuve
+  paymentProofMime String?
+  paymentProofSize Int?
+  // Reçu PDF (généré automatiquement)
+  receiptNumber  String?  // numéro unique du reçu (ex: REC-2026-0001)
+  // Notes
+  note           String?  // note du patient
+  pharmacyNote   String?  // note de la pharmacie (produits, alternatives)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  confirmedAt    DateTime? // pharmacie confirme dispo
+  paidAt         DateTime? // pharmacie confirme paiement reçu
+  completedAt    DateTime? // reçu généré et envoyé
+
+  @@index([clientId])
+  @@index([pharmacyId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Photos TPC (ordonnance + preuve de paiement) — JAMAIS supprimées
+model TPCPhoto {
+  id           String   @id @default(cuid())
+  tpcOrderId   String
+  tpcOrder     TPCOrder @relation(fields: [tpcOrderId], references: [id], onDelete: Cascade)
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  type         String   @default("ordonnance") // "ordonnance" | "payment_proof"
+  uploadedAt   DateTime @default(now())
+
+  @@index([tpcOrderId])
 }

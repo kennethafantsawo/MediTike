@@ -5,6 +5,7 @@ import {
   Bell, Pill, Clock, CheckCircle2, X, Phone, MapPin, Image as ImageIcon,
   Loader2, Send, RefreshCw, LogOut, Building2, FileText, BarChart3, MessageCircle,
   Settings, Lock, Eye, EyeOff, ChevronDown, Save, ShieldCheck, MapPinned,
+  ClipboardList,
 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { KenteDivider } from "@/components/brand/african-pattern";
@@ -16,6 +17,7 @@ import { DutyListView } from "@/components/meditike/shared/duty-list-view";
 import { PushNotifications } from "@/components/meditike/shared/push-notifications";
 import { PharmacistStats } from "@/components/meditike/pharmacist/pharmacist-stats";
 import { PharmacistSettings } from "@/components/meditike/pharmacist/pharmacist-settings";
+import { PharmacistTPCView } from "@/components/meditike/pharmacist/pharmacist-tpc-view";
 import { toast } from "sonner";
 
 interface Photo {
@@ -51,7 +53,7 @@ interface PharmacistAppProps {
 }
 
 export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
-  const [tab, setTab] = useState<"new" | "responded" | "duty" | "stats" | "settings">("new");
+  const [tab, setTab] = useState<"new" | "responded" | "duty" | "stats" | "settings" | "tpc">("new");
   const [requests, setRequests] = useState<PharmacistRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [responding, setResponding] = useState<string | null>(null);
@@ -73,7 +75,7 @@ export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
     let interval: NodeJS.Timeout | null = null;
     const start = () => { if (!interval) interval = setInterval(load, 30000); };
     const stop = () => { if (interval) { clearInterval(interval); interval = null; } };
-    const onVisibility = () => { document.hidden ? stop() : start(); };
+    const onVisibility = () => { if (document.hidden) stop(); else start(); };
     start();
     document.addEventListener("visibilitychange", onVisibility);
     return () => { stop(); document.removeEventListener("visibilitychange", onVisibility); };
@@ -117,7 +119,7 @@ export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
       </header>
 
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-6 pb-20">
-        <div className="grid grid-cols-5 p-1 bg-muted rounded-2xl mb-5 sticky top-14 z-20">
+        <div className="grid grid-cols-6 p-1 bg-muted rounded-2xl mb-5 sticky top-14 z-20">
           <button onClick={() => setTab("new")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${tab === "new" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
             <Bell className="w-4 h-4" /> À répondre
             {newRequests.length > 0 && <span className="ml-1 text-[10px] bg-emerald-500 text-white px-1.5 py-0.5 rounded-full">{newRequests.length}</span>}
@@ -135,12 +137,17 @@ export function PharmacistApp({ user, onLogout }: PharmacistAppProps) {
           <button onClick={() => setTab("settings")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${tab === "settings" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
             <Settings className="w-4 h-4" /> Réglages
           </button>
+          <button onClick={() => setTab("tpc")} className={`py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${tab === "tpc" ? "bg-white shadow text-emerald-700" : "text-muted-foreground"}`}>
+            <ClipboardList className="w-4 h-4" /> TPC
+          </button>
         </div>
 
         {tab === "stats" ? (
           <PharmacistStats />
         ) : tab === "settings" ? (
           <PharmacistSettings />
+        ) : tab === "tpc" ? (
+          <PharmacistTPCView />
         ) : loading && tab !== "duty" ? (
           <div className="text-center py-12"><Loader2 className="w-6 h-6 text-emerald-600 animate-spin mx-auto" /></div>
         ) : tab === "duty" ? (
